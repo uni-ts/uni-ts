@@ -1,13 +1,45 @@
 {
   "name": "@uni-ts/result",
   "version": "0.0.1",
+  "description": "Utils for type-safe error handling in TypeScript.",
+  "keywords": [
+    "typescript",
+    "result",
+    "either",
+    "errors",
+    "type-safe"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uni-ts/uni-ts.git",
+    "directory": "packages/result"
+  },
+  "author": "Konrad Szwarc <konrad.szwarc.dev@gmail.com> (https://github.com/KonradSzwarc)",
+  "homepage": "https://github.com/uni-ts/uni-ts#readme",
+  "bugs": "https://github.com/uni-ts/uni-ts/issues",
   "type": "module",
-  "main": "dist/index.js",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./fp": {
+      "import": "./dist/fp.js",
+      "types": "./dist/fp.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc -b",
     "test": "vitest"
+  },
+  "devDependencies": {
+    "@uni-ts/composition": "workspace:*"
   }
 }

@@ -1,8 +1,40 @@
 {
   "name": "@uni-ts/composition",
   "version": "0.0.1",
+  "description": "Utils for type-safe function composition in TypeScript.",
+  "keywords": [
+    "typescript",
+    "composition",
+    "function",
+    "pipe",
+    "flow",
+    "compose",
+    "builder",
+    "type-safe"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uni-ts/uni-ts.git",
+    "directory": "packages/composition"
+  },
+  "author": "Konrad Szwarc <konrad.szwarc.dev@gmail.com> (https://github.com/KonradSzwarc)",
+  "homepage": "https://github.com/uni-ts/uni-ts#readme",
+  "bugs": "https://github.com/uni-ts/uni-ts/issues",
   "type": "module",
-  "main": "dist/index.js",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./builder": {
+      "import": "./dist/builder.js",
+      "types": "./dist/builder.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],

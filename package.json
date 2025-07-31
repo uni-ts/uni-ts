@@ -1,10 +1,8 @@
 {
   "name": "uni-ts",
   "version": "0.0.1",
-  "type": "module",
   "private": true,
   "license": "MIT",
-  "packageManager": "pnpm@10.14.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/uni-ts/uni-ts.git"
@@ -12,6 +10,8 @@
   "author": "Konrad Szwarc <konrad.szwarc.dev@gmail.com> (https://github.com/KonradSzwarc)",
   "homepage": "https://github.com/uni-ts/uni-ts#readme",
   "bugs": "https://github.com/uni-ts/uni-ts/issues",
+  "type": "module",
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "build": "tsc -b",
     "test": "vitest",

@@ -26,7 +26,11 @@ importers:
 
   packages/composition: {}
 
-  packages/result: {}
+  packages/result:
+    devDependencies:
+      '@uni-ts/composition':
+        specifier: workspace:*
+        version: link:../composition
 
 packages:
 
