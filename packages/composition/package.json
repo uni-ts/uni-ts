@@ -1,0 +1,13 @@
+{
+  "name": "@uni-ts/composition",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest"
+  }
+}
