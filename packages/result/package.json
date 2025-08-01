@@ -30,6 +30,10 @@
     "./fp": {
       "import": "./dist/fp.js",
       "types": "./dist/fp.d.ts"
+    },
+    "./builder": {
+      "import": "./dist/builder.js",
+      "types": "./dist/builder.d.ts"
     }
   },
   "files": [

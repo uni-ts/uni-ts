@@ -20,6 +20,14 @@ export type InferValueAsOk<T> = FlattenOk<Exclude<Awaited<Returned<T>>, Err>>;
 
 export type InferValueAsErr<T> = FlattenErr<Exclude<Awaited<Returned<T>>, Ok>>;
 
+export type IsAsync<Current extends boolean, Return> = [Return] extends [never]
+  ? false
+  : Current extends true
+    ? true
+    : Return extends Promise<unknown>
+      ? true
+      : false;
+
 export function isObject(value: unknown): value is object {
   return typeof value === 'object' && value !== null;
 }
