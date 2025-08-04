@@ -24,6 +24,12 @@ importers:
         specifier: 3.2.4
         version: 3.2.4
 
+  packages/action:
+    devDependencies:
+      '@uni-ts/result':
+        specifier: workspace:*
+        version: link:../result
+
   packages/composition: {}
 
   packages/model:
