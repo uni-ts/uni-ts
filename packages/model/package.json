@@ -1,0 +1,51 @@
+{
+  "name": "@uni-ts/model",
+  "version": "0.0.1",
+  "description": "Utils for creating data models in TypeScript.",
+  "keywords": [
+    "model",
+    "data",
+    "modeling",
+    "type-safe",
+    "validation"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uni-ts/uni-ts.git",
+    "directory": "packages/model"
+  },
+  "author": "Konrad Szwarc <konrad.szwarc.dev@gmail.com> (https://github.com/KonradSzwarc)",
+  "homepage": "https://github.com/uni-ts/uni-ts#readme",
+  "bugs": "https://github.com/uni-ts/uni-ts/issues",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./safe": {
+      "import": "./dist/safe.js",
+      "types": "./dist/safe.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@uni-ts/result": "workspace:*",
+    "arktype": "2.1.20",
+    "valibot": "1.1.0",
+    "zod": "4.0.14"
+  },
+  "optionalDependencies": {
+    "@uni-ts/result": "workspace:*"
+  }
+}
