@@ -485,7 +485,7 @@ export function toThrowable<R extends OrPromise<Result>, Args extends unknown[] 
  * @template CatchReturn - The type returned by the catch handler
  * @template Args - The argument types of the function
  * @param fn - The function that might throw
- * @param toCatch - Value or function to handle caught errors
+ * @param onErr - Value or function to handle caught errors
  * @returns A new function that returns Results instead of throwing
  *
  * @example
@@ -509,21 +509,21 @@ export function toThrowable<R extends OrPromise<Result>, Args extends unknown[] 
  */
 export function fromThrowable<const FnReturn, const CatchReturn, Args extends unknown[] = []>(
   fn: (...args: Args) => NonPromise<FnReturn>,
-  toCatch: (error: unknown) => NonPromise<CatchReturn>,
+  onErr: (error: unknown) => NonPromise<CatchReturn>,
 ): (...args: Args) => Result<FnReturn | UnwrapOk<CatchReturn>, InferValueAsErr<CatchReturn>>;
 export function fromThrowable<const FnReturn, const CatchReturn, Args extends unknown[] = []>(
   fn: (...args: Args) => NonPromise<FnReturn>,
-  toCatch: NonPromise<CatchReturn>,
+  onErr: NonPromise<CatchReturn>,
 ): (...args: Args) => Result<FnReturn | UnwrapOk<CatchReturn>, InferValueAsErr<CatchReturn>>;
 export function fromThrowable<const FnReturn, const CatchReturn, Args extends unknown[] = []>(
   fn: (...args: Args) => OrPromise<FnReturn>,
-  toCatch: OrFunction<OrPromise<CatchReturn>, [error: unknown]>,
+  onErr: OrFunction<OrPromise<CatchReturn>, [error: unknown]>,
 ): (...args: Args) => Promise<Result<FnReturn | UnwrapOk<CatchReturn>, InferValueAsErr<CatchReturn>>>;
 export function fromThrowable<const FnReturn, const CatchReturn, Args extends unknown[] = []>(
   fn: (...args: Args) => OrPromise<FnReturn>,
-  toCatch: OrFunction<OrPromise<CatchReturn>, [error: unknown]>,
+  onErr: OrFunction<OrPromise<CatchReturn>, [error: unknown]>,
 ): (...args: Args) => OrPromise<Result<FnReturn | UnwrapOk<CatchReturn>, InferValueAsErr<CatchReturn>>> {
-  return (...args: Args) => tryCatch(() => fn(...args), toCatch);
+  return (...args: Args) => tryCatch(() => fn(...args), onErr);
 }
 
 /**
@@ -562,10 +562,10 @@ export function tryCatch<const TryReturn, const CatchReturn>(
   toTry: () => NonPromise<TryReturn>,
   toCatch: NonPromise<CatchReturn>,
 ): Result<TryReturn | UnwrapOk<CatchReturn>, InferValueAsErr<CatchReturn>>;
-export function tryCatch<const TryReturn, const CatchReturn>(
-  toTry: OrFunction<OrPromise<TryReturn>>,
+export function tryCatch<const TryReturn extends OrPromise<unknown>, const CatchReturn>(
+  toTry: OrFunction<TryReturn>,
   toCatch: OrFunction<OrPromise<CatchReturn>, [error: unknown]>,
-): Promise<Result<TryReturn | UnwrapOk<CatchReturn>, InferValueAsErr<CatchReturn>>>;
+): Promise<Result<Awaited<TryReturn> | UnwrapOk<CatchReturn>, InferValueAsErr<CatchReturn>>>;
 export function tryCatch<const TryReturn, const CatchReturn>(
   toTry: OrFunction<OrPromise<TryReturn>>,
   toCatch: OrFunction<OrPromise<CatchReturn>, [error: unknown]>,

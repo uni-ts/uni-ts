@@ -34,50 +34,19 @@ import {
   unwrapOrUndefined,
 } from './index.js';
 
-const mixedTypes = {
-  sync: [ok('data'), ok({ foo: 'bar' }), err('404'), err({ code: 404 })],
-  async: [
-    Promise.resolve(ok('data')),
-    Promise.resolve(ok({ foo: 'bar' })),
-    Promise.resolve(err('404')),
-    Promise.resolve(err({ code: 404 })),
-  ],
-  mixed: [Promise.resolve(ok('data')), ok({ foo: 'bar' }), err('404'), Promise.resolve(err({ code: 404 }))],
-};
-
-type MixedOk = 'data' | { readonly foo: 'bar' };
-
 describe('index.ts', () => {
   describe('Basic interfaces', () => {
     it('Ok', () => {
-      expectTypeOf<Ok<string>>().toEqualTypeOf<{
-        success: true;
-        data: string;
-      }>();
-      expectTypeOf<Ok<number>>().toEqualTypeOf<{
-        success: true;
-        data: number;
-      }>();
-      expectTypeOf<Ok<{ foo: string }>>().toEqualTypeOf<{
-        success: true;
-        data: { foo: string };
-      }>();
+      expectTypeOf<Ok<string>>().toEqualTypeOf<{ success: true; data: string }>();
+      expectTypeOf<Ok<number>>().toEqualTypeOf<{ success: true; data: number }>();
+      expectTypeOf<Ok<{ foo: string }>>().toEqualTypeOf<{ success: true; data: { foo: string } }>();
       expectTypeOf<Ok>().toEqualTypeOf<{ success: true; data: any }>();
     });
 
     it('Err', () => {
-      expectTypeOf<Err<string>>().toEqualTypeOf<{
-        success: false;
-        error: string;
-      }>();
-      expectTypeOf<Err<Error>>().toEqualTypeOf<{
-        success: false;
-        error: Error;
-      }>();
-      expectTypeOf<Err<{ code: number }>>().toEqualTypeOf<{
-        success: false;
-        error: { code: number };
-      }>();
+      expectTypeOf<Err<string>>().toEqualTypeOf<{ success: false; error: string }>();
+      expectTypeOf<Err<Error>>().toEqualTypeOf<{ success: false; error: Error }>();
+      expectTypeOf<Err<{ code: number }>>().toEqualTypeOf<{ success: false; error: { code: number } }>();
       expectTypeOf<Err>().toEqualTypeOf<{ success: false; error: any }>();
     });
 
@@ -126,12 +95,12 @@ describe('index.ts', () => {
   });
 
   describe('InferOk', () => {
-    it('infers Ok types from simple Results', () => {
+    it('infers Ok types from result', () => {
       type SimpleResult = Result<string, Error>;
       expectTypeOf<InferOk<SimpleResult>>().toEqualTypeOf<Ok<string>>();
     });
 
-    it('infers Ok types from Promise Results', () => {
+    it('infers Ok types from promise result', () => {
       type AsyncResult = Promise<Result<{ data: string }, { error: string }>>;
       expectTypeOf<InferOk<AsyncResult>>().toEqualTypeOf<Ok<{ data: string }>>();
     });
@@ -151,7 +120,7 @@ describe('index.ts', () => {
   });
 
   describe('InferErr', () => {
-    it('infers Err types from simple Results', () => {
+    it('infers Err types from result', () => {
       type SimpleResult = Result<string, Error>;
       expectTypeOf<InferErr<SimpleResult>>().toEqualTypeOf<Err<Error>>();
     });
@@ -164,7 +133,7 @@ describe('index.ts', () => {
       expectTypeOf<InferErr<AsyncFn>>().toEqualTypeOf<Err<Error>>();
     });
 
-    it('infers Err types from Promise Results', () => {
+    it('infers Err types from promise result', () => {
       type AsyncResult = Promise<Result<{ data: string }, { error: string }>>;
       expectTypeOf<InferErr<AsyncResult>>().toEqualTypeOf<Err<{ error: string }>>();
     });
@@ -283,29 +252,21 @@ describe('index.ts', () => {
       expectTypeOf(result).toEqualTypeOf<Ok<'data'>>();
     });
 
-    it('creates immutable types', () => {
+    it('creates immutable values for different data types', () => {
+      expect(ok('data')).toEqual({ success: true, data: 'data' });
       expectTypeOf(ok('data')).toEqualTypeOf<Ok<'data'>>();
+
+      expect(ok(42)).toEqual({ success: true, data: 42 });
       expectTypeOf(ok(42)).toEqualTypeOf<Ok<42>>();
+
+      expect(ok(true)).toEqual({ success: true, data: true });
       expectTypeOf(ok(true)).toEqualTypeOf<Ok<true>>();
+
+      expect(ok({ foo: 'bar' })).toEqual({ success: true, data: { foo: 'bar' } });
       expectTypeOf(ok({ foo: 'bar' })).toEqualTypeOf<Ok<{ readonly foo: 'bar' }>>();
+
+      expect(ok([1, 2, 3])).toEqual({ success: true, data: [1, 2, 3] });
       expectTypeOf(ok([1, 2, 3])).toEqualTypeOf<Ok<readonly [1, 2, 3]>>();
-    });
-
-    it('works with different data types', () => {
-      const numberOk = ok(42);
-
-      expect(numberOk).toEqual({ success: true, data: 42 });
-      expectTypeOf(numberOk).toEqualTypeOf<Ok<42>>();
-
-      const objectOk = ok({ foo: 'bar' });
-
-      expect(objectOk).toEqual({ success: true, data: { foo: 'bar' } });
-      expectTypeOf(objectOk).toEqualTypeOf<Ok<{ readonly foo: 'bar' }>>();
-
-      const arrayOk = ok([1, 2, 3]);
-
-      expect(arrayOk).toEqual({ success: true, data: [1, 2, 3] });
-      expectTypeOf(arrayOk).toEqualTypeOf<Ok<readonly [1, 2, 3]>>();
     });
   });
 
@@ -317,25 +278,21 @@ describe('index.ts', () => {
       expectTypeOf(result).toEqualTypeOf<Err<'some error'>>();
     });
 
-    it('creates immutable types', () => {
+    it('creates immutable values for different error types', () => {
+      expect(err('data')).toEqual({ success: false, error: 'data' });
       expectTypeOf(err('data')).toEqualTypeOf<Err<'data'>>();
+
+      expect(err(42)).toEqual({ success: false, error: 42 });
       expectTypeOf(err(42)).toEqualTypeOf<Err<42>>();
+
+      expect(err(true)).toEqual({ success: false, error: true });
       expectTypeOf(err(true)).toEqualTypeOf<Err<true>>();
+
+      expect(err({ foo: 'bar' })).toEqual({ success: false, error: { foo: 'bar' } });
       expectTypeOf(err({ foo: 'bar' })).toEqualTypeOf<Err<{ readonly foo: 'bar' }>>();
+
+      expect(err([1, 2, 3])).toEqual({ success: false, error: [1, 2, 3] });
       expectTypeOf(err([1, 2, 3])).toEqualTypeOf<Err<readonly [1, 2, 3]>>();
-    });
-
-    it('works with different error types', () => {
-      const error = new Error('test error');
-      const errorResult = err(error);
-
-      expect(errorResult).toEqual({ success: false, error });
-      expectTypeOf(errorResult).toEqualTypeOf<Err<Error>>();
-
-      const objectResult = err({ code: 404 });
-
-      expect(objectResult).toEqual({ success: false, error: { code: 404 } });
-      expectTypeOf(objectResult).toEqualTypeOf<Err<{ readonly code: 404 }>>();
     });
   });
 
@@ -374,34 +331,35 @@ describe('index.ts', () => {
 
     it('casts value to Result type', () => {
       expectTypeOf(isResult).guards.toExtend<Result>();
-      const value = first(ok(42), err('error'), 'test');
+
+      const value = first(ok(42), err('error'), 'test' as const);
 
       if (isResult(value)) {
         expectTypeOf(value).toEqualTypeOf<Result<42, 'error'>>();
       } else {
-        expectTypeOf(value).toEqualTypeOf<string>();
+        expectTypeOf(value).toEqualTypeOf<'test'>();
       }
     });
   });
 
   describe('isOk', () => {
     it('returns true for Ok results', () => {
-      const result = ok('data');
-
-      expect(isOk(result)).toBe(true);
-
-      if (isOk(result)) {
-        expectTypeOf(result).toEqualTypeOf<Ok<'data'>>();
-      }
+      expect(isOk(ok('data'))).toBe(true);
     });
 
     it('returns false for Err results', () => {
-      const result = err('error');
+      expect(isOk(err('error'))).toBe(false);
+    });
 
-      expect(isOk(result)).toBe(false);
+    it('casts value to Ok result type', () => {
+      expectTypeOf(isOk).guards.toExtend<Ok>();
 
-      if (!isOk(result)) {
-        expectTypeOf(result).toEqualTypeOf<Err<'error'>>();
+      const value = first(ok(42), err('error'));
+
+      if (isOk(value)) {
+        expectTypeOf(value).toEqualTypeOf<Ok<42>>();
+      } else {
+        expectTypeOf(value).toEqualTypeOf<Err<'error'>>();
       }
     });
 
@@ -413,41 +371,53 @@ describe('index.ts', () => {
 
   describe('isOkResult', () => {
     it('returns true for Ok results', () => {
-      const result = ok('data');
-
-      expect(isOkResult(result)).toBe(true);
+      expect(isOkResult(ok('data'))).toBe(true);
     });
 
     it('returns false for Err results', () => {
-      const result = err('error');
-
-      expect(isOkResult(result)).toBe(false);
+      expect(isOkResult(err('error'))).toBe(false);
     });
 
     it('accepts any type as argument', () => {
-      expect(isOkResult({ success: true })).toBe(false);
-    });
-
-    it('returns false for wrong data types', () => {
       expect(isOkResult('test')).toBe(false);
       expect(isOkResult(42)).toBe(false);
       expect(isOkResult(true)).toBe(false);
       expect(isOkResult({})).toBe(false);
       expect(isOkResult([])).toBe(false);
     });
+
+    it('casts value to Ok result type', () => {
+      expectTypeOf(isOkResult).guards.toExtend<Ok>();
+
+      const value = first(ok(42), err('error'), [], { foo: 'bar' });
+
+      if (isOkResult(value)) {
+        expectTypeOf(value).toEqualTypeOf<Ok<42>>();
+      } else {
+        expectTypeOf(value).toEqualTypeOf<Err<'error'> | readonly [] | { readonly foo: 'bar' }>();
+      }
+    });
   });
 
   describe('isErr', () => {
     it('returns true for Err results', () => {
-      const result = err('error');
-
-      expect(isErr(result)).toBe(true);
+      expect(isErr(err('error'))).toBe(true);
     });
 
     it('returns false for Ok results', () => {
-      const result = ok('data');
+      expect(isErr(ok('data'))).toBe(false);
+    });
 
-      expect(isErr(result)).toBe(false);
+    it('casts value to Err result type', () => {
+      expectTypeOf(isErr).guards.toExtend<Err>();
+
+      const value = first(ok(42), err('error'));
+
+      if (isErr(value)) {
+        expectTypeOf(value).toEqualTypeOf<Err<'error'>>();
+      } else {
+        expectTypeOf(value).toEqualTypeOf<Ok<42>>();
+      }
     });
 
     it('only accepts Result type as argument', () => {
@@ -458,131 +428,46 @@ describe('index.ts', () => {
 
   describe('isErrResult', () => {
     it('returns true for Err results', () => {
-      const result = err('error');
-
-      expect(isErrResult(result)).toBe(true);
+      expect(isErrResult(err('error'))).toBe(true);
     });
 
     it('returns false for Ok results', () => {
-      const result = ok('data');
-
-      expect(isErrResult(result)).toBe(false);
+      expect(isErrResult(ok('data'))).toBe(false);
     });
 
     it('accepts any type as argument', () => {
-      expect(isErrResult({ success: false })).toBe(false);
-    });
-
-    it('returns false for wrong data types', () => {
       expect(isErrResult('test')).toBe(false);
       expect(isErrResult(42)).toBe(false);
       expect(isErrResult(true)).toBe(false);
       expect(isErrResult({})).toBe(false);
       expect(isErrResult([])).toBe(false);
     });
+
+    it('casts value to Err result type', () => {
+      expectTypeOf(isErrResult).guards.toExtend<Err>();
+
+      const value = first(ok(42), err('error'), [], { foo: 'bar' });
+
+      if (isErrResult(value)) {
+        expectTypeOf(value).toEqualTypeOf<Err<'error'>>();
+      } else {
+        expectTypeOf(value).toEqualTypeOf<Ok<42> | readonly [] | { readonly foo: 'bar' }>();
+      }
+    });
   });
 
   describe('unwrapOr', () => {
     it('returns the data for Ok results', () => {
-      const value = unwrapOr(ok('data'), 'error_happened');
-
-      expect(value).toBe('data');
-      expectTypeOf(value).toEqualTypeOf<'data' | 'error_happened'>();
+      expect(unwrapOr(ok('data'), null)).toBe('data');
+      expectTypeOf(unwrapOr(ok('data'), null)).toEqualTypeOf<'data' | null>();
     });
 
     it('returns the provided value for Err results', () => {
-      const value = unwrapOr(err('error'), 'error_happened');
-
-      expect(value).toBe('error_happened');
-      expectTypeOf(value).toEqualTypeOf<'error_happened'>();
+      expect(unwrapOr(err('error'), null)).toBe(null);
+      expectTypeOf(unwrapOr(err('error'), null)).toEqualTypeOf<null>();
     });
 
-    it('works with promises', async () => {
-      const okValue = unwrapOr(Promise.resolve(ok('data')), 'error_happened');
-
-      expect(await okValue).toBe('data');
-      expectTypeOf(okValue).toEqualTypeOf<Promise<'data' | 'error_happened'>>();
-
-      const errValue = unwrapOr(Promise.resolve(err('error')), 'error_happened');
-
-      expect(await errValue).toBe('error_happened');
-      expectTypeOf(errValue).toEqualTypeOf<Promise<'error_happened'>>();
-    });
-
-    describe('works with multiple return types', () => {
-      it('sync', () => {
-        const value = unwrapOr(first(...mixedTypes.sync), 'error_happened');
-
-        expect(value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<MixedOk | 'error_happened'>();
-      });
-
-      it('async', async () => {
-        const value = unwrapOr(Promise.resolve(first(...mixedTypes.async)), 'error_happened');
-
-        expect(await value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<Promise<MixedOk | 'error_happened'>>();
-      });
-
-      it('mixed', async () => {
-        const value = unwrapOr(first(...mixedTypes.mixed), 'error_happened');
-
-        expect(await value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<Promise<MixedOk | 'error_happened'>>();
-      });
-    });
-
-    it('takes a function to determine the value for Err results', () => {
-      const value = unwrapOr(first(err('error'), err('error2')), (error) => error);
-
-      expect(value).toBe('error');
-      expectTypeOf(value).toEqualTypeOf<'error' | 'error2'>();
-    });
-
-    it('takes async function to determine the value for Err results', async () => {
-      const value1 = unwrapOr(err('error'), async () => 'error_happened' as const);
-      expect(await value1).toBe('error_happened');
-      expectTypeOf(value1).toEqualTypeOf<Promise<'error_happened'>>();
-
-      const value2 = unwrapOr(ok('success'), async () => 'error_happened' as const);
-      expect(await value2).toBe('success');
-      expectTypeOf(value2).toEqualTypeOf<Promise<'success' | 'error_happened'>>();
-    });
-
-    it('works with static values for Err results', () => {
-      const value1 = unwrapOr(err('error'), 'error_happened');
-      expect(value1).toBe('error_happened');
-      expectTypeOf(value1).toEqualTypeOf<'error_happened'>();
-
-      const value2 = unwrapOr(ok('success'), 'error_happened');
-      expect(value2).toBe('success');
-      expectTypeOf(value2).toEqualTypeOf<'success' | 'error_happened'>();
-    });
-
-    it('works with promises for Err results', async () => {
-      const value1 = unwrapOr(err('error'), Promise.resolve('error_happened' as const));
-      expect(await value1).toBe('error_happened');
-      expectTypeOf(value1).toEqualTypeOf<Promise<'error_happened'>>();
-
-      const value2 = unwrapOr(ok('success'), Promise.resolve('error_happened' as const));
-      expect(await value2).toBe('success');
-      expectTypeOf(value2).toEqualTypeOf<Promise<'success' | 'error_happened'>>();
-    });
-
-    it('handles complex default value types', () => {
-      const value = unwrapOr(err('network error'), {
-        fallback: true,
-        code: 500,
-      });
-
-      expect(value).toEqual({ fallback: true, code: 500 });
-      expectTypeOf(value).toEqualTypeOf<{
-        readonly fallback: true;
-        readonly code: 500;
-      }>();
-    });
-
-    it('preserves error type in function parameters', () => {
+    it('preserves error type in function parameter', () => {
       const value = unwrapOr(err({ code: 404, message: 'Not found' }), (error) => {
         expectTypeOf(error).toEqualTypeOf<Readonly<{ code: 404; message: 'Not found' }>>();
         return `Error ${error.code}: ${error.message}`;
@@ -591,678 +476,712 @@ describe('index.ts', () => {
       expect(value).toBe('Error 404: Not found');
       expectTypeOf(value).toEqualTypeOf<'Error 404: Not found'>();
     });
+
+    describe('works with different data types', () => {
+      const okInput = first(ok('data'), ok({ foo: 'bar' }), err('error1'), err({ code: 404 }));
+      const errInput = first(err('error1'), err({ code: 404 }), ok('data'), ok({ foo: 'bar' }));
+      const staticOnErr = first('error2', { error: 'error' });
+      const fnOnErr = <T>(error: T) => first('error2', { error });
+      const asyncFnOnErr = async <T>(error: T) => first('error2', { error });
+
+      type StaticResult = 'data' | { readonly foo: 'bar' } | 'error2' | { readonly error: 'error' };
+      type FnResult =
+        | 'data'
+        | { readonly foo: 'bar' }
+        | 'error2'
+        | { readonly error: 'error1' | { readonly code: 404 } };
+
+      describe('static input', () => {
+        it('static onErr', () => {
+          const okValue = unwrapOr(okInput, staticOnErr);
+
+          expect(okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<StaticResult>();
+
+          const errValue = unwrapOr(errInput, staticOnErr);
+
+          expect(errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<StaticResult>();
+        });
+
+        it('promise onErr', async () => {
+          const okValue = unwrapOr(okInput, Promise.resolve(staticOnErr));
+
+          expect(await okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<Promise<StaticResult>>();
+
+          const errValue = unwrapOr(errInput, Promise.resolve(staticOnErr));
+
+          expect(await errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<Promise<StaticResult>>();
+        });
+
+        it('function onErr', () => {
+          const okValue = unwrapOr(okInput, fnOnErr);
+
+          expect(okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<FnResult>();
+
+          const errValue = unwrapOr(errInput, fnOnErr);
+
+          expect(errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<FnResult>();
+        });
+
+        it('async function onErr', async () => {
+          const okValue = unwrapOr(okInput, (e) => asyncFnOnErr(e));
+
+          expect(await okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<Promise<FnResult>>();
+
+          const errValue = unwrapOr(errInput, (e) => asyncFnOnErr(e));
+
+          expect(await errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<Promise<FnResult>>();
+        });
+      });
+
+      describe('promise input', () => {
+        it('static onErr', async () => {
+          const okValue = unwrapOr(Promise.resolve(okInput), staticOnErr);
+
+          expect(await okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<Promise<StaticResult>>();
+
+          const errValue = unwrapOr(Promise.resolve(errInput), staticOnErr);
+
+          expect(await errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<Promise<StaticResult>>();
+        });
+
+        it('promise onErr', async () => {
+          const okValue = unwrapOr(Promise.resolve(okInput), Promise.resolve(staticOnErr));
+
+          expect(await okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<Promise<StaticResult>>();
+
+          const errValue = unwrapOr(Promise.resolve(errInput), Promise.resolve(staticOnErr));
+
+          expect(await errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<Promise<StaticResult>>();
+        });
+
+        it('function onErr', async () => {
+          const okValue = unwrapOr(Promise.resolve(okInput), (e) => fnOnErr(e));
+
+          expect(await okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<Promise<FnResult>>();
+
+          const errValue = unwrapOr(Promise.resolve(errInput), (e) => fnOnErr(e));
+
+          expect(await errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<Promise<FnResult>>();
+        });
+
+        it('async function onErr', async () => {
+          const okValue = unwrapOr(Promise.resolve(okInput), (e) => asyncFnOnErr(e));
+
+          expect(await okValue).toBe('data');
+          expectTypeOf(okValue).toEqualTypeOf<Promise<FnResult>>();
+
+          const errValue = unwrapOr(Promise.resolve(errInput), (e) => asyncFnOnErr(e));
+
+          expect(await errValue).toBe('error2');
+          expectTypeOf(errValue).toEqualTypeOf<Promise<FnResult>>();
+        });
+      });
+    });
   });
 
   describe('unwrapOrThrow', () => {
     it('returns the data for Ok results', () => {
-      const result = ok('data');
-
-      expect(unwrapOrThrow(result)).toBe('data');
-      expectTypeOf(unwrapOrThrow(result)).toEqualTypeOf<'data'>();
+      expect(unwrapOrThrow(ok('data'))).toBe('data');
+      expectTypeOf(unwrapOrThrow(ok('data'))).toEqualTypeOf<'data'>();
     });
 
     it('throws an error for Err results', () => {
-      const result = err('error');
-
-      expect(() => unwrapOrThrow(result)).toThrow('error');
-      expectTypeOf(() => unwrapOrThrow(result)).returns.toEqualTypeOf<never>();
+      expect(() => unwrapOrThrow(err('error'))).toThrow('error');
+      expectTypeOf(() => unwrapOrThrow(err('error'))).returns.toEqualTypeOf<never>();
     });
 
-    it('works with fulfilled promises', async () => {
-      const result1 = Promise.resolve(ok('data'));
+    describe('works with different data types', () => {
+      const okInput = first(ok('data'), ok({ foo: 'bar' }), err('error1'), err({ code: 404 }));
+      const errInput = first(err('error1'), err({ code: 404 }), ok('data'), ok({ foo: 'bar' }));
 
-      expect(await unwrapOrThrow(result1)).toBe('data');
-      expectTypeOf(unwrapOrThrow(result1)).toEqualTypeOf<Promise<'data'>>();
+      type StaticResult = 'data' | { readonly foo: 'bar' };
 
-      const result2 = Promise.resolve(err('error'));
+      it('static input', () => {
+        expect(unwrapOrThrow(okInput)).toBe('data');
+        expectTypeOf(unwrapOrThrow(okInput)).toEqualTypeOf<StaticResult>();
 
-      await expect(unwrapOrThrow(result2)).rejects.toThrow('error');
-      expectTypeOf(() => unwrapOrThrow(result2)).returns.toEqualTypeOf<Promise<never>>();
-    });
-
-    it('works with rejected promises', async () => {
-      const result1 = Promise.reject(ok('data'));
-
-      expect(await unwrapOrThrow(result1).catch((e) => e)).toStrictEqual(ok('data'));
-      expectTypeOf(() => unwrapOrThrow(result1)).returns.toEqualTypeOf<Promise<never>>();
-
-      const result2 = Promise.reject(err('error'));
-
-      expect(await unwrapOrThrow(result2).catch((e) => e)).toStrictEqual(err('error'));
-      expectTypeOf(() => unwrapOrThrow(result2)).returns.toEqualTypeOf<Promise<never>>();
-    });
-
-    describe('works with multiple return types', () => {
-      it('sync', () => {
-        const result = first(...mixedTypes.sync);
-
-        expect(unwrapOrThrow(result)).toBe('data');
-        expectTypeOf(unwrapOrThrow(result)).toEqualTypeOf<MixedOk>();
+        expect(() => unwrapOrThrow(errInput)).toThrow('error');
+        expectTypeOf(() => unwrapOrThrow(errInput)).returns.toEqualTypeOf<StaticResult>();
       });
 
-      it('async', async () => {
-        const result = first(...mixedTypes.async);
+      it('promise input', async () => {
+        expect(await unwrapOrThrow(Promise.resolve(okInput))).toBe('data');
+        expectTypeOf(unwrapOrThrow(Promise.resolve(okInput))).toEqualTypeOf<Promise<StaticResult>>();
 
-        expect(await unwrapOrThrow(result)).toBe('data');
-        expectTypeOf(unwrapOrThrow(result)).toEqualTypeOf<Promise<MixedOk>>();
-      });
-
-      it('mixed', async () => {
-        const result = first(...mixedTypes.mixed);
-
-        expect(await unwrapOrThrow(result)).toBe('data');
-        expectTypeOf(unwrapOrThrow(result)).toEqualTypeOf<Promise<MixedOk>>();
+        await expect(unwrapOrThrow(Promise.resolve(errInput))).rejects.toThrow('error');
+        expectTypeOf(() => unwrapOrThrow(Promise.resolve(errInput))).returns.toEqualTypeOf<Promise<StaticResult>>();
       });
     });
   });
 
   describe('unwrapOrNull', () => {
     it('returns the data for Ok results', () => {
-      const value = unwrapOrNull(ok('data'));
-
-      expect(value).toBe('data');
-      expectTypeOf(value).toEqualTypeOf<'data' | null>();
+      expect(unwrapOrNull(ok('data'))).toBe('data');
+      expectTypeOf(unwrapOrNull(ok('data'))).toEqualTypeOf<'data' | null>();
     });
 
     it('returns null for Err results', () => {
-      const value = unwrapOrNull(err('error'));
-
-      expect(value).toBe(null);
-      expectTypeOf(value).toEqualTypeOf<null>();
+      expect(unwrapOrNull(err('error'))).toBeNull();
+      expectTypeOf(unwrapOrNull(err('error'))).toEqualTypeOf<null>();
     });
 
-    it('works with promises', async () => {
-      const okValue = unwrapOrNull(Promise.resolve(ok('data')));
+    describe('works with different data types', () => {
+      const okInput = first(ok('data'), ok({ foo: 'bar' }), err('error1'), err({ code: 404 }));
+      const errInput = first(err('error1'), err({ code: 404 }), ok('data'), ok({ foo: 'bar' }));
 
-      expect(await okValue).toBe('data');
-      expectTypeOf(okValue).toEqualTypeOf<Promise<'data' | null>>();
+      type StaticResult = 'data' | { readonly foo: 'bar' } | null;
 
-      const errValue = unwrapOrNull(Promise.resolve(err('error')));
+      it('static input', () => {
+        expect(unwrapOrNull(okInput)).toBe('data');
+        expectTypeOf(unwrapOrNull(okInput)).toEqualTypeOf<StaticResult>();
 
-      expect(await errValue).toBe(null);
-      expectTypeOf(errValue).toEqualTypeOf<Promise<null>>();
-    });
-
-    describe('works with multiple return types', () => {
-      it('sync', () => {
-        const value = unwrapOrNull(first(...mixedTypes.sync));
-
-        expect(value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<MixedOk | null>();
+        expect(unwrapOrNull(errInput)).toBeNull();
+        expectTypeOf(() => unwrapOrNull(errInput)).returns.toEqualTypeOf<StaticResult>();
       });
 
-      it('async', async () => {
-        const value = unwrapOrNull(Promise.resolve(first(...mixedTypes.async)));
+      it('promise input', async () => {
+        expect(await unwrapOrNull(Promise.resolve(okInput))).toBe('data');
+        expectTypeOf(unwrapOrNull(Promise.resolve(okInput))).toEqualTypeOf<Promise<StaticResult>>();
 
-        expect(await value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<Promise<MixedOk | null>>();
+        expect(await unwrapOrNull(Promise.resolve(errInput))).toBeNull();
+        expectTypeOf(() => unwrapOrNull(Promise.resolve(errInput))).returns.toEqualTypeOf<Promise<StaticResult>>();
       });
-
-      it('mixed', async () => {
-        const value = unwrapOrNull(first(...mixedTypes.mixed));
-
-        expect(await value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<Promise<MixedOk | null>>();
-      });
-    });
-
-    it('handles complex data types', () => {
-      const objectResult = unwrapOrNull(ok({ name: 'test', age: 25 }));
-      expect(objectResult).toEqual({ name: 'test', age: 25 });
-      expectTypeOf(objectResult).toEqualTypeOf<{
-        readonly name: 'test';
-        readonly age: 25;
-      } | null>();
-
-      const arrayResult = unwrapOrNull(ok([1, 2, 3]));
-      expect(arrayResult).toEqual([1, 2, 3]);
-      expectTypeOf(arrayResult).toEqualTypeOf<readonly [1, 2, 3] | null>();
-    });
-
-    it('preserves null distinction from undefined', () => {
-      const nullOk = unwrapOrNull(ok(null));
-      expect(nullOk).toBe(null);
-      expectTypeOf(nullOk).toEqualTypeOf<null>();
-
-      const undefinedOk = unwrapOrNull(ok(undefined));
-      expect(undefinedOk).toBe(undefined);
-      expectTypeOf(undefinedOk).toEqualTypeOf<undefined | null>();
     });
   });
 
   describe('unwrapOrUndefined', () => {
     it('returns the data for Ok results', () => {
-      const value = unwrapOrUndefined(ok('data'));
-
-      expect(value).toBe('data');
-      expectTypeOf(value).toEqualTypeOf<'data' | undefined>();
+      expect(unwrapOrUndefined(ok('data'))).toBe('data');
+      expectTypeOf(unwrapOrUndefined(ok('data'))).toEqualTypeOf<'data' | undefined>();
     });
 
     it('returns undefined for Err results', () => {
-      const value = unwrapOrUndefined(err('error'));
-
-      expect(value).toBe(undefined);
-      expectTypeOf(value).toEqualTypeOf<undefined>();
+      expect(unwrapOrUndefined(err('error'))).toBeUndefined();
+      expectTypeOf(unwrapOrUndefined(err('error'))).toEqualTypeOf<undefined>();
     });
 
-    it('works with promises', async () => {
-      const okValue = unwrapOrUndefined(Promise.resolve(ok('data')));
+    describe('works with different data types', () => {
+      const okInput = first(ok('data'), ok({ foo: 'bar' }), err('error1'), err({ code: 404 }));
+      const errInput = first(err('error1'), err({ code: 404 }), ok('data'), ok({ foo: 'bar' }));
 
-      expect(await okValue).toBe('data');
-      expectTypeOf(okValue).toEqualTypeOf<Promise<'data' | undefined>>();
+      type StaticResult = 'data' | { readonly foo: 'bar' } | undefined;
 
-      const errValue = unwrapOrUndefined(Promise.resolve(err('error')));
+      it('static input', () => {
+        expect(unwrapOrUndefined(okInput)).toBe('data');
+        expectTypeOf(unwrapOrUndefined(okInput)).toEqualTypeOf<StaticResult>();
 
-      expect(await errValue).toBe(undefined);
-      expectTypeOf(errValue).toEqualTypeOf<Promise<undefined>>();
-    });
-
-    describe('works with multiple return types', () => {
-      it('sync', () => {
-        const value = unwrapOrUndefined(first(...mixedTypes.sync));
-
-        expect(value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<MixedOk | undefined>();
+        expect(unwrapOrUndefined(errInput)).toBeUndefined();
+        expectTypeOf(() => unwrapOrUndefined(errInput)).returns.toEqualTypeOf<StaticResult>();
       });
 
-      it('async', async () => {
-        const value = unwrapOrUndefined(Promise.resolve(first(...mixedTypes.async)));
+      it('promise input', async () => {
+        expect(await unwrapOrUndefined(Promise.resolve(okInput))).toBe('data');
+        expectTypeOf(unwrapOrUndefined(Promise.resolve(okInput))).toEqualTypeOf<Promise<StaticResult>>();
 
-        expect(await value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<Promise<MixedOk | undefined>>();
+        expect(await unwrapOrUndefined(Promise.resolve(errInput))).toBeUndefined();
+        expectTypeOf(() => unwrapOrUndefined(Promise.resolve(errInput))).returns.toEqualTypeOf<Promise<StaticResult>>();
       });
-
-      it('mixed', async () => {
-        const value = unwrapOrUndefined(first(...mixedTypes.mixed));
-
-        expect(await value).toBe('data');
-        expectTypeOf(value).toEqualTypeOf<Promise<MixedOk | undefined>>();
-      });
-    });
-
-    it('handles complex data types', () => {
-      const objectResult = unwrapOrUndefined(ok({ name: 'test', active: true }));
-      expect(objectResult).toEqual({ name: 'test', active: true });
-      expectTypeOf(objectResult).toEqualTypeOf<{ readonly name: 'test'; readonly active: true } | undefined>();
-
-      const arrayResult = unwrapOrUndefined(ok(['a', 'b', 'c']));
-      expect(arrayResult).toEqual(['a', 'b', 'c']);
-      expectTypeOf(arrayResult).toEqualTypeOf<readonly ['a', 'b', 'c'] | undefined>();
-    });
-
-    it('preserves undefined distinction from null', () => {
-      const undefinedOk = unwrapOrUndefined(ok(undefined));
-      expect(undefinedOk).toBe(undefined);
-      expectTypeOf(undefinedOk).toEqualTypeOf<undefined>();
-
-      const nullOk = unwrapOrUndefined(ok(null));
-      expect(nullOk).toBe(null);
-      expectTypeOf(nullOk).toEqualTypeOf<null | undefined>();
     });
   });
 
   describe('toThrowable', () => {
     it('converts a result-returning function to a throwable one', () => {
-      const fn1 = toThrowable(() => first(ok('data'), err('404')));
+      const okFn = toThrowable(() => first(ok('data'), err('404')));
 
-      expect(fn1()).toBe('data');
-      expectTypeOf(fn1()).toEqualTypeOf<'data'>();
+      expect(okFn()).toBe('data');
+      expectTypeOf(okFn).toEqualTypeOf<() => 'data'>();
 
-      const fn2 = toThrowable(() => first(err('404'), ok('data')));
+      const errFn = toThrowable(() => first(err('404'), ok('data')));
 
-      expect(() => fn2()).toThrow('404');
-      expectTypeOf(fn2).returns.toEqualTypeOf<'data'>();
+      expect(() => errFn()).toThrow('404');
+      expectTypeOf(okFn).toEqualTypeOf<() => 'data'>();
     });
 
-    describe('works with multiple return types', () => {
-      it('sync', () => {
-        const fn = toThrowable(() => first(...mixedTypes.sync));
+    it('infers function parameters', () => {
+      const divide = (a: number, b: number) => (b === 0 ? err('Division by zero') : ok(a / b));
+      const fn = toThrowable(divide);
 
-        expect(fn()).toBe('data');
-        expectTypeOf(fn()).toEqualTypeOf<MixedOk>();
+      expect(fn(1, 2)).toBe(0.5);
+      expectTypeOf(fn).toEqualTypeOf<(a: number, b: number) => number>();
+    });
+
+    describe('works with different data types', () => {
+      const okOutput = first(ok('data'), ok({ foo: 'bar' }), err('error'), err({ code: 404 }));
+      const errOutput = first(err('error'), err({ code: 404 }), ok('data'), ok({ foo: 'bar' }));
+
+      type StaticResult = 'data' | { readonly foo: 'bar' };
+
+      it('static input', () => {
+        const okFn = toThrowable(() => okOutput);
+
+        expect(okFn()).toBe('data');
+        expectTypeOf(okFn).toEqualTypeOf<() => StaticResult>();
+
+        const errFn = toThrowable(() => errOutput);
+        expect(() => errFn()).toThrow('error');
+        expectTypeOf(errFn).toEqualTypeOf<() => StaticResult>();
       });
 
-      it('async', async () => {
-        const fn = toThrowable(() => Promise.resolve(first(...mixedTypes.async)));
+      it('promise input', async () => {
+        const okFn = toThrowable(() => Promise.resolve(okOutput));
 
-        expect(await fn()).toBe('data');
-        expectTypeOf(fn()).toEqualTypeOf<Promise<MixedOk>>();
-      });
+        expect(await okFn()).toBe('data');
+        expectTypeOf(okFn).toEqualTypeOf<() => Promise<StaticResult>>();
 
-      it('mixed', async () => {
-        const fn = toThrowable(() => first(...mixedTypes.mixed));
+        const errFn = toThrowable(() => Promise.resolve(errOutput));
 
-        expect(await fn()).toBe('data');
-        expectTypeOf(fn()).toEqualTypeOf<Promise<MixedOk>>();
+        await expect(errFn).rejects.toBe('error');
+        expectTypeOf(errFn).toEqualTypeOf<() => Promise<StaticResult>>();
       });
     });
   });
 
   describe('fromThrowable', () => {
-    describe('sync', () => {
-      describe('fn', () => {
-        it('handles successful functions', () => {
-          const fn = fromThrowable(() => 42, 'error');
+    it('converts a throwable function to a result-returning one', () => {
+      const fn = fromThrowable(() => {
+        throw new Error('test error');
+      }, 'mapped_error');
 
-          expect(fn()).toEqual(ok(42));
-          expectTypeOf(fn).toEqualTypeOf<() => Result<number, 'error'>>();
-        });
+      expect(fn()).toEqual(err('mapped_error'));
+      expectTypeOf(fn).toEqualTypeOf<() => Result<never, 'mapped_error'>>();
+    });
 
-        it('handles throwing functions', () => {
-          const fn = fromThrowable(() => {
-            throw new Error('test error');
-            // biome-ignore lint/correctness/noUnreachable: needed for type inference
-            return 42;
-          }, 'caught error');
+    describe('for function input', () => {
+      const throwable = () => {
+        throw new Error('throwable error');
+      };
 
-          expect(fn()).toEqual(err('caught error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Result<number, 'caught error'>>();
-        });
+      it('returns the value for successful functions', () => {
+        const fn = fromThrowable(() => 42, 'error');
 
-        it('infers function parameters', () => {
-          const fn = fromThrowable((a: number, b: number) => a / b, 'error');
-
-          expect(fn(1, 2)).toEqual(ok(0.5));
-          expectTypeOf(fn).toEqualTypeOf<(a: number, b: number) => Result<number, 'error'>>();
-        });
+        expect(fn()).toEqual(ok(42));
+        expectTypeOf(fn).toEqualTypeOf<() => Result<number, 'error'>>();
       });
 
-      describe('catch', () => {
-        const throwable = () => {
-          throw new Error('throwable error');
-        };
+      it('returns the onErr value for failed functions', () => {
+        const fn = fromThrowable(() => {
+          throw new Error('test error');
+          // biome-ignore lint/correctness/noUnreachable: needed for type inference
+          return 42;
+        }, 'caught error');
 
-        it('can be a value', async () => {
-          const fn = fromThrowable(throwable, 'error');
+        expect(fn()).toEqual(err('caught error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Result<number, 'caught error'>>();
+      });
 
-          expect(fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Result<never, 'error'>>();
+      it('infers function parameters', () => {
+        const fn = fromThrowable((a: number, b: number) => a / b, 'error');
+
+        expect(fn(1, 2)).toEqual(ok(0.5));
+        expectTypeOf(fn).toEqualTypeOf<(a: number, b: number) => Result<number, 'error'>>();
+      });
+
+      it('can use static value for onErr', () => {
+        const fn = fromThrowable(throwable, 'error');
+
+        expect(fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Result<never, 'error'>>();
+      });
+
+      it('can use promise for onErr', async () => {
+        const fn = fromThrowable(throwable, Promise.resolve('error' as const));
+
+        expect(await fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
+      });
+
+      it('can use function for onErr', () => {
+        const fn = fromThrowable(throwable, (ex) => (ex instanceof Error ? ex.message : { error: 'unknown' }));
+
+        expect(fn()).toEqual(err('throwable error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Result<never, string | { readonly error: 'unknown' }>>();
+      });
+
+      it('can use async function for onErr', async () => {
+        const fn = fromThrowable(throwable, async (ex) => (ex instanceof Error ? ex.message : { error: 'unknown' }));
+
+        expect(await fn()).toEqual(err('throwable error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, string | { readonly error: 'unknown' }>>>();
+      });
+
+      it('can return ok result from onErr', () => {
+        const fn = fromThrowable(throwable, () => ok('data'));
+
+        expect(fn()).toEqual(ok('data'));
+        expectTypeOf(fn).toEqualTypeOf<() => Result<'data', never>>();
+      });
+
+      it('can return mixed value types from onErr (sync)', () => {
+        const fn = fromThrowable(throwable, () => {
+          if (Math.random() > -1) return 'error' as const;
+          if (Math.random() > 1) return ok('data');
+          if (Math.random() > 1) return err({ code: 404 });
+          if (Math.random() > 1) return ok({ foo: 'bar' });
+          return { status: 'failed' };
         });
 
-        it('can be a function', async () => {
-          const fn = fromThrowable(throwable, () => 'error' as const);
+        expect(fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<
+          () => Result<
+            'data' | { readonly foo: 'bar' },
+            'error' | { readonly code: 404 } | { readonly status: 'failed' }
+          >
+        >();
+      });
 
-          expect(fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Result<never, 'error'>>();
+      it('can return mixed value types from onErr (async)', async () => {
+        const fn = fromThrowable(throwable, async () => {
+          if (Math.random() > -1) return 'error' as const;
+          if (Math.random() > 1) return ok('data');
+          if (Math.random() > 1) return err({ code: 404 });
+          if (Math.random() > 1) return ok({ foo: 'bar' });
+          return { status: 'failed' };
         });
 
-        it('can be a promise', async () => {
-          const fn = fromThrowable(throwable, Promise.resolve('error' as const));
-
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
-        });
-
-        it('can be an async function', async () => {
-          const fn = fromThrowable(throwable, () => Promise.resolve('error' as const));
-
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
-        });
-
-        it('can return an ok result', async () => {
-          const fn = fromThrowable(throwable, () => ok('data'));
-
-          expect(fn()).toEqual(ok('data'));
-          expectTypeOf(fn).toEqualTypeOf<() => Result<'data', never>>();
-        });
-
-        it('can return mixed value types (sync)', async () => {
-          const fn = fromThrowable(throwable, () => {
-            if (Math.random() > -1) return 'error' as const;
-            if (Math.random() > 1) return ok('data');
-            if (Math.random() > 1) return err({ code: 404 });
-            if (Math.random() > 1) return ok({ foo: 'bar' });
-            return { status: 'failed' };
-          });
-
-          expect(fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<
-            () => Result<
-              'data' | { readonly foo: 'bar' },
-              'error' | { readonly code: 404 } | { readonly status: 'failed' }
-            >
-          >();
-        });
-
-        it('can return mixed value types (async)', async () => {
-          const fn = fromThrowable(throwable, async () => {
-            if (Math.random() > -1) return 'error' as const;
-            if (Math.random() > 1) return ok('data');
-            if (Math.random() > 1) return err({ code: 404 });
-            if (Math.random() > 1) return ok({ foo: 'bar' });
-            return { status: 'failed' };
-          });
-
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<
-            () => Promise<
-              Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
-            >
-          >();
-        });
-
-        it('allows custom error mapping', async () => {
-          const error = new Error('promise error');
-          const fn = fromThrowable(
-            () => {
-              throw error;
-            },
-            (ex) => (ex instanceof Error ? ex : 'UNKNOWN_ERROR'),
-          );
-
-          expect(fn()).toEqual(err(error));
-          expectTypeOf(fn).toEqualTypeOf<() => Result<never, Error | 'UNKNOWN_ERROR'>>();
-        });
+        expect(await fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<
+          () => Promise<
+            Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
+          >
+        >();
       });
     });
 
-    describe('async', () => {
-      describe('fn', () => {
-        it('handles resolving async functions', async () => {
-          const fn = fromThrowable(async () => Promise.resolve(42), 'error');
+    describe('for async function input', () => {
+      const throwable = async () => Promise.reject(new Error('throwable error'));
 
-          expect(await fn()).toEqual(ok(42));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<number, 'error'>>>();
-        });
+      it('returns the value for successful async functions', async () => {
+        const fn = fromThrowable(async () => Promise.resolve(42), 'error');
 
-        it('handles rejecting async functions', async () => {
-          const fn = fromThrowable(async () => {
-            throw new Error('test error');
-            // biome-ignore lint/correctness/noUnreachable: needed for type inference
-            return Promise.resolve(42);
-          }, 'caught error');
-
-          expect(await fn()).toEqual(err('caught error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<number, 'caught error'>>>();
-        });
-
-        it('infers function parameters', async () => {
-          const fn = fromThrowable(async (a: number, b: number) => a / b, 'error');
-
-          expect(await fn(1, 2)).toEqual(ok(0.5));
-          expectTypeOf(fn).toEqualTypeOf<(a: number, b: number) => Promise<Result<number, 'error'>>>();
-        });
+        expect(await fn()).toEqual(ok(42));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<number, 'error'>>>();
       });
 
-      describe('catch', () => {
-        const throwable = () => Promise.reject(new Error('throwable error'));
+      it('returns the onErr value for failed async functions', async () => {
+        const fn = fromThrowable(async () => {
+          throw new Error('test error');
+          // biome-ignore lint/correctness/noUnreachable: needed for type inference
+          return Promise.resolve(42);
+        }, 'caught error');
 
-        it('can be a value', async () => {
-          const fn = fromThrowable(throwable, 'error');
+        expect(await fn()).toEqual(err('caught error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<number, 'caught error'>>>();
+      });
 
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
+      it('infers function parameters', async () => {
+        const fn = fromThrowable(async (a: number, b: number) => a / b, 'error');
+
+        expect(await fn(1, 2)).toEqual(ok(0.5));
+        expectTypeOf(fn).toEqualTypeOf<(a: number, b: number) => Promise<Result<number, 'error'>>>();
+      });
+
+      it('can use static value for onErr', async () => {
+        const fn = fromThrowable(throwable, 'error');
+
+        expect(await fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
+      });
+
+      it('can use promise for onErr', async () => {
+        const fn = fromThrowable(throwable, Promise.resolve('error' as const));
+
+        expect(await fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
+      });
+
+      it('can use function for onErr', async () => {
+        const fn = fromThrowable(throwable, (ex) => (ex instanceof Error ? ex.message : { error: 'unknown' }));
+
+        expect(await fn()).toEqual(err('throwable error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, string | { readonly error: 'unknown' }>>>();
+      });
+
+      it('can use async function for onErr', async () => {
+        const fn = fromThrowable(throwable, async (ex) => (ex instanceof Error ? ex.message : { error: 'unknown' }));
+
+        expect(await fn()).toEqual(err('throwable error'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, string | { readonly error: 'unknown' }>>>();
+      });
+
+      it('can return an ok result', async () => {
+        const fn = fromThrowable(throwable, () => ok('data'));
+
+        expect(await fn()).toEqual(ok('data'));
+        expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<'data', never>>>();
+      });
+
+      it('can return mixed value types from onErr (sync)', async () => {
+        const fn = fromThrowable(throwable, () => {
+          if (Math.random() > -1) return 'error' as const;
+          if (Math.random() > 1) return ok('data');
+          if (Math.random() > 1) return err({ code: 404 });
+          if (Math.random() > 1) return ok({ foo: 'bar' });
+          return { status: 'failed' };
         });
 
-        it('can be a function', async () => {
-          const fn = fromThrowable(throwable, () => 'error' as const);
+        expect(await fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<
+          () => Promise<
+            Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
+          >
+        >();
+      });
 
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
+      it('can return mixed value types from onErr (async)', async () => {
+        const fn = fromThrowable(throwable, async () => {
+          if (Math.random() > -1) return 'error' as const;
+          if (Math.random() > 1) return ok('data');
+          if (Math.random() > 1) return err({ code: 404 });
+          if (Math.random() > 1) return ok({ foo: 'bar' });
+          return { status: 'failed' };
         });
 
-        it('can be a promise', async () => {
-          const fn = fromThrowable(throwable, Promise.resolve('error' as const));
-
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
-        });
-
-        it('can be an async function', async () => {
-          const fn = fromThrowable(throwable, () => Promise.resolve('error' as const));
-
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, 'error'>>>();
-        });
-
-        it('can return an ok result', async () => {
-          const fn = fromThrowable(throwable, () => ok('data'));
-
-          expect(await fn()).toEqual(ok('data'));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<'data', never>>>();
-        });
-
-        it('can return mixed value types (sync)', async () => {
-          const fn = fromThrowable(throwable, () => {
-            if (Math.random() > -1) return 'error' as const;
-            if (Math.random() > 1) return ok('data');
-            if (Math.random() > 1) return err({ code: 404 });
-            if (Math.random() > 1) return ok({ foo: 'bar' });
-            return { status: 'failed' };
-          });
-
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<
-            () => Promise<
-              Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
-            >
-          >();
-        });
-
-        it('can return mixed value types (async)', async () => {
-          const fn = fromThrowable(throwable, async () => {
-            if (Math.random() > -1) return 'error' as const;
-            if (Math.random() > 1) return ok('data');
-            if (Math.random() > 1) return err({ code: 404 });
-            if (Math.random() > 1) return ok({ foo: 'bar' });
-            return { status: 'failed' };
-          });
-
-          expect(await fn()).toEqual(err('error'));
-          expectTypeOf(fn).toEqualTypeOf<
-            () => Promise<
-              Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
-            >
-          >();
-        });
-
-        it('allows custom error mapping', async () => {
-          const error = new Error('promise error');
-          const fn = fromThrowable(
-            () => Promise.reject(error),
-            (ex) => (ex instanceof Error ? ex : 'UNKNOWN_ERROR'),
-          );
-
-          expect(await fn()).toEqual(err(error));
-          expectTypeOf(fn).toEqualTypeOf<() => Promise<Result<never, Error | 'UNKNOWN_ERROR'>>>();
-        });
+        expect(await fn()).toEqual(err('error'));
+        expectTypeOf(fn).toEqualTypeOf<
+          () => Promise<
+            Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
+          >
+        >();
       });
     });
   });
 
   describe('tryCatch', () => {
-    describe('sync', () => {
-      describe('try', () => {
-        it('handles successful functions', () => {
-          const result = tryCatch(() => 42, 'error');
+    describe('creates a result-returning boundary around a', () => {
+      it('rejected promise', async () => {
+        const result = tryCatch(Promise.reject(new Error('test error')), 'caught error');
 
-          expect(result).toEqual(ok(42));
-          expectTypeOf(result).toEqualTypeOf<Result<number, 'error'>>();
+        expect(await result).toEqual(err('caught error'));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'caught error'>>>();
+      });
+
+      it('throwable function', () => {
+        const result = tryCatch(() => {
+          throw new Error('test error');
+        }, 'caught error');
+
+        expect(result).toEqual(err('caught error'));
+        expectTypeOf(result).toEqualTypeOf<Result<never, 'caught error'>>();
+      });
+
+      it('throwable async function', async () => {
+        const result = tryCatch(async () => {
+          throw new Error('test error');
+        }, 'caught error');
+
+        expect(await result).toEqual(err('caught error'));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'caught error'>>>();
+      });
+    });
+
+    describe('returns ok result for', () => {
+      it('resolved promise', async () => {
+        const result = tryCatch(Promise.resolve(42), 'caught error');
+
+        expect(await result).toEqual(ok(42));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<number, 'caught error'>>>();
+      });
+
+      it('non-throwing function', () => {
+        const result = tryCatch(() => 42, 'caught error');
+
+        expect(result).toEqual(ok(42));
+        expectTypeOf(result).toEqualTypeOf<Result<number, 'caught error'>>();
+      });
+
+      it('non-throwing async function', async () => {
+        const result = tryCatch(async () => 42, 'caught error');
+
+        expect(await result).toEqual(ok(42));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<number, 'caught error'>>>();
+      });
+    });
+
+    describe('extends success response when ok result is returned from onCatch', () => {
+      const throwable = () => {
+        throw new Error('throwable error');
+      };
+
+      it('in sync function', () => {
+        const result = tryCatch(throwable, () => ok('data'));
+
+        expect(result).toEqual(ok('data'));
+        expectTypeOf(result).toEqualTypeOf<Result<'data', never>>();
+      });
+
+      it('in async function', async () => {
+        const result = tryCatch(throwable, async () => ok('data'));
+
+        expect(await result).toEqual(ok('data'));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<'data', never>>>();
+      });
+    });
+
+    describe('works for different data types', () => {
+      const staticOnCatch = 'caught error' as const;
+      const fnOnCatch = (ex: unknown) => (ex instanceof Error ? { error: ex.message } : 'caught error');
+      const asyncFnOnCatch = async (ex: unknown) => (ex instanceof Error ? { error: ex.message } : 'caught error');
+
+      type StaticResult = Result<42 | { foo: string }, 'caught error'>;
+      type FnResult = Result<42 | { foo: string }, 'caught error' | { error: string }>;
+
+      describe('promise as onTry', () => {
+        const promise = () =>
+          first(Promise.reject(new Error('test error')), Promise.resolve(42 as const), Promise.resolve({ foo: 'bar' }));
+
+        it('static value for onCatch', async () => {
+          const result = tryCatch(promise(), staticOnCatch);
+
+          expect(await result).toEqual(err('caught error'));
+          expectTypeOf(result).toEqualTypeOf<Promise<StaticResult>>();
         });
 
-        it('handles throwing functions', () => {
-          const result = tryCatch(() => {
-            throw new Error('test error');
-            // biome-ignore lint/correctness/noUnreachable: needed for type inference
-            return 42;
-          }, 'caught error');
+        it('promise for onCatch', async () => {
+          const result = tryCatch(promise(), Promise.resolve(staticOnCatch));
 
-          expect(result).toEqual(err('caught error'));
-          expectTypeOf(result).toEqualTypeOf<Result<number, 'caught error'>>();
+          expect(await result).toEqual(err('caught error'));
+          expectTypeOf(result).toEqualTypeOf<Promise<StaticResult>>();
+        });
+
+        it('function for onCatch', async () => {
+          const result = tryCatch(promise(), fnOnCatch);
+
+          expect(await result).toEqual(err({ error: 'test error' }));
+          expectTypeOf(result).toEqualTypeOf<Promise<FnResult>>();
+        });
+
+        it('async function for onCatch', async () => {
+          const result = tryCatch(promise(), asyncFnOnCatch);
+
+          expect(await result).toEqual(err({ error: 'test error' }));
+          expectTypeOf(result).toEqualTypeOf<Promise<FnResult>>();
         });
       });
 
-      describe('catch', () => {
-        const throwable = () => {
-          throw new Error('throwable error');
+      describe('function as onTry', () => {
+        const fn = () => {
+          if (Math.random() > -1) {
+            throw new Error('test error');
+          }
+          return Math.random() > 1 ? 42 : { foo: 'bar' };
         };
 
-        it('can be a value', async () => {
-          const result = tryCatch(throwable, 'error');
+        it('static value for onCatch', () => {
+          const result = tryCatch(fn, staticOnCatch);
 
-          expect(result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Result<never, 'error'>>();
+          expect(result).toEqual(err('caught error'));
+          expectTypeOf(result).toEqualTypeOf<StaticResult>();
         });
 
-        it('can be a function', async () => {
-          const result = tryCatch(throwable, () => 'error' as const);
+        it('promise for onCatch', async () => {
+          const result = tryCatch(fn, Promise.resolve(staticOnCatch));
 
-          expect(result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Result<never, 'error'>>();
+          expect(await result).toEqual(err('caught error'));
+          expectTypeOf(result).toEqualTypeOf<Promise<StaticResult>>();
         });
 
-        it('can be a promise', async () => {
-          const result = tryCatch(throwable, Promise.resolve('error' as const));
+        it('function for onCatch', () => {
+          const result = tryCatch(fn, fnOnCatch);
 
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'error'>>>();
+          expect(result).toEqual(err({ error: 'test error' }));
+          expectTypeOf(result).toEqualTypeOf<FnResult>();
         });
 
-        it('can be an async function', async () => {
-          const result = tryCatch(throwable, () => Promise.resolve('error' as const));
+        it('async function for onCatch', async () => {
+          const result = tryCatch(fn, asyncFnOnCatch);
 
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'error'>>>();
+          expect(await result).toEqual(err({ error: 'test error' }));
+          expectTypeOf(result).toEqualTypeOf<Promise<FnResult>>();
+        });
+      });
+
+      describe('async function as onTry', () => {
+        const asyncFn = async () => {
+          if (Math.random() > -1) {
+            throw new Error('test error');
+          }
+          return Math.random() > 1 ? 42 : { foo: 'bar' };
+        };
+
+        it('static value for onCatch', async () => {
+          const result = tryCatch(asyncFn, staticOnCatch);
+
+          expect(await result).toEqual(err('caught error'));
+          expectTypeOf(result).toEqualTypeOf<Promise<StaticResult>>();
         });
 
-        it('can return an ok result', async () => {
-          const result = tryCatch(throwable, () => ok('data'));
+        it('promise for onCatch', async () => {
+          const result = tryCatch(asyncFn, Promise.resolve(staticOnCatch));
 
-          expect(result).toEqual(ok('data'));
-          expectTypeOf(result).toEqualTypeOf<Result<'data', never>>();
+          expect(await result).toEqual(err('caught error'));
+          expectTypeOf(result).toEqualTypeOf<Promise<StaticResult>>();
         });
 
-        it('can return mixed value types', async () => {
-          const result = tryCatch(throwable, () => {
-            if (Math.random() > -1) return 'error' as const;
-            if (Math.random() > 1) return ok('data');
-            if (Math.random() > 1) return err({ code: 404 });
-            if (Math.random() > 1) return ok({ foo: 'bar' });
-            return { status: 'failed' };
-          });
+        it('function for onCatch', async () => {
+          const result = tryCatch(asyncFn, fnOnCatch);
 
-          expect(result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<
-            Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
-          >();
+          expect(await result).toEqual(err({ error: 'test error' }));
+          expectTypeOf(result).toEqualTypeOf<Promise<FnResult>>();
         });
 
-        it('allows custom error mapping', async () => {
-          const error = new Error('promise error');
-          const result = tryCatch(
-            () => {
-              throw error;
-            },
-            (ex) => (ex instanceof Error ? ex : 'UNKNOWN_ERROR'),
-          );
+        it('async function for onCatch', async () => {
+          const result = tryCatch(asyncFn, asyncFnOnCatch);
 
-          expect(result).toEqual(err(error));
-          expectTypeOf(result).toEqualTypeOf<Result<never, Error | 'UNKNOWN_ERROR'>>();
+          expect(await result).toEqual(err({ error: 'test error' }));
+          expectTypeOf(result).toEqualTypeOf<Promise<FnResult>>();
         });
       });
     });
 
-    describe('async', () => {
-      describe('try', () => {
-        it('handles resolving async functions', async () => {
-          const result = tryCatch(async () => Promise.resolve(42), 'error');
+    describe('allows to return mixed value types from onCatch', () => {
+      const throwable = () => {
+        throw new Error('throwable error');
+      };
 
-          expect(await result).toEqual(ok(42));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<number, 'error'>>>();
+      it('sync function', () => {
+        const result = tryCatch(throwable, () => {
+          if (Math.random() > -1) return 'error' as const;
+          if (Math.random() > 1) return ok('data');
+          if (Math.random() > 1) return err({ code: 404 });
+          if (Math.random() > 1) return ok({ foo: 'bar' });
+          return { status: 'failed' };
         });
 
-        it('handles rejecting async functions', async () => {
-          const result = tryCatch(async () => {
-            throw new Error('test error');
-            // biome-ignore lint/correctness/noUnreachable: needed for type inference
-            return Promise.resolve(42);
-          }, 'caught error');
-
-          expect(await result).toEqual(err('caught error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<number, 'caught error'>>>();
-        });
-
-        it('handles resolved promises', async () => {
-          const result = tryCatch(Promise.resolve(42), 'error');
-
-          expect(await result).toEqual(ok(42));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<number, 'error'>>>();
-        });
-
-        it('handles rejected promises', async () => {
-          const result = tryCatch(Promise.reject(new Error('promise error')), 'error');
-
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'error'>>>();
-        });
+        expect(result).toEqual(err('error'));
+        expectTypeOf(result).toEqualTypeOf<
+          Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
+        >();
       });
 
-      describe('catch', () => {
-        const throwable = () => Promise.reject(new Error('throwable error'));
-
-        it('can be a value', async () => {
-          const result = tryCatch(throwable, 'error');
-
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'error'>>>();
+      it('async function', async () => {
+        const result = tryCatch(throwable, async () => {
+          if (Math.random() > -1) return 'error' as const;
+          if (Math.random() > 1) return ok('data');
+          if (Math.random() > 1) return err({ code: 404 });
+          if (Math.random() > 1) return ok({ foo: 'bar' });
+          return { status: 'failed' };
         });
 
-        it('can be a function', async () => {
-          const result = tryCatch(throwable, () => 'error' as const);
-
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'error'>>>();
-        });
-
-        it('can be a promise', async () => {
-          const result = tryCatch(throwable, Promise.resolve('error' as const));
-
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'error'>>>();
-        });
-
-        it('can be an async function', async () => {
-          const result = tryCatch(throwable, () => Promise.resolve('error' as const));
-
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, 'error'>>>();
-        });
-
-        it('can return an ok result', async () => {
-          const result = tryCatch(throwable, () => ok('data'));
-
-          expect(await result).toEqual(ok('data'));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<'data', never>>>();
-        });
-
-        it('can return mixed value types', async () => {
-          const result = tryCatch(throwable, async () => {
-            if (Math.random() > -1) return 'error' as const;
-            if (Math.random() > 1) return ok('data');
-            if (Math.random() > 1) return err({ code: 404 });
-            if (Math.random() > 1) return ok({ foo: 'bar' });
-            return { status: 'failed' };
-          });
-
-          expect(await result).toEqual(err('error'));
-          expectTypeOf(result).toEqualTypeOf<
-            Promise<
-              Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
-            >
-          >();
-        });
-
-        it('allows custom error mapping', async () => {
-          const error = new Error('promise error');
-          const result = tryCatch(
-            () => Promise.reject(error),
-            (ex) => (ex instanceof Error ? ex : 'UNKNOWN_ERROR'),
-          );
-
-          expect(await result).toEqual(err(error));
-          expectTypeOf(result).toEqualTypeOf<Promise<Result<never, Error | 'UNKNOWN_ERROR'>>>();
-        });
+        expect(await result).toEqual(err('error'));
+        expectTypeOf(result).toEqualTypeOf<
+          Promise<
+            Result<'data' | { readonly foo: 'bar' }, 'error' | { readonly code: 404 } | { readonly status: 'failed' }>
+          >
+        >();
       });
     });
   });
@@ -1282,7 +1201,7 @@ describe('index.ts', () => {
       expectTypeOf(result).toEqualTypeOf<Result<number, 'error'>>();
     });
 
-    it('allows to change response type', () => {
+    it('allows to change type of the success value', () => {
       const result = mapOk(ok(42), (data) => {
         if (data > 100) return { size: 'large' };
         if (data > 50) return ['size', 'medium'];
@@ -1327,28 +1246,60 @@ describe('index.ts', () => {
       >();
     });
 
-    it('handles promises as the first argument', async () => {
-      const okResult = mapOk(Promise.resolve(ok(42)), (data) => (data ? ok('ok') : err('error')));
+    describe('works with different data types', () => {
+      it('static input, function mapper', () => {
+        const output = mapOk(ok(1), (data) =>
+          mapOk(data ? ok(data * 2) : err('error'), (data) => (data ? Boolean(data > 1) : err({ error: data }))),
+        );
 
-      expect(await okResult).toEqual(ok('ok'));
-      expectTypeOf(okResult).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
+        expect(output).toEqual(ok(true));
+        expectTypeOf(output).toEqualTypeOf<Result<boolean, 'error' | { readonly error: number }>>();
+      });
 
-      const errResult = mapOk(Promise.resolve(err('error')), (data) => (data ? ok('ok') : err('error')));
+      it('static input, async function mapper', async () => {
+        const output = mapOk(ok(1), async (x) =>
+          mapOk(await (x ? ok(x * 2) : err('error')), async (y) => (y ? Boolean(y > 1) : err({ error: y }))),
+        );
 
-      expect(await errResult).toEqual(err('error'));
-      expectTypeOf(errResult).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
-    });
+        expect(await output).toEqual(ok(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<boolean, 'error' | { readonly error: number }>>>();
+      });
 
-    it('handles async functions as the second argument', async () => {
-      const okResult = mapOk(ok(42), async (data) => (data ? ok('ok') : err('error')));
+      it('static input, mixed function mapper', async () => {
+        const output = mapOk(ok(1), async (data) =>
+          mapOk(data ? ok(data * 2) : err('error'), (data) => (data ? Boolean(data > 1) : err({ error: data }))),
+        );
 
-      expect(await okResult).toEqual(ok('ok'));
-      expectTypeOf(okResult).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
+        expect(await output).toEqual(ok(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<boolean, 'error' | { readonly error: number }>>>();
+      });
 
-      const errResult = mapOk(err('error'), async (data) => (data ? ok('ok') : err('error')));
+      it('promise input, function mapper', async () => {
+        const output = mapOk(Promise.resolve(ok(1)), (data) =>
+          mapOk(data ? ok(data * 2) : err('error'), (data) => (data ? Boolean(data > 1) : err({ error: data }))),
+        );
 
-      expect(await errResult).toEqual(err('error'));
-      expectTypeOf(errResult).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
+        expect(await output).toEqual(ok(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<boolean, 'error' | { readonly error: number }>>>();
+      });
+
+      it('promise input, async function mapper', async () => {
+        const output = mapOk(Promise.resolve(ok(1)), async (data) =>
+          mapOk(data ? ok(data * 2) : err('error'), async (data) => (data ? Boolean(data > 1) : err({ error: data }))),
+        );
+
+        expect(await output).toEqual(ok(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<boolean, 'error' | { readonly error: number }>>>();
+      });
+
+      it('promise input, mixed function mapper', async () => {
+        const output = mapOk(Promise.resolve(ok(1)), async (data) =>
+          mapOk(data ? ok(data * 2) : err('error'), (data) => (data ? Boolean(data > 1) : err({ error: data }))),
+        );
+
+        expect(await output).toEqual(ok(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<boolean, 'error' | { readonly error: number }>>>();
+      });
     });
   });
 
@@ -1367,7 +1318,7 @@ describe('index.ts', () => {
       expectTypeOf(result).toEqualTypeOf<Result<42, 'not-found' | 'other'>>();
     });
 
-    it('allows to change response type', () => {
+    it('allows to change type of the error value', () => {
       const result = mapErr(err(404), (error) => {
         if (error > 500) return { type: 'server-error' };
         if (error > 400) return ['type', 'client-error'];
@@ -1410,33 +1361,69 @@ describe('index.ts', () => {
       >();
     });
 
-    it('handles promises as the first argument', async () => {
-      const okResult = mapErr(Promise.resolve(ok(42)), (data) => (data ? err('error') : ok('ok')));
+    describe('works with different data types', () => {
+      it('static input, function mapper', () => {
+        const output = mapErr(err(1), (error) =>
+          mapErr(error ? err(error * 2) : ok('success'), (error) => (error ? Boolean(error > 1) : err({ error }))),
+        );
 
-      expect(await okResult).toEqual(ok(42));
-      expectTypeOf(okResult).toEqualTypeOf<Promise<Result<42 | 'ok', 'error'>>>();
+        expect(output).toEqual(err(true));
+        expectTypeOf(output).toEqualTypeOf<Result<'success', boolean | { readonly error: number }>>();
+      });
 
-      const errResult = mapErr(Promise.resolve(err('error')), (data) => (data ? err('error') : ok('ok')));
+      it('static input, async function mapper', async () => {
+        const output = mapErr(err(1), async (error) =>
+          mapErr(error ? err(error * 2) : ok('success'), async (error) =>
+            error ? Boolean(error > 1) : err({ error }),
+          ),
+        );
 
-      expect(await errResult).toEqual(err('error'));
-      expectTypeOf(errResult).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
-    });
+        expect(await output).toEqual(err(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', boolean | { readonly error: number }>>>();
+      });
 
-    it('handles async functions as the second argument', async () => {
-      const okResult = mapErr(ok(42), async (data) => (data ? err('error') : ok('ok')));
+      it('static input, mixed function mapper', async () => {
+        const output = mapErr(err(1), async (error) =>
+          mapErr(error ? err(error * 2) : ok('success'), (error) => (error ? Boolean(error > 1) : err({ error }))),
+        );
 
-      expect(await okResult).toEqual(ok(42));
-      expectTypeOf(okResult).toEqualTypeOf<Promise<Result<42 | 'ok', 'error'>>>();
+        expect(await output).toEqual(err(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', boolean | { readonly error: number }>>>();
+      });
 
-      const errResult = mapErr(err('error'), async (data) => (data ? err('error') : ok('ok')));
+      it('promise input, function mapper', async () => {
+        const output = mapErr(Promise.resolve(err(1)), (error) =>
+          mapErr(error ? err(error * 2) : ok('success'), (error) => (error ? Boolean(error > 1) : err({ error }))),
+        );
 
-      expect(await errResult).toEqual(err('error'));
-      expectTypeOf(errResult).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
+        expect(await output).toEqual(err(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', boolean | { readonly error: number }>>>();
+      });
+
+      it('promise input, async function mapper', async () => {
+        const output = mapErr(Promise.resolve(err(1)), async (error) =>
+          mapErr(error ? err(error * 2) : ok('success'), async (error) =>
+            error ? Boolean(error > 1) : err({ error }),
+          ),
+        );
+
+        expect(await output).toEqual(err(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', boolean | { readonly error: number }>>>();
+      });
+
+      it('promise input, mixed function mapper', async () => {
+        const output = mapErr(Promise.resolve(err(1)), async (error) =>
+          mapErr(error ? err(error * 2) : ok('success'), (error) => (error ? Boolean(error > 1) : err({ error }))),
+        );
+
+        expect(await output).toEqual(err(true));
+        expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', boolean | { readonly error: number }>>>();
+      });
     });
   });
 
   describe('match', () => {
-    it('matches on Ok', () => {
+    it('invokes the onOk function for Ok results', () => {
       const okType = match(
         ok('ok'),
         (data) => data,
@@ -1456,7 +1443,7 @@ describe('index.ts', () => {
       expectTypeOf(mixedType).toEqualTypeOf<'ok' | 'error'>();
     });
 
-    it('matches on Err', () => {
+    it('invokes the onErr function for Err results', () => {
       const errType = match(
         err('error'),
         (data) => data,
@@ -1476,114 +1463,460 @@ describe('index.ts', () => {
       expectTypeOf(mixedType).toEqualTypeOf<'ok' | 'error'>();
     });
 
-    it('allows mixed static and function mappers', () => {
-      const allStatic = match(first(ok('ok'), err('err')), 'success', 'error');
-      expect(allStatic).toBe('success');
-      expectTypeOf(allStatic).toEqualTypeOf<'success' | 'error'>();
+    describe('works with different data types', () => {
+      describe('static input', () => {
+        const okInput = first(ok('success'), err('error'));
+        const errInput = first(err('error'), ok('success'));
 
-      const okIsFn = match(first(ok('ok'), err('err')), (data) => data, 'error');
-      expect(okIsFn).toBe('ok');
-      expectTypeOf(okIsFn).toEqualTypeOf<'ok' | 'error'>();
+        it('function onOk, function onErr', () => {
+          const okOutput = match(
+            okInput,
+            (data) => ({ data }),
+            (error) => ({ error }),
+          );
 
-      const errIsFn = match(first(ok('ok'), err('err')), 'success', (error) => error);
-      expect(errIsFn).toBe('success');
-      expectTypeOf(errIsFn).toEqualTypeOf<'success' | 'err'>();
+          expect(okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Readonly<{ data: 'success' } | { error: 'error' }>>();
 
-      const allFn = match(
-        first(ok('ok'), err('err')),
-        (data) => data,
-        (error) => error,
-      );
-      expect(allFn).toBe('ok');
-      expectTypeOf(allFn).toEqualTypeOf<'ok' | 'err'>();
-    });
+          const errOutput = match(
+            errInput,
+            (data) => ({ data }),
+            (error) => ({ error }),
+          );
+          expect(errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Readonly<{ data: 'success' } | { error: 'error' }>>();
+        });
 
-    it('works with promises', async () => {
-      const okResult = match(
-        Promise.resolve(ok('ok')),
-        (data) => data,
-        (error) => error,
-      );
-      expect(await okResult).toBe('ok');
-      expectTypeOf(okResult).toEqualTypeOf<Promise<'ok'>>();
+        it('function onOk, async function onErr', async () => {
+          const okOutput = match(
+            okInput,
+            (data) => ({ data }),
+            async (error) => ({ error }),
+          );
 
-      const errResult = match(
-        Promise.resolve(err('error')),
-        (data) => data,
-        (error) => error,
-      );
-      expect(await errResult).toBe('error');
-      expectTypeOf(errResult).toEqualTypeOf<Promise<'error'>>();
-    });
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
 
-    it('works with async mappers', async () => {
-      const asyncOkMapper = match(
-        first(ok('ok'), err('error')),
-        async (data) => data,
-        (error) => error,
-      );
+          const errOutput = match(
+            errInput,
+            (data) => ({ data }),
+            async (error) => ({ error }),
+          );
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+        });
 
-      expect(await asyncOkMapper).toBe('ok');
-      expectTypeOf(asyncOkMapper).toEqualTypeOf<Promise<'ok' | 'error'>>();
+        it('function onOk, static onErr', () => {
+          const okOutput = match(okInput, (data) => ({ data }), 'some_error');
 
-      const asyncErrMapper = match(
-        first(ok('ok'), err('error')),
-        (data) => data,
-        async (error) => error,
-      );
+          expect(okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<{ readonly data: 'success' } | 'some_error'>();
 
-      expect(await asyncErrMapper).toBe('ok');
-      expectTypeOf(asyncErrMapper).toEqualTypeOf<Promise<'ok' | 'error'>>();
-    });
+          const errOutput = match(errInput, (data) => ({ data }), 'some_error');
+          expect(errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<{ readonly data: 'success' } | 'some_error'>();
+        });
 
-    it('allows mixed promise and async function mappers', async () => {
-      const allStatic = match(
-        first(ok('ok'), err('err')),
-        Promise.resolve('success' as const),
-        Promise.resolve('error' as const),
-      );
-      expect(await allStatic).toBe('success');
-      expectTypeOf(allStatic).toEqualTypeOf<Promise<'success' | 'error'>>();
+        it('function onOk, promise onErr', async () => {
+          const okOutput = match(okInput, (data) => ({ data }), Promise.resolve('some_error' as const));
 
-      const okIsFn = match(first(ok('ok'), err('err')), async (data) => data, Promise.resolve('error' as const));
-      expect(await okIsFn).toBe('ok');
-      expectTypeOf(okIsFn).toEqualTypeOf<Promise<'ok' | 'error'>>();
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
 
-      const errIsFn = match(first(ok('ok'), err('err')), Promise.resolve('success' as const), async (error) => error);
-      expect(await errIsFn).toBe('success');
-      expectTypeOf(errIsFn).toEqualTypeOf<Promise<'success' | 'err'>>();
+          const errOutput = match(errInput, (data) => ({ data }), Promise.resolve('some_error' as const));
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+        });
 
-      const allFn = match(
-        first(ok('ok'), err('err')),
-        async (data) => data,
-        async (error) => error,
-      );
-      expect(await allFn).toBe('ok');
-      expectTypeOf(allFn).toEqualTypeOf<Promise<'ok' | 'err'>>();
-    });
+        it('async function onOk, function onErr', async () => {
+          const okOutput = match(
+            okInput,
+            async (data) => ({ data }),
+            (error) => ({ error }),
+          );
 
-    it('allows mixed return types', async () => {
-      const syncValue = match(
-        first(ok('ok'), err('error')),
-        (data) => (data ? { data } : 'negative_value'),
-        (error) => (error ? { error } : 'unknown_error'),
-      );
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
 
-      expect(syncValue).toEqual({ data: 'ok' });
-      expectTypeOf(syncValue).toEqualTypeOf<
-        { readonly data: 'ok' } | 'negative_value' | { readonly error: 'error' } | 'unknown_error'
-      >();
+          const errOutput = match(
+            errInput,
+            async (data) => ({ data }),
+            (error) => ({ error }),
+          );
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+        });
 
-      const asyncValue = match(
-        first(ok('ok'), err('error')),
-        (data) => (data ? { data } : 'negative_value'),
-        async (error) => (error ? { error } : 'unknown_error'),
-      );
+        it('async function onOk, async function onErr', async () => {
+          const okOutput = match(
+            okInput,
+            async (data) => ({ data }),
+            async (error) => ({ error }),
+          );
 
-      expect(await asyncValue).toEqual({ data: 'ok' });
-      expectTypeOf(asyncValue).toEqualTypeOf<
-        Promise<'negative_value' | 'unknown_error' | { readonly data: 'ok' } | { readonly error: 'error' }>
-      >();
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+
+          const errOutput = match(
+            errInput,
+            async (data) => ({ data }),
+            async (error) => ({ error }),
+          );
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+        });
+
+        it('async function onOk, static onErr', async () => {
+          const okOutput = match(okInput, async (data) => ({ data }), 'some_error');
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+
+          const errOutput = match(errInput, async (data) => ({ data }), 'some_error');
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+        });
+
+        it('async function onOk, promise onErr', async () => {
+          const okOutput = match(okInput, async (data) => ({ data }), Promise.resolve('some_error' as const));
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+
+          const errOutput = match(errInput, async (data) => ({ data }), Promise.resolve('some_error' as const));
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+        });
+
+        it('static onOk, function onErr', () => {
+          const okOutput = match(okInput, 'some_success', (error) => ({ error }));
+
+          expect(okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<'some_success' | { readonly error: 'error' }>();
+
+          const errOutput = match(errInput, 'some_success', (error) => ({ error }));
+          expect(errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<'some_success' | { readonly error: 'error' }>();
+        });
+
+        it('static onOk, async function onErr', async () => {
+          const okOutput = match(okInput, 'some_success', async (error) => ({ error }));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+
+          const errOutput = match(errInput, 'some_success', async (error) => ({
+            error,
+          }));
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+        });
+
+        it('static onOk, static onErr', () => {
+          const okOutput = match(okInput, 'some_success', 'some_error');
+
+          expect(okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<'some_success' | 'some_error'>();
+
+          const errOutput = match(errInput, 'some_success', 'some_error');
+          expect(errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<'some_success' | 'some_error'>();
+        });
+
+        it('static onOk, promise onErr', async () => {
+          const okOutput = match(okInput, 'some_success', Promise.resolve('some_error' as const));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+
+          const errOutput = match(errInput, 'some_success', Promise.resolve('some_error' as const));
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+        });
+
+        it('promise onOk, function onErr', async () => {
+          const okOutput = match(okInput, Promise.resolve('some_success' as const), (error) => ({ error }));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+
+          const errOutput = match(errInput, Promise.resolve('some_success' as const), (error) => ({ error }));
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+        });
+
+        it('promise onOk, async function onErr', async () => {
+          const okOutput = match(okInput, Promise.resolve('some_success' as const), async (error) => ({
+            error,
+          }));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+
+          const errOutput = match(errInput, Promise.resolve('some_success' as const), async (error) => ({
+            error,
+          }));
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+        });
+
+        it('promise onOk, static onErr', async () => {
+          const okOutput = match(okInput, Promise.resolve('some_success' as const), 'some_error');
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+
+          const errOutput = match(errInput, Promise.resolve('some_success' as const), 'some_error');
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+        });
+
+        it('promise onOk, promise onErr', async () => {
+          const okOutput = match(
+            okInput,
+            Promise.resolve('some_success' as const),
+            Promise.resolve('some_error' as const),
+          );
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+
+          const errOutput = match(
+            errInput,
+            Promise.resolve('some_success' as const),
+            Promise.resolve('some_error' as const),
+          );
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+        });
+      });
+
+      describe('promise input', () => {
+        const okInput = Promise.resolve(first(ok('success'), err('error')));
+        const errInput = Promise.resolve(first(err('error'), ok('success')));
+
+        it('function onOk, function onErr', async () => {
+          const okOutput = match(
+            okInput,
+            (data) => ({ data }),
+            (error) => ({ error }),
+          );
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+
+          const errOutput = match(
+            errInput,
+            (data) => ({ data }),
+            (error) => ({ error }),
+          );
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+        });
+
+        it('function onOk, async function onErr', async () => {
+          const okOutput = match(
+            okInput,
+            (data) => ({ data }),
+            async (error) => ({ error }),
+          );
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+
+          const errOutput = match(
+            errInput,
+            (data) => ({ data }),
+            async (error) => ({ error }),
+          );
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+        });
+
+        it('function onOk, static onErr', async () => {
+          const okOutput = match(okInput, (data) => ({ data }), 'some_error');
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+
+          const errOutput = match(errInput, (data) => ({ data }), 'some_error');
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+        });
+
+        it('function onOk, promise onErr', async () => {
+          const okOutput = match(okInput, (data) => ({ data }), Promise.resolve('some_error' as const));
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+
+          const errOutput = match(errInput, (data) => ({ data }), Promise.resolve('some_error' as const));
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+        });
+
+        it('async function onOk, function onErr', async () => {
+          const okOutput = match(
+            okInput,
+            async (data) => ({ data }),
+            (error) => ({ error }),
+          );
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+
+          const errOutput = match(
+            errInput,
+            async (data) => ({ data }),
+            (error) => ({ error }),
+          );
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+        });
+
+        it('async function onOk, async function onErr', async () => {
+          const okOutput = match(
+            okInput,
+            async (data) => ({ data }),
+            async (error) => ({ error }),
+          );
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+
+          const errOutput = match(
+            errInput,
+            async (data) => ({ data }),
+            async (error) => ({ error }),
+          );
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<Readonly<{ data: 'success' } | { error: 'error' }>>>();
+        });
+
+        it('async function onOk, static onErr', async () => {
+          const okOutput = match(okInput, async (data) => ({ data }), 'some_error');
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+
+          const errOutput = match(errInput, async (data) => ({ data }), 'some_error');
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+        });
+
+        it('async function onOk, promise onErr', async () => {
+          const okOutput = match(okInput, async (data) => ({ data }), Promise.resolve('some_error' as const));
+
+          expect(await okOutput).toEqual({ data: 'success' });
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+
+          const errOutput = match(errInput, async (data) => ({ data }), Promise.resolve('some_error' as const));
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<{ readonly data: 'success' } | 'some_error'>>();
+        });
+
+        it('static onOk, function onErr', async () => {
+          const okOutput = match(okInput, 'some_success', (error) => ({ error }));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+
+          const errOutput = match(errInput, 'some_success', (error) => ({ error }));
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+        });
+
+        it('static onOk, async function onErr', async () => {
+          const okOutput = match(okInput, 'some_success', async (error) => ({ error }));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+
+          const errOutput = match(errInput, 'some_success', async (error) => ({
+            error,
+          }));
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+        });
+
+        it('static onOk, static onErr', async () => {
+          const okOutput = match(okInput, 'some_success', 'some_error');
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+
+          const errOutput = match(errInput, 'some_success', 'some_error');
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+        });
+
+        it('static onOk, promise onErr', async () => {
+          const okOutput = match(okInput, 'some_success', Promise.resolve('some_error' as const));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+
+          const errOutput = match(errInput, 'some_success', Promise.resolve('some_error' as const));
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+        });
+
+        it('promise onOk, function onErr', async () => {
+          const okOutput = match(okInput, Promise.resolve('some_success' as const), (error) => ({ error }));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+
+          const errOutput = match(errInput, Promise.resolve('some_success' as const), (error) => ({ error }));
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+        });
+
+        it('promise onOk, async function onErr', async () => {
+          const okOutput = match(okInput, Promise.resolve('some_success' as const), async (error) => ({
+            error,
+          }));
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+
+          const errOutput = match(errInput, Promise.resolve('some_success' as const), async (error) => ({
+            error,
+          }));
+          expect(await errOutput).toEqual({ error: 'error' });
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | { readonly error: 'error' }>>();
+        });
+
+        it('promise onOk, static onErr', async () => {
+          const okOutput = match(okInput, Promise.resolve('some_success' as const), 'some_error');
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+
+          const errOutput = match(errInput, Promise.resolve('some_success' as const), 'some_error');
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+        });
+
+        it('promise onOk, promise onErr', async () => {
+          const okOutput = match(
+            okInput,
+            Promise.resolve('some_success' as const),
+            Promise.resolve('some_error' as const),
+          );
+
+          expect(await okOutput).toEqual('some_success');
+          expectTypeOf(okOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+
+          const errOutput = match(
+            errInput,
+            Promise.resolve('some_success' as const),
+            Promise.resolve('some_error' as const),
+          );
+          expect(await errOutput).toEqual('some_error');
+          expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
+        });
+      });
     });
   });
 });
