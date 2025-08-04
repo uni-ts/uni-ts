@@ -106,18 +106,20 @@ export function flow<A>(...fns: Fn[]): Fn<A, unknown> {
   return (arg: A) => {
     let result: unknown = arg;
 
-    for (let i = 0; i < fns.length; i++) {
+    for (const fn of fns) {
       if (result instanceof Promise) {
         return result.then(async (r) => {
           result = r;
-          for (let j = i; j < fns.length; j++) {
-            result = await fns[j]!(result);
+
+          for (const asyncFn of fns.slice(fns.indexOf(fn))) {
+            result = await asyncFn(result);
           }
+
           return result;
         });
       }
 
-      result = fns[i]!(result);
+      result = fn(result);
     }
 
     return result;

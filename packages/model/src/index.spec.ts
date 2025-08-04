@@ -77,6 +77,11 @@ describe('index.ts', () => {
       expectTypeOf(arkTypeModel.schema).toEqualTypeOf<typeof arkTypeStringSchema>();
     });
 
+    it('throws error for promise schemas when used', () => {
+      expect(() => createModel(z.string().refine(async () => true)).is('x')).toThrow(TypeError);
+      expect(() => createModel(v.pipeAsync(v.string())).is('x')).toThrow(TypeError);
+    });
+
     describe('is', () => {
       it('returns true when value matches the model schema', () => {
         const schema = oneOf(z.email(), v.pipe(v.string(), v.email()), type('string.email'));
@@ -166,6 +171,58 @@ describe('index.ts', () => {
         expect(() => Email.cast(123)).toThrow(ModelValidationError);
         expect(() => Email.cast(null)).toThrow(ModelValidationError);
         expect(() => Email.cast({})).toThrow(ModelValidationError);
+      });
+    });
+
+    describe('extend', () => {
+      it('extends the model with additional properties', () => {
+        const baseModel = createModel(oneOf(z.string(), v.string(), type('string')));
+        const extendedModel = baseModel.extend({
+          customProperty: 'custom',
+          customMethod: () => 'custom',
+        });
+
+        expect(extendedModel.customProperty).toBe('custom');
+        expect(extendedModel.customMethod()).toBe('custom');
+        expect(extendedModel.schema).toBe(baseModel.schema);
+        expectTypeOf(extendedModel.customProperty).toEqualTypeOf<'custom'>();
+        expectTypeOf(extendedModel.customMethod).toEqualTypeOf<() => 'custom'>();
+      });
+
+      it('can override existing properties', () => {
+        const baseModel = createModel(oneOf(z.string(), v.string(), type('string')));
+        const extendedModel = baseModel.extend({
+          is: (value: string) => `yes it is ${value}`,
+        });
+
+        expect(baseModel.is('custom')).toBe(true);
+        expect(extendedModel.is('custom')).toBe('yes it is custom');
+
+        expectTypeOf(baseModel.is).toEqualTypeOf<(value: unknown) => value is string>();
+        expectTypeOf(extendedModel.is).toEqualTypeOf<(value: string) => string>();
+      });
+
+      it('can access current model data and methods', () => {
+        const baseModel = createModel(oneOf(z.email(), v.pipe(v.string(), v.email()), type('string.email')));
+        const extendedModel = baseModel.extend((current) => ({
+          isLongEmail: (value: string) => current.is(value) && value.length > 15,
+        }));
+
+        expect(baseModel.is('correct-long@email.com')).toBe(true);
+        expect(baseModel.is('short@mail.com')).toBe(true);
+        expect(baseModel.is('invalid-but-long-string')).toBe(false);
+
+        expect(extendedModel.isLongEmail('correct-long@email.com')).toBe(true);
+        expect(extendedModel.isLongEmail('short@mail.com')).toBe(false);
+        expect(extendedModel.isLongEmail('invalid-but-long-string')).toBe(false);
+      });
+
+      it('disables further model extensions when receiving false as an argument', () => {
+        const baseModel = createModel(oneOf(z.string(), v.string(), type('string')));
+        const extendedModel = baseModel.extend(false);
+
+        expect(baseModel).toHaveProperty('extend');
+        expect(extendedModel).not.toHaveProperty('extend');
       });
     });
   });

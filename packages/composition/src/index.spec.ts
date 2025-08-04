@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { flow, pipe } from './index.js';
 
 describe('index.ts', () => {
@@ -37,6 +37,20 @@ describe('index.ts', () => {
       expect(await fn('xx')).toBe(7);
       expect(await fn('xyz')).toBe(9);
       expectTypeOf(fn).toEqualTypeOf<(x: string) => Promise<number>>();
+    });
+
+    it('calls each function only once', async () => {
+      const fn1 = vi.fn((x: string) => x.length);
+      const fn2 = vi.fn(async (x: number) => x * 2);
+      const fn3 = vi.fn((x: number) => x + 3);
+
+      const fn = flow(fn1, fn2, fn3);
+
+      expect(await fn('xx')).toBe(7);
+
+      expect(fn1).toHaveBeenCalledOnce();
+      expect(fn2).toHaveBeenCalledOnce();
+      expect(fn3).toHaveBeenCalledOnce();
     });
 
     it('returns noop function if no functions are provided', async () => {
@@ -93,6 +107,18 @@ describe('index.ts', () => {
 
       expect(await result).toBe(7);
       expectTypeOf(result).toEqualTypeOf<Promise<number>>();
+    });
+
+    it('calls each function only once', async () => {
+      const fn1 = vi.fn((x: string) => x.length);
+      const fn2 = vi.fn(async (x: number) => x * 2);
+      const fn3 = vi.fn((x: number) => x + 3);
+
+      expect(await pipe('xx', fn1, fn2, fn3)).toBe(7);
+
+      expect(fn1).toHaveBeenCalledOnce();
+      expect(fn2).toHaveBeenCalledOnce();
+      expect(fn3).toHaveBeenCalledOnce();
     });
 
     it('returns the first argument if no functions are provided', async () => {

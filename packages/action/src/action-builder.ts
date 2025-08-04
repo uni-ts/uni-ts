@@ -51,9 +51,7 @@ export class ActionBuilder<
             if (isResult(resultOrContext)) return resultOrContext;
             extendCtx(resultOrContext);
 
-            const nextMiddlewareIndex = this.fns.indexOf(middlewareFn) + 1;
-
-            for (const asyncMiddlewareFn of this.fns.slice(nextMiddlewareIndex)) {
+            for (const asyncMiddlewareFn of this.fns.slice(this.fns.indexOf(middlewareFn) + 1)) {
               resultOrContext = await asyncMiddlewareFn({ input, ctx: ctx.value });
 
               if (isResult(resultOrContext)) return resultOrContext;
