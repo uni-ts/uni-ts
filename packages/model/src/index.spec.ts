@@ -3,11 +3,8 @@ import * as v from 'valibot';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import { ModelValidationError } from './error.js';
+import { oneOf } from './helpers.js';
 import { createModel, type InferModelType } from './index.js';
-
-function oneOf<const T extends unknown[]>(...values: T): T[number] {
-  return values[Math.floor(Math.random() * values.length)];
-}
 
 describe('index.ts', () => {
   describe('InferModelType', () => {
@@ -60,6 +57,15 @@ describe('index.ts', () => {
   });
 
   describe('createModel', () => {
+    const NonEmptyString = createModel(
+      oneOf(z.string().min(1), v.pipe(v.string(), v.minLength(1)), type('string > 0')),
+    );
+
+    type Email = InferModelType<typeof Email>;
+    const Email = createModel(
+      oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
+    );
+
     it('creates a model with given schema', () => {
       const zodStringSchema = z.string();
       const zodModel = createModel(zodStringSchema);
@@ -84,34 +90,25 @@ describe('index.ts', () => {
 
     describe('is', () => {
       it('returns true when value matches the model schema', () => {
-        const schema = oneOf(z.email(), v.pipe(v.string(), v.email()), type('string.email'));
-        const model = createModel(schema);
-
-        expect(model.is('correct@email.com')).toBe(true);
-        expect(model.is('another-email@example.com')).toBe(true);
+        expect(Email.is('correct@email.com')).toBe(true);
+        expect(Email.is('another-email@example.com')).toBe(true);
       });
 
       it('returns false when value does not match the model schema', () => {
-        const schema = oneOf(z.email(), v.pipe(v.string(), v.email()), type('string.email'));
-        const model = createModel(schema);
-
-        expect(model.is('incorrect-email')).toBe(false);
-        expect(model.is(123)).toBe(false);
-        expect(model.is(null)).toBe(false);
-        expect(model.is(undefined)).toBe(false);
-        expect(model.is({})).toBe(false);
-        expect(model.is([])).toBe(false);
+        expect(Email.is('incorrect-email')).toBe(false);
+        expect(Email.is(123)).toBe(false);
+        expect(Email.is(null)).toBe(false);
+        expect(Email.is(undefined)).toBe(false);
+        expect(Email.is({})).toBe(false);
+        expect(Email.is([])).toBe(false);
       });
 
       it('serves as a type guard for the model schema', () => {
-        const schema = oneOf(z.string(), v.string(), type('string'));
-        const model = createModel(schema);
-
-        expectTypeOf(model.is).guards.toBeString();
+        expectTypeOf(Email.is).guards.toBeString();
 
         const value = Math.random() > 0.5 ? 'hello' : 123;
 
-        if (model.is(value)) {
+        if (NonEmptyString.is(value)) {
           expect(value).toBe('hello');
           expectTypeOf(value).toEqualTypeOf<string>();
         } else {
@@ -122,47 +119,35 @@ describe('index.ts', () => {
     });
 
     describe('from', () => {
-      type Email = InferModelType<typeof Email>;
-      const Email = createModel(
-        oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
-      );
-
-      it('creates a model from a value if it matches the model schema', () => {
+      it('returns a model if value matches the model schema', () => {
         const email = Email.from('correct@email.com');
         expect(email).toBe('correct@email.com');
         expectTypeOf(email).toEqualTypeOf<Email>();
       });
 
-      it('throws a ModelValidationError when the value does not match the model schema', () => {
+      it("throws a ModelValidationError if value doesn't match the model schema", () => {
         expect(() => Email.from('incorrect-email')).toThrow(ModelValidationError);
         expect(() => Email.from('')).toThrow(ModelValidationError);
       });
 
       it('accepts only model schema input types as value', () => {
-        const model = createModel(z.string());
-
         // @ts-expect-error - incorrect type
-        expect(() => model.from(123)).toThrow(ModelValidationError);
+        expect(() => Email.from(123)).toThrow(ModelValidationError);
         // @ts-expect-error - incorrect type
-        expect(() => model.from(null)).toThrow(ModelValidationError);
+        expect(() => Email.from(null)).toThrow(ModelValidationError);
         // @ts-expect-error - incorrect type
-        expect(() => model.from({})).toThrow(ModelValidationError);
+        expect(() => Email.from({})).toThrow(ModelValidationError);
       });
     });
 
     describe('cast', () => {
-      type Email = InferModelType<typeof Email>;
-      const Email = createModel(
-        oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
-      );
-
-      it('casts a value to the model schema', () => {
+      it('returns a model if value matches the model schema', () => {
         const email = Email.cast('correct@email.com');
         expect(email).toBe('correct@email.com');
         expectTypeOf(email).toEqualTypeOf<Email>();
       });
 
-      it('throws a ModelValidationError when the value does not match the model schema', () => {
+      it("throws a ModelValidationError if value doesn't match the model schema", () => {
         expect(() => Email.cast('incorrect-email')).toThrow(ModelValidationError);
         expect(() => Email.cast('')).toThrow(ModelValidationError);
       });
@@ -176,7 +161,7 @@ describe('index.ts', () => {
 
     describe('extend', () => {
       it('extends the model with additional properties', () => {
-        const baseModel = createModel(oneOf(z.string(), v.string(), type('string')));
+        const baseModel = NonEmptyString;
         const extendedModel = baseModel.extend({
           customProperty: 'custom',
           customMethod: () => 'custom',
@@ -190,7 +175,7 @@ describe('index.ts', () => {
       });
 
       it('can override existing properties', () => {
-        const baseModel = createModel(oneOf(z.string(), v.string(), type('string')));
+        const baseModel = NonEmptyString;
         const extendedModel = baseModel.extend({
           is: (value: string) => `yes it is ${value}`,
         });
@@ -203,7 +188,7 @@ describe('index.ts', () => {
       });
 
       it('can access current model data and methods', () => {
-        const baseModel = createModel(oneOf(z.email(), v.pipe(v.string(), v.email()), type('string.email')));
+        const baseModel = Email;
         const extendedModel = baseModel.extend((current) => ({
           isLongEmail: (value: string) => current.is(value) && value.length > 15,
         }));
@@ -218,7 +203,7 @@ describe('index.ts', () => {
       });
 
       it('disables further model extensions when receiving false as an argument', () => {
-        const baseModel = createModel(oneOf(z.string(), v.string(), type('string')));
+        const baseModel = NonEmptyString;
         const extendedModel = baseModel.extend(false);
 
         expect(baseModel).toHaveProperty('extend');

@@ -12,7 +12,7 @@ export function createSafeModel<S extends StandardSchemaV1>(schema: S) {
 }
 
 export function createSafeFirstModel<S extends StandardSchemaV1>(schema: S) {
-  return createSafeModel(schema).extend((current) => ({
+  return createModel(schema).extend((current) => ({
     from: (value: StandardSchemaV1.InferInput<S>) => safeValidate(schema, value),
     cast: (value: unknown) => safeValidate(schema, value),
     unsafeFrom: current.from,
@@ -21,7 +21,7 @@ export function createSafeFirstModel<S extends StandardSchemaV1>(schema: S) {
 }
 
 export function createUnsafeFirstModel<S extends StandardSchemaV1>(schema: S) {
-  return createSafeModel(schema).extend(() => ({
+  return createModel(schema).extend(() => ({
     safeFrom: (value: StandardSchemaV1.InferInput<S>) => safeValidate(schema, value),
     safeCast: (value: unknown) => safeValidate(schema, value),
   }));
@@ -35,3 +35,5 @@ function safeValidate<S extends StandardSchemaV1>(
 
   return result.issues ? err(result.issues) : ok(result.value);
 }
+
+export type { InferModelType } from './index.js';

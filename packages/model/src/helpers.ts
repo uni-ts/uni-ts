@@ -32,6 +32,10 @@ export function createExtendableModel<const T>(model: T) {
   } as ExtendableModel<T>;
 }
 
+export function oneOf<const T extends unknown[]>(...values: T): T[number] {
+  return values[Math.floor(Math.random() * values.length)];
+}
+
 type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
 
 type Merge<Destination, Source> = Simplify<
