@@ -16,7 +16,7 @@
     "check": "biome check --write",
     "test": "vitest",
     "test:cov": "vitest --coverage",
-    "clean": "rimraf -g \"packages/*/{dist,tsconfig.tsbuildinfo}\"",
+    "clean": "rimraf -g \"packages/*/{dist,tsconfig.tsbuildinfo}\" \"tsconfig.tsbuildinfo\"",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"

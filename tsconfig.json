@@ -19,5 +19,10 @@
     "verbatimModuleSyntax": true
   },
   "files": [],
-  "references": [{ "path": "./packages/result" }, { "path": "./packages/composition" }]
+  "references": [
+    { "path": "./packages/action" },
+    { "path": "./packages/composition" },
+    { "path": "./packages/model" },
+    { "path": "./packages/result" }
+  ]
 }
