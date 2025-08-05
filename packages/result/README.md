@@ -231,7 +231,9 @@ As an alternative to the functional style, the library also provides a builder-s
 ```typescript
 import { result } from '@uni-ts/result/builder';
 
-const processed = result((x: number) => (x === 0 ? err('division_by_zero') : ok(100 / x)))
+const processed = result((x: number) =>
+  x === 0 ? err('division_by_zero') : ok(100 / x)
+)
   .mapOk((x) => `The answer is ${x}`)
   .mapErr((error) => `Processing failed: ${error}`)
   .match(

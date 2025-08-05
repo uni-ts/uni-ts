@@ -16,7 +16,9 @@ Here's how data transformation typically works with nested calls:
 
 ```typescript
 // Hard to read and maintain
-const finalPrice = formatPrice(calculateTax(applyDiscount(getBasePrice(product), discount), taxRate));
+const finalPrice = formatPrice(
+  calculateTax(applyDiscount(getBasePrice(product), discount), taxRate)
+);
 ```
 
 With composition, the same transformation becomes a clear pipeline:
@@ -116,7 +118,8 @@ For complex pipelines or when you prefer method chaining, use the builder style 
 import { flow, pipe } from '@uni-ts/composition/builder';
 
 const getBasePrice = (product: Product) => product.price;
-const applyDiscount = (discount: number) => (price: number) => price * (1 - discount);
+const applyDiscount = (discount: number) => (price: number) =>
+  price * (1 - discount);
 const roundPrice = (price: number) => Math.round(price * 100) / 100;
 const applyTax = (tax: number) => (price: number) => price * (1 + tax);
 const formatPrice = (price: number) => `$${price.toFixed(2)}`;
@@ -187,7 +190,9 @@ Transform hard-to-read nested calls into clear, sequential steps:
 
 ```typescript
 // Before: hard to follow the data flow
-const result = formatCurrency(Math.round(applyTax(calculateDiscount(price, 0.1), 0.08)));
+const result = formatCurrency(
+  Math.round(applyTax(calculateDiscount(price, 0.1), 0.08))
+);
 
 // After: clear step-by-step transformation
 const result = pipe(

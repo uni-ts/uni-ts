@@ -191,8 +191,8 @@ Models are extensible, allowing you to add custom functionality.
 ```typescript
 const ExtendedUser = User.extend((model) => ({
   // Add custom methods
-  greet() {
-    return (user: User) => `Hello, ${user.name}!`;
+  greet(user: User) {
+    return `Hello, ${user.name}!`;
   },
 
   // Override existing methods
@@ -202,8 +202,12 @@ const ExtendedUser = User.extend((model) => ({
   },
 }));
 
-const user = ExtendedUser.from({ name: 'John', email: 'john@example.com', age: 25 });
-console.log(ExtendedUser.greet()(user)); // "Hello, John!"
+const user = ExtendedUser.from({
+  name: 'John',
+  email: 'john@example.com',
+  age: 25,
+});
+console.log(ExtendedUser.greet(user)); // "Hello, John!"
 ```
 
 ## Models for Primitive Types
