@@ -1,6 +1,6 @@
 {
   "name": "@uni-ts/action",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Utils for building type-safe action pipelines with context and error handling.",
   "keywords": [
     "action",
