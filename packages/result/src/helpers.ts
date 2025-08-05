@@ -49,6 +49,6 @@ export function callOrFunction<T, A extends unknown[] = []>(orFn: OrFunction<T, 
   return isFunction(orFn) ? orFn(...args) : orFn;
 }
 
-export function first<const T extends unknown[]>(...values: T): T[number] {
-  return values[0]!;
+export function first<const T extends unknown[]>(...args: T): T[number] {
+  return args[0];
 }

@@ -1,6 +1,6 @@
 {
   "name": "@uni-ts/result",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Utils for type-safe error handling in TypeScript.",
   "keywords": [
     "typescript",
