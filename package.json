@@ -14,12 +14,14 @@
   "scripts": {
     "build": "tsc -b",
     "check": "biome check --write",
+    "check:ci": "biome ci .",
     "test": "vitest",
     "test:cov": "vitest --coverage",
     "clean": "rimraf -g \"packages/*/{dist,tsconfig.tsbuildinfo}\" \"tsconfig.tsbuildinfo\"",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",

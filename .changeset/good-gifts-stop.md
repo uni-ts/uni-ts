@@ -1,5 +1,5 @@
 ---
-'@uni-ts/action': patch
+'@uni-ts/action': minor
 ---
 
 💥 BREAKING: `createAction` is now unsafe by default (throws exceptions instead of returning `Result`). In order to use the previous behavior, you need to import `createSafeAction` from `@uni-ts/action/safe`.

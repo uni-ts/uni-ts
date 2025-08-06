@@ -1,5 +1,5 @@
 ---
-'@uni-ts/model': patch
+'@uni-ts/model': minor
 ---
 
 💥 BREAKING: Safe utilities now return `ModelValidationError` as error value instead of `StandardSchemaV1.FailureResult['issues']`.
