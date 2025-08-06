@@ -2,7 +2,7 @@
 '@uni-ts/model': minor
 ---
 
-💥 BREAKING: Safe utilities now return `ModelValidationError` as error value instead of `StandardSchemaV1.FailureResult['issues']`.
+Safe utilities now return `ModelValidationError` as error value instead of `StandardSchemaV1.FailureResult['issues']`.
 
 ```typescript
 const Email = createSafeModel(z.string().email().brand('Email'));
