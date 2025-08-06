@@ -22,3 +22,5 @@ function validate<S extends StandardSchemaV1>(schema: S, value: unknown): Standa
 
   return result.value;
 }
+
+export { ModelValidationError };

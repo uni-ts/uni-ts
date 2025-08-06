@@ -1,4 +1,4 @@
-import type { Result } from '@uni-ts/result';
+import type { Err, Ok, Result } from '@uni-ts/result';
 import { isErr, isOk } from '@uni-ts/result';
 import { type } from 'arktype';
 import * as v from 'valibot';
@@ -7,57 +7,66 @@ import { z } from 'zod';
 import { ModelValidationError } from './error.js';
 import { oneOf } from './helpers.js';
 import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel, type InferModelType } from './safe.js';
-import type { StandardSchemaV1 } from './standard-schema.js';
 
 describe('safe.ts', () => {
+  function expectToBeOkResult(result: Result<unknown, unknown>, value: unknown) {
+    expect(isOk(result)).toBe(true);
+    expect((result as Ok<unknown>).data).toEqual(value);
+  }
+
+  function expectToBeErrorResult(result: Result<unknown, unknown>) {
+    expect(isErr(result)).toBe(true);
+    expect((result as Err<unknown>).error).toBeInstanceOf(ModelValidationError);
+  }
+
   describe('createSafeModel', () => {
     type Email = InferModelType<typeof Email>;
     const Email = createSafeModel(
       oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
     );
 
-    type EmailResult = Result<Email, StandardSchemaV1.FailureResult['issues']>;
+    type EmailResult = Result<Email, ModelValidationError>;
 
     describe('from', () => {
       it('returns ok result if value matches the model schema', () => {
         const email = Email.from('correct@email.com');
-        expect(isOk(email)).toBe(true);
+        expectToBeOkResult(email, 'correct@email.com');
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it("returns err result if value doesn't match the model schema", () => {
         const email = Email.from('incorrect-email');
-        expect(isErr(email)).toBe(true);
+        expectToBeErrorResult(email);
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it('accepts only model schema input types as value', () => {
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.from(123))).toBe(true);
+        expectToBeErrorResult(Email.from(123));
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.from(null))).toBe(true);
+        expectToBeErrorResult(Email.from(null));
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.from({}))).toBe(true);
+        expectToBeErrorResult(Email.from({}));
       });
     });
 
     describe('cast', () => {
       it('returns ok result if value matches the model schema', () => {
         const email = Email.cast('correct@email.com');
-        expect(isOk(email)).toBe(true);
+        expectToBeOkResult(email, 'correct@email.com');
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it("returns err result if value doesn't match the model schema", () => {
         const email = Email.cast('incorrect-email');
-        expect(isErr(email)).toBe(true);
+        expectToBeErrorResult(email);
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it('accepts any value as input', () => {
-        expect(isErr(Email.cast(123))).toBe(true);
-        expect(isErr(Email.cast(null))).toBe(true);
-        expect(isErr(Email.cast({}))).toBe(true);
+        expectToBeErrorResult(Email.cast(123));
+        expectToBeErrorResult(Email.cast(null));
+        expectToBeErrorResult(Email.cast({}));
       });
     });
   });
@@ -68,48 +77,48 @@ describe('safe.ts', () => {
       oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
     );
 
-    type EmailResult = Result<Email, StandardSchemaV1.FailureResult['issues']>;
+    type EmailResult = Result<Email, ModelValidationError>;
 
     describe('from', () => {
       it('returns ok result if value matches the model schema', () => {
         const email = Email.from('correct@email.com');
-        expect(isOk(email)).toBe(true);
+        expectToBeOkResult(email, 'correct@email.com');
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it("returns err result if value doesn't match the model schema", () => {
         const email = Email.from('incorrect-email');
-        expect(isErr(email)).toBe(true);
+        expectToBeErrorResult(email);
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it('accepts only model schema input types as value', () => {
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.from(123))).toBe(true);
+        expectToBeErrorResult(Email.from(123));
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.from(null))).toBe(true);
+        expectToBeErrorResult(Email.from(null));
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.from({}))).toBe(true);
+        expectToBeErrorResult(Email.from({}));
       });
     });
 
     describe('cast', () => {
       it('returns ok result if value matches the model schema', () => {
         const email = Email.cast('correct@email.com');
-        expect(isOk(email)).toBe(true);
+        expectToBeOkResult(email, 'correct@email.com');
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it("returns err result if value doesn't match the model schema", () => {
         const email = Email.cast('incorrect-email');
-        expect(isErr(email)).toBe(true);
+        expectToBeErrorResult(email);
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it('accepts any value as input', () => {
-        expect(isErr(Email.cast(123))).toBe(true);
-        expect(isErr(Email.cast(null))).toBe(true);
-        expect(isErr(Email.cast({}))).toBe(true);
+        expectToBeErrorResult(Email.cast(123));
+        expectToBeErrorResult(Email.cast(null));
+        expectToBeErrorResult(Email.cast({}));
       });
     });
 
@@ -161,7 +170,7 @@ describe('safe.ts', () => {
       oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
     );
 
-    type EmailResult = Result<Email, StandardSchemaV1.FailureResult['issues']>;
+    type EmailResult = Result<Email, ModelValidationError>;
 
     describe('from', () => {
       it('returns a model if value matches the model schema', () => {
@@ -207,43 +216,43 @@ describe('safe.ts', () => {
     describe('safeFrom', () => {
       it('returns ok result if value matches the model schema', () => {
         const email = Email.safeFrom('correct@email.com');
-        expect(isOk(email)).toBe(true);
+        expectToBeOkResult(email, 'correct@email.com');
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it("returns err result if value doesn't match the model schema", () => {
         const email = Email.safeFrom('incorrect-email');
-        expect(isErr(email)).toBe(true);
+        expectToBeErrorResult(email);
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it('accepts only model schema input types as value', () => {
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.safeFrom(123))).toBe(true);
+        expectToBeErrorResult(Email.safeFrom(123));
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.safeFrom(null))).toBe(true);
+        expectToBeErrorResult(Email.safeFrom(null));
         // @ts-expect-error - incorrect type
-        expect(isErr(Email.safeFrom({}))).toBe(true);
+        expectToBeErrorResult(Email.safeFrom({}));
       });
     });
 
     describe('safeCast', () => {
       it('returns ok result if value matches the model schema', () => {
         const email = Email.safeCast('correct@email.com');
-        expect(isOk(email)).toBe(true);
+        expectToBeOkResult(email, 'correct@email.com');
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it("returns err result if value doesn't match the model schema", () => {
         const email = Email.safeCast('incorrect-email');
-        expect(isErr(email)).toBe(true);
+        expectToBeErrorResult(email);
         expectTypeOf(email).toEqualTypeOf<EmailResult>();
       });
 
       it('accepts any value as input', () => {
-        expect(isErr(Email.safeCast(123))).toBe(true);
-        expect(isErr(Email.safeCast(null))).toBe(true);
-        expect(isErr(Email.safeCast({}))).toBe(true);
+        expectToBeErrorResult(Email.safeCast(123));
+        expectToBeErrorResult(Email.safeCast(null));
+        expectToBeErrorResult(Email.safeCast({}));
       });
     });
   });

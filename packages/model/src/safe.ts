@@ -30,10 +30,11 @@ export function createUnsafeFirstModel<S extends StandardSchemaV1>(schema: S) {
 function safeValidate<S extends StandardSchemaV1>(
   schema: S,
   value: unknown,
-): Result<StandardSchemaV1.InferOutput<S>, StandardSchemaV1.FailureResult['issues']> {
+): Result<StandardSchemaV1.InferOutput<S>, ModelValidationError> {
   const result = getSyncValidationResult(schema, value);
 
-  return result.issues ? err(result.issues) : ok(result.value);
+  return result.issues ? err(new ModelValidationError(result.issues)) : ok(result.value);
 }
 
 export type { InferModelType } from './index.js';
+export { ModelValidationError };
