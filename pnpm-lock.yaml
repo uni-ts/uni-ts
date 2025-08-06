@@ -34,7 +34,7 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)
 
   packages/action:
-    devDependencies:
+    optionalDependencies:
       '@uni-ts/result':
         specifier: workspace:*
         version: link:../result
