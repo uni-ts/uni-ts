@@ -1,5 +1,19 @@
 # @uni-ts/action
 
+## 0.1.0
+
+### Minor Changes
+
+- e30a457: `createAction` is now unsafe by default (throws exceptions instead of returning `Result`). In order to use the previous behavior, you need to import `createSafeAction` from `@uni-ts/action/safe`.
+
+  ```typescript
+  // Before
+  import { createAction } from "@uni-ts/action";
+
+  // After
+  import { createSafeAction } from "@uni-ts/action/safe";
+  ```
+
 ## 0.0.2
 
 ### Patch Changes
