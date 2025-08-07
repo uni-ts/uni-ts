@@ -1,19 +1,22 @@
-import type { Err } from '@uni-ts/result';
+import type { Err, UnknownResult } from '@uni-ts/result';
 import { err } from '@uni-ts/result';
+import { ThrownActionError } from './error.js';
+import type { Ctx } from './helpers.js';
 import { SafeActionBuilder } from './safe-action-builder.js';
 
 export function createSafeAction<
-  Input,
-  ExceptionHandler extends (ex: unknown) => Err<unknown> = typeof defaultActionExceptionHandler,
+  Input = never,
+  ExceptionHandler extends (ex: unknown) => UnknownResult = typeof defaultActionExceptionHandler,
 >({ onThrow }: { onThrow?: ExceptionHandler } = {}) {
-  return new SafeActionBuilder<Input, ExceptionHandler>(
+  return new SafeActionBuilder<Input, never, never, Ctx, false, ExceptionHandler>(
     [],
     (onThrow ?? defaultActionExceptionHandler) as ExceptionHandler,
   );
 }
 
-export function defaultActionExceptionHandler(): Err<'UNHANDLED_ERROR'> {
-  return err('UNHANDLED_ERROR');
+export function defaultActionExceptionHandler(ex: unknown): Err<ThrownActionError> {
+  return err(new ThrownActionError(ex));
 }
 
 export { next } from './helpers.js';
+export { ThrownActionError };

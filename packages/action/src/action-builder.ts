@@ -16,10 +16,10 @@ export { next } from './helpers.js';
 
 export class ActionBuilder<
   Input,
+  CurrentOutput,
+  Context extends Ctx,
+  Async extends boolean,
   ExceptionHandler extends (ex: unknown) => unknown,
-  CurrentOutput = never,
-  Context extends Ctx = Ctx,
-  Async extends boolean = false,
 > {
   constructor(
     private readonly fns: MiddlewareFn<Input, OrPromise<OutputType | Ctx>, Ctx>[],
@@ -31,10 +31,10 @@ export class ActionBuilder<
   ) {
     return new ActionBuilder<
       Input,
-      ExceptionHandler,
       CurrentOutput | UnwrapNonCtx<MiddlewareOutput>,
       Ctx<Merge<CtxValue<Context>, CtxValue<UnwrapCtx<MiddlewareOutput>>>>,
-      IsAsync<Async, MiddlewareOutput>
+      IsAsync<Async, MiddlewareOutput>,
+      ExceptionHandler
     >([...this.fns, fn], this.handleException);
   }
 

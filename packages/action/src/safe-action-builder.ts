@@ -1,4 +1,4 @@
-import type { Err, Result, UnknownResult, UnwrapErr, UnwrapOk } from '@uni-ts/result';
+import type { Err, Ok, Result, UnknownResult, UnwrapErr, UnwrapOk } from '@uni-ts/result';
 import type {
   ActionExecutor,
   ActionFn,
@@ -17,11 +17,11 @@ export { next } from './helpers.js';
 
 export class SafeActionBuilder<
   Input,
-  ExceptionHandler extends (ex: unknown) => Err<unknown>,
-  CurrentOk = never,
-  CurrentErr = never,
-  Context extends Ctx = Ctx,
-  Async extends boolean = false,
+  CurrentOk,
+  CurrentErr,
+  Context extends Ctx,
+  Async extends boolean,
+  ExceptionHandler extends (ex: unknown) => unknown,
 > {
   constructor(
     private readonly fns: MiddlewareFn<Input, OrPromise<UnknownResult | Ctx>, Ctx>[],
@@ -33,11 +33,11 @@ export class SafeActionBuilder<
   ) {
     return new SafeActionBuilder<
       Input,
-      ExceptionHandler,
       CurrentOk | UnwrapOk<MiddlewareOutput>,
       CurrentErr | UnwrapErr<MiddlewareOutput>,
       Ctx<Merge<CtxValue<Context>, CtxValue<UnwrapCtx<MiddlewareOutput>>>>,
-      IsAsync<Async, MiddlewareOutput>
+      IsAsync<Async, MiddlewareOutput>,
+      ExceptionHandler
     >([...this.fns, fn], this.handleException);
   }
 
@@ -49,7 +49,7 @@ export class SafeActionBuilder<
       ActionResponse<
         IsAsync<Async, ActionOutput>,
         Result<
-          CurrentOk | UnwrapOk<ActionOutput>,
+          CurrentOk | UnwrapOk<ActionOutput> | InferCatchOk<ExceptionHandler>,
           CurrentErr | UnwrapErr<ActionOutput> | InferCatchErr<ExceptionHandler>
         >
       >
@@ -57,4 +57,6 @@ export class SafeActionBuilder<
   }
 }
 
-type InferCatchErr<F> = F extends (ex: unknown) => Err<infer E> ? E : never;
+type InferCatchOk<T> = T extends (ex: unknown) => Ok<infer O> ? O : never;
+
+type InferCatchErr<T> = T extends (ex: unknown) => Err<infer E> ? E : never;

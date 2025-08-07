@@ -104,7 +104,7 @@ export type MiddlewareFn<Input, Output, Context extends Ctx> = (opts: {
 
 export type ActionFn<Input, Output, Context> = (opts: { input: Input; ctx: CtxValue<Context> }) => Output;
 
-export type ActionExecutor<Input, Response> = Input extends object ? (input: Input) => Response : () => Response;
+export type ActionExecutor<Input, Response> = [Input] extends [never] ? () => Response : (input: Input) => Response;
 
 export type ActionResponse<Async extends boolean, Content> = Async extends true ? Promise<Content> : Content;
 
