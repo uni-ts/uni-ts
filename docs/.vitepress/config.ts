@@ -1,5 +1,6 @@
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash';
 import { defineConfig } from 'vitepress';
+import typedocSidebar from '../api/typedoc-sidebar.json';
 
 const title = 'UniTS';
 const description = 'A set of utilities to make your TypeScript projects cleaner, safer, and more composable.';
@@ -27,28 +28,46 @@ export default defineConfig({
   ],
   themeConfig: {
     logo,
-    sidebar: [
+    nav: [
       {
-        text: 'Getting Started',
-        link: '/getting-started',
+        text: 'Docs',
+        link: '/docs/',
       },
       {
-        text: 'Result',
-        items: [{ text: 'Getting Started', link: '/result/getting-started' }],
-      },
-      {
-        text: 'Model',
-        items: [{ text: 'Getting Started', link: '/model/getting-started' }],
-      },
-      {
-        text: 'Composition',
-        items: [{ text: 'Getting Started', link: '/composition/getting-started' }],
-      },
-      {
-        text: 'Action',
-        items: [{ text: 'Getting Started', link: '/action/getting-started' }],
+        text: 'API Reference',
+        link: '/api/',
       },
     ],
+    sidebar: {
+      '/docs/': [
+        {
+          text: 'Getting Started',
+          link: '/docs/',
+        },
+        {
+          text: 'Result',
+          items: [{ text: 'Getting Started', link: '/docs/result/getting-started' }],
+        },
+        {
+          text: 'Model',
+          items: [{ text: 'Getting Started', link: '/docs/model/getting-started' }],
+        },
+        {
+          text: 'Composition',
+          items: [{ text: 'Getting Started', link: '/docs/composition/getting-started' }],
+        },
+        {
+          text: 'Action',
+          items: [{ text: 'Getting Started', link: '/docs/action/getting-started' }],
+        },
+      ],
+      '/api/': [
+        {
+          text: 'API Reference',
+          items: typedocSidebar,
+        },
+      ],
+    },
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/uni-ts/uni-ts' }],
   },

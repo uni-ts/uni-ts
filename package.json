@@ -18,8 +18,9 @@
     "test": "vitest",
     "test:cov": "vitest --coverage",
     "clean": "rimraf -g \"packages/*/{dist,tsconfig.tsbuildinfo}\" \"tsconfig.tsbuildinfo\"",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "typedoc": "typedoc",
+    "docs:dev": "typedoc && vitepress dev docs",
+    "docs:build": "typedoc && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "release": "pnpm build && changeset publish"
   },
@@ -29,6 +30,9 @@
     "@shikijs/vitepress-twoslash": "3.9.2",
     "@vitest/coverage-v8": "3.2.4",
     "rimraf": "6.0.1",
+    "typedoc": "0.28.9",
+    "typedoc-plugin-markdown": "4.8.0",
+    "typedoc-vitepress-theme": "1.1.2",
     "typescript": "5.9.2",
     "vitepress": "2.0.0-alpha.9",
     "vitest": "3.2.4"

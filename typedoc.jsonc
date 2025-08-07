@@ -1,0 +1,16 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["packages/*"],
+  "entryPointStrategy": "packages",
+  "exclude": ["**/node_modules/**", "**/dist/**", "**/docs/**"],
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "out": "./docs/api",
+  "docsRoot": "./docs",
+  "hideBreadcrumbs": true,
+  "readme": "none",
+  "packageOptions": {
+    "validation": {
+      "notExported": false
+    }
+  }
+}
