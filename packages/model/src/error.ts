@@ -35,7 +35,7 @@ export class ModelValidationError extends Error {
    * Array of all validation issues that caused the error.
    * Each issue contains details about what validation rule failed and where.
    */
-  public readonly issues: ReadonlyArray<StandardSchemaV1.Issue>;
+  readonly issues: ReadonlyArray<StandardSchemaV1.Issue>;
 
   /**
    * Creates a new ModelValidationError with the provided validation issues.
@@ -44,7 +44,7 @@ export class ModelValidationError extends Error {
    */
   constructor(issues: ReadonlyArray<StandardSchemaV1.Issue>) {
     super(issues[0]?.message);
-    this.name = 'SchemaError';
+    this.name = ModelValidationError.name;
     this.issues = issues;
   }
 }

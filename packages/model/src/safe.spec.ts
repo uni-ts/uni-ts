@@ -1,4 +1,4 @@
-import type { Err, Ok, Result } from '@uni-ts/result';
+import type { Err, Ok, Result, UnknownResult } from '@uni-ts/result';
 import { isErr, isOk } from '@uni-ts/result';
 import { type } from 'arktype';
 import * as v from 'valibot';
@@ -9,12 +9,12 @@ import { oneOf } from './helpers.js';
 import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel, type InferModelType } from './safe.js';
 
 describe('safe.ts', () => {
-  function expectToBeOkResult(result: Result<unknown, unknown>, value: unknown) {
+  function expectToBeOkResult(result: UnknownResult, value: unknown) {
     expect(isOk(result)).toBe(true);
     expect((result as Ok<unknown>).data).toEqual(value);
   }
 
-  function expectToBeErrorResult(result: Result<unknown, unknown>) {
+  function expectToBeErrorResult(result: UnknownResult) {
     expect(isErr(result)).toBe(true);
     expect((result as Err<unknown>).error).toBeInstanceOf(ModelValidationError);
   }
