@@ -1,5 +1,11 @@
 # @uni-ts/model
 
+## 0.1.1
+
+### Patch Changes
+
+- d38b039: Change ModelValidationError name to match its class name
+
 ## 0.1.0
 
 ### Minor Changes
