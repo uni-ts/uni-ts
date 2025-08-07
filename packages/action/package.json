@@ -25,6 +25,10 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./safe": {
+      "import": "./dist/safe.js",
+      "types": "./dist/safe.d.ts"
     }
   },
   "files": [
