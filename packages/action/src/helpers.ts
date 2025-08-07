@@ -1,3 +1,26 @@
+/**
+ * Creates a context object for passing data between middleware functions.
+ *
+ * @template Value - The object type to be merged into the context. Properties will be available to subsequent middleware and actions.
+ * @param value - Value that will be merged to the next context value object
+ * @returns A context object that can be returned by middleware functions
+ *
+ * @example
+ * ```typescript
+ * const action = createAction()
+ *   .with(async () => {
+ *     return next({ session: await getSession() });
+ *   })
+ *   .with(async ({ ctx }) => {
+ *     return next({ user: await getUser(ctx.session.userId) });
+ *   })
+ *   .with(({ ctx }) => {
+ *     console.log(ctx); // { session: { userId: string }, user: { name: string, ... } }
+ *     return next();
+ *   })
+ *   .do(({ ctx }) => {...});
+ * ```
+ */
 // biome-ignore lint/complexity/noBannedTypes: fine as the default value.
 export function next<const Value extends object = {}>(value = {} as Value): Ctx<Value> {
   return { type: 'ctx', value };
