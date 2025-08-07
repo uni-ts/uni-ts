@@ -1,5 +1,13 @@
 # @uni-ts/action
 
+## 0.1.1
+
+### Patch Changes
+
+- ad6f16c: Actions by default uses ThrownActionError for errors thrown within the pipeline
+- 98eaccc: Export safe action utils from package.json
+- 1457e18: Add JSDoc comments to all exported utils and types
+
 ## 0.1.0
 
 ### Minor Changes
