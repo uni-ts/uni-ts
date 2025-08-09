@@ -41,7 +41,12 @@
   "devDependencies": {
     "@uni-ts/result": "workspace:*"
   },
-  "optionalDependencies": {
+  "peerDependencies": {
     "@uni-ts/result": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@uni-ts/result": {
+      "optional": true
+    }
   }
 }

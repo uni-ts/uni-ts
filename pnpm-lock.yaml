@@ -43,7 +43,7 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)(yaml@2.8.1)
 
   packages/action:
-    optionalDependencies:
+    devDependencies:
       '@uni-ts/result':
         specifier: workspace:*
         version: link:../result
@@ -52,6 +52,9 @@ importers:
 
   packages/model:
     devDependencies:
+      '@uni-ts/result':
+        specifier: workspace:*
+        version: link:../result
       arktype:
         specifier: 2.1.20
         version: 2.1.20
@@ -61,10 +64,6 @@ importers:
       zod:
         specifier: 4.0.14
         version: 4.0.14
-    optionalDependencies:
-      '@uni-ts/result':
-        specifier: workspace:*
-        version: link:../result
 
   packages/result:
     devDependencies:

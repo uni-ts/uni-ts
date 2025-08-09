@@ -45,7 +45,12 @@
     "valibot": "1.1.0",
     "zod": "4.0.14"
   },
-  "optionalDependencies": {
+  "peerDependencies": {
     "@uni-ts/result": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@uni-ts/result": {
+      "optional": true
+    }
   }
 }
