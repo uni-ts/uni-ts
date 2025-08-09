@@ -1,4 +1,12 @@
-import type { InferValueAsErr, InferValueAsOk, NonPromise, OrFunction, OrPromise, Returned } from './helpers.js';
+import type {
+  InferValueAsErr,
+  InferValueAsOk,
+  NonPromise,
+  OrFunction,
+  OrPromise,
+  ResultTuple,
+  Returned,
+} from './helpers.js';
 import { callOrFunction, isObject, isPromise, mapOrPromise } from './helpers.js';
 
 /**
@@ -734,6 +742,38 @@ export function match<R extends Result, const OkReturn, const ErrReturn>(
   }
 
   return isOk(result) ? callOrFunction(onOk, result.data) : callOrFunction(onErr, result.error);
+}
+
+/**
+ * Transforms the result into a tuple where the first value is data (for successful results)
+ * and the second value is error (for error results).
+ * Useful when you want to safely unwrap a result without additional unwrapping logic.
+ *
+ * @template R - The input Result type
+ * @param result - The Result to match on
+ * @returns A tuple with unwrapped result data and error
+ *
+ * @example
+ * ```typescript
+ * function divide(a: number, b: number) {
+ *   return b === 0 ? err('division_by_zero') : ok(a / b);
+ * }
+ *
+ * const [data, error] = toTuple(divide(10, 2));
+ *
+ * if (!error) {
+ *   console.log(`Division result is: ${data}`);
+ * }
+ * ```
+ */
+export function toTuple<R extends Result>(result: NonPromise<R>): ResultTuple<R>;
+export function toTuple<R extends Result>(result: OrPromise<R>): Promise<ResultTuple<R>>;
+export function toTuple<R extends Result>(result: OrPromise<R>): OrPromise<ResultTuple<R>> {
+  return match(
+    result,
+    (data) => [data, undefined],
+    (error) => [undefined, error],
+  );
 }
 
 function valueToErr(value: unknown) {

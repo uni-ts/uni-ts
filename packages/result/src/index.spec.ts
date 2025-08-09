@@ -27,6 +27,7 @@ import {
   match,
   ok,
   toThrowable,
+  toTuple,
   tryCatch,
   unwrapOr,
   unwrapOrNull,
@@ -1917,6 +1918,73 @@ describe('index.ts', () => {
           expectTypeOf(errOutput).toEqualTypeOf<Promise<'some_success' | 'some_error'>>();
         });
       });
+    });
+  });
+
+  describe('toTuple', () => {
+    const okResult = first(ok(1), ok({ foo: 'bar' }), err('a'), err({ status: 404 }));
+    const errResult = first(err('a'), err({ status: 404 }), ok(1), ok({ foo: 'bar' }));
+
+    it('works with ok results', () => {
+      const [data, error] = toTuple(okResult);
+
+      expect(data).toBe(1);
+      expect(error).toBeUndefined();
+    });
+
+    it('works with err results', () => {
+      const [data, error] = toTuple(errResult);
+
+      expect(data).toBeUndefined();
+      expect(error).toBe('a');
+    });
+
+    it('works with ok promise results', async () => {
+      const [data, error] = await toTuple(Promise.resolve(okResult));
+
+      expect(data).toBe(1);
+      expect(error).toBeUndefined();
+    });
+
+    it('works with err promise results', async () => {
+      const [data, error] = await toTuple(Promise.resolve(errResult));
+
+      expect(data).toBeUndefined();
+      expect(error).toBe('a');
+    });
+
+    it('infers data and error types correctly (sync)', () => {
+      const [data, error] = toTuple(okResult);
+
+      expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' } | undefined>();
+      expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 } | undefined>();
+
+      if (!error) {
+        expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' }>();
+      }
+
+      if (!data) {
+        expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 }>();
+      }
+    });
+
+    it('infers data and error types correctly (async)', async () => {
+      const tuple = toTuple(Promise.resolve(okResult));
+
+      expectTypeOf(tuple).toExtend<Promise<unknown>>();
+
+      const [data, error] = await tuple;
+
+      expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' } | undefined>();
+      expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 } | undefined>();
+
+      if (!error) {
+        expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' }>();
+      }
+
+      if (!data) {
+        expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 }>();
+      }
     });
   });
 });

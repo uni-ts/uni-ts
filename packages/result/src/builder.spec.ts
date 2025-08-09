@@ -1144,4 +1144,135 @@ describe('builder.ts', () => {
       });
     });
   });
+
+  describe('toTuple', () => {
+    const okResult = first(ok(1), ok({ foo: 'bar' }), err('a'), err({ status: 404 }));
+    const errResult = first(err('a'), err({ status: 404 }), ok(1), ok({ foo: 'bar' }));
+
+    it('works with ok results', () => {
+      const [data, error] = result(okResult).toTuple();
+
+      expect(data).toBe(1);
+      expect(error).toBeUndefined();
+    });
+
+    it('works with err results', () => {
+      const [data, error] = result(errResult).toTuple();
+
+      expect(data).toBeUndefined();
+      expect(error).toBe('a');
+    });
+
+    it('works with ok promise results', async () => {
+      const [data, error] = await result(Promise.resolve(okResult)).toTuple();
+
+      expect(data).toBe(1);
+      expect(error).toBeUndefined();
+    });
+
+    it('works with err promise results', async () => {
+      const [data, error] = await result(Promise.resolve(errResult)).toTuple();
+
+      expect(data).toBeUndefined();
+      expect(error).toBe('a');
+    });
+
+    it('works with function results', () => {
+      const fn = result((num: number) => (num > 0 ? ok(num) : err('no_negative'))).toTuple();
+
+      const [okData, okError] = fn(1);
+
+      expect(okData).toBe(1);
+      expect(okError).toBeUndefined();
+
+      const [errData, errError] = fn(-1);
+
+      expect(errData).toBeUndefined();
+      expect(errError).toBe('no_negative');
+    });
+
+    it('works with async function results', async () => {
+      const fn = result(async (num: number) => (num > 0 ? ok(num) : err('no_negative'))).toTuple();
+
+      const [okData, okError] = await fn(1);
+
+      expect(okData).toBe(1);
+      expect(okError).toBeUndefined();
+
+      const [errData, errError] = await fn(-1);
+
+      expect(errData).toBeUndefined();
+      expect(errError).toBe('no_negative');
+    });
+
+    it('infers data and error types correctly (sync)', () => {
+      const [data, error] = result(okResult).toTuple();
+
+      expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' } | undefined>();
+      expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 } | undefined>();
+
+      if (!error) {
+        expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' }>();
+      }
+
+      if (!data) {
+        expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 }>();
+      }
+    });
+
+    it('infers data and error types correctly (async)', async () => {
+      const tuple = result(Promise.resolve(okResult)).toTuple();
+
+      expectTypeOf(tuple).toExtend<Promise<unknown>>();
+
+      const [data, error] = await tuple;
+
+      expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' } | undefined>();
+      expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 } | undefined>();
+
+      if (!error) {
+        expectTypeOf(data).toEqualTypeOf<1 | { readonly foo: 'bar' }>();
+      }
+
+      if (!data) {
+        expectTypeOf(error).toEqualTypeOf<'a' | { readonly status: 404 }>();
+      }
+    });
+
+    it('infers data and error types correctly (function)', () => {
+      const fn = result((num: number) => (num > 0 ? ok({ value: num }) : err('no_negative'))).toTuple();
+
+      const [data, error] = fn(1);
+
+      expectTypeOf(data).toEqualTypeOf<{ readonly value: number } | undefined>();
+      expectTypeOf(error).toEqualTypeOf<'no_negative' | undefined>();
+
+      if (!error) {
+        expectTypeOf(data).toEqualTypeOf<{ readonly value: number }>();
+      }
+
+      if (!data) {
+        expectTypeOf(error).toEqualTypeOf<'no_negative'>();
+      }
+    });
+
+    it('infers data and error types correctly (async function)', async () => {
+      const fn = result(async (num: number) => (num > 0 ? ok({ value: num }) : err('no_negative'))).toTuple();
+
+      expectTypeOf<ReturnType<typeof fn>>().toExtend<Promise<unknown>>();
+
+      const [data, error] = await fn(1);
+
+      expectTypeOf(data).toEqualTypeOf<{ readonly value: number } | undefined>();
+      expectTypeOf(error).toEqualTypeOf<'no_negative' | undefined>();
+
+      if (!error) {
+        expectTypeOf(data).toEqualTypeOf<{ readonly value: number }>();
+      }
+
+      if (!data) {
+        expectTypeOf(error).toEqualTypeOf<'no_negative'>();
+      }
+    });
+  });
 });

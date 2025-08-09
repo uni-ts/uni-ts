@@ -1,7 +1,15 @@
-import type { InferValueAsErr, InferValueAsOk, IsAsync, NonPromise, OrFunction, OrPromise } from './helpers.js';
+import type {
+  InferValueAsErr,
+  InferValueAsOk,
+  IsAsync,
+  NonPromise,
+  OrFunction,
+  OrPromise,
+  ResultTuple,
+} from './helpers.js';
 import { isFunction, isPromise } from './helpers.js';
 import type { Result, UnwrapErr, UnwrapOk } from './index.js';
-import { mapErr, mapOk, match } from './index.js';
+import { mapErr, mapOk, match, toTuple } from './index.js';
 
 /**
  * Creates a fluent Result builder that allows chaining operations.
@@ -45,7 +53,7 @@ export function result<R extends OrFunction<OrPromise<Result>, A>, A extends unk
 }
 
 class SyncResultBuilder<R extends Result> {
-  constructor(private result: R) {}
+  constructor(private result: NonPromise<R>) {}
 
   mapOk<const MapperReturn>(
     mapper: (data: UnwrapOk<R>) => NonPromise<MapperReturn>,
@@ -110,6 +118,10 @@ class SyncResultBuilder<R extends Result> {
     return match(this.result, onOk, onErr);
   }
 
+  toTuple(): ResultTuple<R> {
+    return toTuple(this.result);
+  }
+
   create(): R {
     return this.result;
   }
@@ -151,6 +163,10 @@ class AsyncResultBuilder<R extends Result> {
     onErr: (error: UnwrapErr<R>) => OrPromise<ErrReturn>,
   ): unknown {
     return match(this.result, onOk, onErr);
+  }
+
+  toTuple(): Promise<ResultTuple<R>> {
+    return toTuple(this.result);
   }
 
   create(): Promise<R> {
@@ -200,19 +216,19 @@ class FnResultBuilder<R extends OrPromise<Result>, A extends unknown[] = [], Asy
   match<const OkReturn, const ErrReturn>(
     onOk: (data: UnwrapOk<R>) => NonPromise<OkReturn>,
     onErr: (error: UnwrapErr<R>) => NonPromise<ErrReturn>,
-  ): (...args: A) => Async extends true ? Promise<OkReturn | ErrReturn> : OkReturn | ErrReturn;
+  ): FnResult<A, OkReturn | ErrReturn, Async>;
   match<const OkReturn, const ErrReturn>(
     onOk: (data: UnwrapOk<R>) => NonPromise<OkReturn>,
     onErr: NonPromise<ErrReturn>,
-  ): (...args: A) => Async extends true ? Promise<OkReturn | ErrReturn> : OkReturn | ErrReturn;
+  ): FnResult<A, OkReturn | ErrReturn, Async>;
   match<const OkReturn, const ErrReturn>(
     onOk: NonPromise<OkReturn>,
     onErr: (error: UnwrapErr<R>) => NonPromise<ErrReturn>,
-  ): (...args: A) => Async extends true ? Promise<OkReturn | ErrReturn> : OkReturn | ErrReturn;
+  ): FnResult<A, OkReturn | ErrReturn, Async>;
   match<const OkReturn, const ErrReturn>(
     onOk: NonPromise<OkReturn>,
     onErr: NonPromise<ErrReturn>,
-  ): (...args: A) => Async extends true ? Promise<OkReturn | ErrReturn> : OkReturn | ErrReturn;
+  ): FnResult<A, OkReturn | ErrReturn, Async>;
   match<const OkReturn, const ErrReturn>(
     onOk: (data: UnwrapOk<R>) => OrPromise<OkReturn>,
     onErr: (error: UnwrapErr<R>) => OrPromise<ErrReturn>,
@@ -236,7 +252,15 @@ class FnResultBuilder<R extends OrPromise<Result>, A extends unknown[] = [], Asy
     return (...args: A) => match(this.fn(...args), onOk, onErr);
   }
 
+  toTuple() {
+    return ((...args: A) => toTuple(this.fn(...args))) as FnResult<A, ResultTuple<Awaited<R>>, Async>;
+  }
+
   create() {
-    return this.fn as (...args: A) => Async extends true ? Promise<Awaited<R>> : Awaited<R>;
+    return this.fn as FnResult<A, R, Async>;
   }
 }
+
+type FnResult<A extends unknown[], R, Async extends boolean> = (
+  ...args: A
+) => Async extends true ? Promise<Awaited<R>> : Awaited<R>;

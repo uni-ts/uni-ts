@@ -167,6 +167,7 @@ export {
   isResult,
   ok,
   toThrowable,
+  toTuple,
   tryCatch,
   unwrapOrNull,
   unwrapOrThrow,

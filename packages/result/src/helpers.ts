@@ -1,4 +1,4 @@
-import type { Err, FlattenErr, FlattenOk, Ok } from './index.js';
+import type { Err, FlattenErr, FlattenOk, Ok, Result, UnwrapErr, UnwrapOk } from './index.js';
 
 export type Fn<A extends any[] = any[], R = any> = (...args: A) => R;
 
@@ -19,6 +19,10 @@ export type NonPromise<T> = T extends Fn
 export type InferValueAsOk<T> = FlattenOk<Exclude<Awaited<Returned<T>>, Err>>;
 
 export type InferValueAsErr<T> = FlattenErr<Exclude<Awaited<Returned<T>>, Ok>>;
+
+export type ResultTuple<R extends Result> = Readonly<
+  [ok: UnwrapOk<R>, err: undefined] | [ok: undefined, err: UnwrapErr<R>]
+>;
 
 export type IsAsync<Current extends boolean, Return> = [Return] extends [never]
   ? false
