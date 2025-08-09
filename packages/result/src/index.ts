@@ -25,8 +25,8 @@ import { callOrFunction, isObject, isPromise, mapOrPromise } from './helpers.js'
  * ```
  */
 export interface Ok<T = any> {
-  success: true;
-  data: T;
+  readonly success: true;
+  readonly data: T;
 }
 
 /**
@@ -45,8 +45,8 @@ export interface Ok<T = any> {
  * ```
  */
 export interface Err<T = any> {
-  success: false;
-  error: T;
+  readonly success: false;
+  readonly error: T;
 }
 
 /**
