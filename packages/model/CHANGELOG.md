@@ -1,5 +1,11 @@
 # @uni-ts/model
 
+## 0.1.2
+
+### Patch Changes
+
+- 9671314: If you're using the `/safe` imports from `@uni-ts/result`, update its version to 0.0.2 or above.
+
 ## 0.1.1
 
 ### Patch Changes
