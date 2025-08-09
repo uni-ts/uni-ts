@@ -1,5 +1,15 @@
 # @uni-ts/action
 
+## 0.1.2
+
+### Patch Changes
+
+- 9671314: If you're using the `/safe` imports from `@uni-ts/result`, update its version to 0.0.2 or above.
+- Updated dependencies [e9f2a1d]
+- Updated dependencies [217391d]
+- Updated dependencies [d3006aa]
+  - @uni-ts/result@0.0.2
+
 ## 0.1.1
 
 ### Patch Changes
