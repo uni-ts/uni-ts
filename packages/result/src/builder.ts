@@ -1,3 +1,4 @@
+import { tap } from './fp.js';
 import type {
   InferValueAsErr,
   InferValueAsOk,
@@ -118,6 +119,13 @@ class SyncResultBuilder<R extends Result> {
     return match(this.result, onOk, onErr);
   }
 
+  tap<FnReturn>(fn: (result: R) => NonPromise<FnReturn>): SyncResultBuilder<Result<UnwrapOk<R>, UnwrapErr<R>>>;
+  tap<FnReturn>(fn: (result: R) => OrPromise<FnReturn>): AsyncResultBuilder<Result<UnwrapOk<R>, UnwrapErr<R>>>;
+  tap<FnReturn>(fn: (result: R) => OrPromise<FnReturn>): unknown {
+    const data = fn(this.result);
+    return isPromise(data) ? new AsyncResultBuilder(Promise.resolve(this.result)) : new SyncResultBuilder(this.result);
+  }
+
   toTuple(): ResultTuple<R> {
     return toTuple(this.result);
   }
@@ -163,6 +171,10 @@ class AsyncResultBuilder<R extends Result> {
     onErr: (error: UnwrapErr<R>) => OrPromise<ErrReturn>,
   ): unknown {
     return match(this.result, onOk, onErr);
+  }
+
+  tap(fn: (result: R) => OrPromise<unknown>): AsyncResultBuilder<Result<UnwrapOk<R>, UnwrapErr<R>>> {
+    return new AsyncResultBuilder(this.result.then(tap(fn)));
   }
 
   toTuple(): Promise<ResultTuple<R>> {
@@ -250,6 +262,16 @@ class FnResultBuilder<R extends OrPromise<Result>, A extends unknown[] = [], Asy
     onErr: (error: UnwrapErr<R>) => OrPromise<ErrReturn>,
   ): unknown {
     return (...args: A) => match(this.fn(...args), onOk, onErr);
+  }
+
+  tap<FnReturn>(
+    fn: (result: R) => NonPromise<FnReturn>,
+  ): FnResultBuilder<Result<UnwrapOk<R>, UnwrapErr<R>>, A, IsAsync<Async, FnReturn>>;
+  tap<FnReturn>(
+    fn: (result: R) => FnReturn,
+  ): FnResultBuilder<Result<UnwrapOk<R>, UnwrapErr<R>>, A, IsAsync<Async, FnReturn>>;
+  tap<FnReturn>(fn: (result: R) => OrPromise<FnReturn>): unknown {
+    return new FnResultBuilder((...args: A) => tap(fn)(this.fn(...args)));
   }
 
   toTuple() {

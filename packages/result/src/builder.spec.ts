@@ -1275,4 +1275,110 @@ describe('builder.ts', () => {
       }
     });
   });
+
+  describe('tap', () => {
+    it('static input, sync fn', () => {
+      const output = result(first(ok('success'), err('error')))
+        .tap((result) => {
+          expect(result).toEqual(ok('success'));
+          expectTypeOf(result).toEqualTypeOf<Result<'success', 'error'>>();
+          return ok('other_success');
+        })
+        .create();
+
+      expect(output).toEqual(ok('success'));
+      expectTypeOf(output).toEqualTypeOf<Result<'success', 'error'>>();
+    });
+
+    it('static input, async fn', async () => {
+      const output = result(first(ok('success'), err('error')))
+        .tap(async (result) => {
+          expect(result).toEqual(ok('success'));
+          expectTypeOf(result).toEqualTypeOf<Result<'success', 'error'>>();
+          return ok('other_success');
+        })
+        .create();
+
+      expect(await output).toEqual(ok('success'));
+      expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', 'error'>>>();
+    });
+
+    it('promise input, sync fn', async () => {
+      const output = result(Promise.resolve(first(ok('success'), err('error'))))
+        .tap((result) => {
+          expect(result).toEqual(ok('success'));
+          expectTypeOf(result).toEqualTypeOf<Result<'success', 'error'>>();
+          return ok('other_success');
+        })
+        .create();
+
+      expect(await output).toEqual(ok('success'));
+      expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', 'error'>>>();
+    });
+
+    it('promise input, async fn', async () => {
+      const output = result(Promise.resolve(first(ok('success'), err('error'))))
+        .tap(async (result) => {
+          expect(result).toEqual(ok('success'));
+          expectTypeOf(result).toEqualTypeOf<Result<'success', 'error'>>();
+          return ok('other_success');
+        })
+        .create();
+
+      expect(await output).toEqual(ok('success'));
+      expectTypeOf(output).toEqualTypeOf<Promise<Result<'success', 'error'>>>();
+    });
+
+    it('function input, sync fn', () => {
+      const fn = result((num: number) => (num > 0 ? ok(num) : err('no_negative')))
+        .tap((result) => {
+          expect(result).toEqual(ok(1));
+          expectTypeOf(result).toEqualTypeOf<Result<number, 'no_negative'>>();
+          return ok(2);
+        })
+        .create();
+
+      expect(fn(1)).toEqual(ok(1));
+      expectTypeOf(fn).toEqualTypeOf<(num: number) => Result<number, 'no_negative'>>();
+    });
+
+    it('function input, async fn', async () => {
+      const fn = result((num: number) => (num > 0 ? ok(num) : err('no_negative')))
+        .tap(async (result) => {
+          expect(result).toEqual(ok(1));
+          expectTypeOf(result).toEqualTypeOf<Result<number, 'no_negative'>>();
+          return ok(2);
+        })
+        .create();
+
+      expect(await fn(1)).toEqual(ok(1));
+      expectTypeOf(fn).toEqualTypeOf<(num: number) => Promise<Result<number, 'no_negative'>>>();
+    });
+
+    it('async function input, sync fn', async () => {
+      const fn = result(async (num: number) => (num > 0 ? ok(num) : err('no_negative')))
+        .tap((result) => {
+          expect(result).toEqual(ok(1));
+          expectTypeOf(result).toEqualTypeOf<Result<number, 'no_negative'>>();
+          return ok(2);
+        })
+        .create();
+
+      expect(await fn(1)).toEqual(ok(1));
+      expectTypeOf(fn).toEqualTypeOf<(num: number) => Promise<Result<number, 'no_negative'>>>();
+    });
+
+    it('async function input, async fn', async () => {
+      const fn = result(async (num: number) => (num > 0 ? ok(num) : err('no_negative')))
+        .tap(async (result) => {
+          expect(result).toEqual(ok(1));
+          expectTypeOf(result).toEqualTypeOf<Result<number, 'no_negative'>>();
+          return ok(2);
+        })
+        .create();
+
+      expect(await fn(1)).toEqual(ok(1));
+      expectTypeOf(fn).toEqualTypeOf<(num: number) => Promise<Result<number, 'no_negative'>>>();
+    });
+  });
 });

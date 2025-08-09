@@ -1,6 +1,6 @@
 import { pipe } from '@uni-ts/composition';
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { mapErr, mapOk, match, unwrapOr } from './fp.js';
+import { mapErr, mapOk, match, tap, unwrapOr } from './fp.js';
 import { first } from './helpers.js';
 import type { Result } from './index.js';
 import { err, ok } from './index.js';
@@ -87,6 +87,78 @@ describe('fp.ts', () => {
       expectTypeOf(async).toEqualTypeOf<
         Promise<{ readonly data: 'ok' } | 'negative_value' | { readonly error: 'error' } | 'unknown_error'>
       >();
+    });
+  });
+
+  describe('tap', () => {
+    it('passes given result through function without changing it', () => {
+      const result = pipe(
+        first(ok('ok'), err('error')),
+        tap((result) => {
+          expect(result).toEqual(ok('ok'));
+          return ok('other_ok');
+        }),
+      );
+
+      expect(result).toEqual(ok('ok'));
+    });
+
+    describe('works with different data types', () => {
+      it('static result, sync fn', () => {
+        const result = pipe(
+          first(ok('ok'), err('error')),
+          tap((result) => {
+            expect(result).toEqual(ok('ok'));
+            expectTypeOf(result).toEqualTypeOf<Result<'ok', 'error'>>();
+            return ok('other_ok');
+          }),
+        );
+
+        expect(result).toEqual(ok('ok'));
+        expectTypeOf(result).toEqualTypeOf<Result<'ok', 'error'>>();
+      });
+
+      it('static result, async fn', async () => {
+        const result = pipe(
+          first(ok('ok'), err('error')),
+          tap(async (result) => {
+            expect(result).toEqual(ok('ok'));
+            expectTypeOf(result).toEqualTypeOf<Result<'ok', 'error'>>();
+            return ok('other_ok');
+          }),
+        );
+
+        expect(await result).toEqual(ok('ok'));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
+      });
+
+      it('promise result, sync fn', async () => {
+        const result = pipe(
+          Promise.resolve(first(ok('ok'), err('error'))),
+          tap((result) => {
+            expect(result).toEqual(ok('ok'));
+            expectTypeOf(result).toEqualTypeOf<Result<'ok', 'error'>>();
+            return ok('other_ok');
+          }),
+        );
+
+        expect(await result).toEqual(ok('ok'));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
+      });
+
+      it('promise result, async fn', async () => {
+        const result = pipe(
+          Promise.resolve(first(ok('ok'), err('error'))),
+          tap(async (result) => {
+            expect(result).toEqual(ok('ok'));
+            expectTypeOf(result).toEqualTypeOf<Result<'ok', 'error'>>();
+            return ok('other_ok');
+          }),
+        );
+
+        expect(await result).toEqual(ok('ok'));
+        expectTypeOf(result).toEqualTypeOf<Promise<Result<'ok', 'error'>>>();
+      });
     });
   });
 });

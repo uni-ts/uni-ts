@@ -1,4 +1,5 @@
 import type { InferValueAsErr, InferValueAsOk, NonPromise, OrFunction, OrPromise } from './helpers.js';
+import { isPromise } from './helpers.js';
 import type { Result, UnwrapErr, UnwrapOk } from './index.js';
 import { mapErr as _mapErr, mapOk as _mapOk, match as _match, unwrapOr as _unwrapOr } from './index.js';
 
@@ -141,6 +142,52 @@ export function match<R extends Result, const OkReturn, const ErrReturn>(
   onErr: (error: UnwrapErr<R>) => OrPromise<ErrReturn>,
 ): (result: OrPromise<R>) => OrPromise<OkReturn | ErrReturn> {
   return (result) => _match(result, onOk, onErr);
+}
+
+/**
+ * Takes a side-effect function and returns a function that accepts a Result.
+ * The returned function passes the Result through the side-effect function and returns the original Result unchanged.
+ *
+ * Useful for debugging, logging, or performing side effects without modifying the Result.
+ *
+ * @template R - The input Result type
+ * @template FnReturn - The return type of the side-effect function (ignored)
+ * @param fn - Side-effect function to execute with the Result
+ * @returns A function that takes a Result, executes the side-effect function, and returns the original Result
+ *
+ * @example
+ * ```typescript
+ * const result = pipe(
+ *   ok("hello"),
+ *   tap((result) => {
+ *     console.log("Result:", result); // Logs the result (side-effect)
+ *     return "something"; // Return value is ignored
+ *   }),
+ *   mapOk((data) => data.toUpperCase()), // Original result is passed through
+ * ); // { success: true, data: "HELLO" }
+ * ```
+ */
+export function tap<R extends Result, FnReturn>(
+  fn: (result: R) => NonPromise<FnReturn>,
+): (result: R) => Result<UnwrapOk<R>, UnwrapErr<R>>;
+export function tap<R extends OrPromise<Result>, FnReturn>(
+  fn: (result: Awaited<R>) => OrPromise<FnReturn>,
+): (result: R) => Promise<Result<UnwrapOk<R>, UnwrapErr<R>>>;
+export function tap<R extends Result, FnReturn>(
+  fn: (result: R) => OrPromise<FnReturn>,
+): (result: OrPromise<R>) => OrPromise<Result<UnwrapOk<R>, UnwrapErr<R>>> {
+  return (result) => {
+    if (isPromise(result)) {
+      return result.then(async (r) => {
+        await fn(r);
+        return r;
+      });
+    }
+
+    const data = fn(result);
+
+    return isPromise(data) ? data.then(() => result) : result;
+  };
 }
 
 export type {
