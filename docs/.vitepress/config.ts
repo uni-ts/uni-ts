@@ -40,25 +40,49 @@ export default defineConfig({
     ],
     sidebar: {
       '/docs/': [
+        { text: 'About the project', link: '/docs/' },
         {
-          text: 'Getting Started',
-          link: '/docs/',
+          text: '🎬 Action',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/action/' },
+            { text: 'Getting started', link: '/docs/action/getting-started' },
+            { text: 'Basic utilities', link: '/docs/action/basic-utilities' },
+            { text: 'Safe utilities', link: '/docs/action/safe-utilities' },
+            { text: 'Best practices', link: '/docs/action/best-practices' },
+          ],
         },
         {
-          text: 'Result',
-          items: [{ text: 'Getting Started', link: '/docs/result/getting-started' }],
+          text: '🔀 Composition',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/composition/' },
+            { text: 'Getting started', link: '/docs/composition/getting-started' },
+            { text: 'Best practices', link: '/docs/composition/best-practices' },
+          ],
         },
         {
-          text: 'Model',
-          items: [{ text: 'Getting Started', link: '/docs/model/getting-started' }],
+          text: '🏗️ Model',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/model/' },
+            { text: 'Getting started', link: '/docs/model/getting-started' },
+            { text: 'Basic utilities', link: '/docs/model/basic-utilities' },
+            { text: 'Safe utilities', link: '/docs/model/safe-utilities' },
+            { text: 'Best practices', link: '/docs/model/best-practices' },
+          ],
         },
         {
-          text: 'Composition',
-          items: [{ text: 'Getting Started', link: '/docs/composition/getting-started' }],
-        },
-        {
-          text: 'Action',
-          items: [{ text: 'Getting Started', link: '/docs/action/getting-started' }],
+          text: '🛡️ Result',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/result/' },
+            { text: 'Getting started', link: '/docs/result/getting-started' },
+            { text: 'Basic utilities', link: '/docs/result/basic-utilities' },
+            { text: 'Builder flow', link: '/docs/result/builder-flow' },
+            { text: 'Functional composition', link: '/docs/result/functional-composition' },
+            { text: 'Best Practices', link: '/docs/result/best-practices' },
+          ],
         },
       ],
       '/api/': [
@@ -72,7 +96,19 @@ export default defineConfig({
     socialLinks: [{ icon: 'github', link: 'https://github.com/uni-ts/uni-ts' }],
   },
   markdown: {
-    codeTransformers: [transformerTwoslash()],
+    codeTransformers: [
+      transformerTwoslash({
+        twoslashOptions: {
+          compilerOptions: {
+            strict: true,
+            noImplicitReturns: true,
+            paths: {
+              '@uni-ts/result': ['packages/result/src/index.ts'],
+            },
+          },
+        },
+      }),
+    ],
     languages: ['js', 'ts'],
   },
 });

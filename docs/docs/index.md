@@ -1,1 +1,1 @@
-# Getting Started
+# About the project
