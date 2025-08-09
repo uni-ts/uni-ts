@@ -104,6 +104,9 @@ export default defineConfig({
             noImplicitReturns: true,
             paths: {
               '@uni-ts/result': ['packages/result/src/index.ts'],
+              '@uni-ts/result/fp': ['packages/result/src/fp.ts'],
+              '@uni-ts/result/builder': ['packages/result/src/builder.ts'],
+              '@uni-ts/composition': ['packages/composition/src/index.ts'],
             },
           },
         },
