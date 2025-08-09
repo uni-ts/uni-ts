@@ -2,7 +2,7 @@
 '@uni-ts/result': patch
 ---
 
-Add `toTuple` function
+Add `toTuple` function that returns a tuple of the data and error from a result.
 
 ```typescript
 function divide(a: number, b: number) {

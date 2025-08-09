@@ -1,5 +1,5 @@
 ---
-"@uni-ts/result": patch
+'@uni-ts/result': patch
 ---
 
-Make Ok and Err interface properties readonly
+Make `Ok` and `Err` interface properties readonly.
