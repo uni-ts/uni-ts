@@ -4,7 +4,7 @@
 
 UniTS provides essential building blocks for modern TypeScript applications. Each package focuses on a specific aspect of type-safe development, from error handling to data validation and function composition.
 
-For detailed information about the project and its packages, see the [Documentation](https://uni-ts.pages.dev).
+For detailed information about the project and its packages, see the [Documentation](https://uni-ts.dev).
 
 ## 📄 License
 

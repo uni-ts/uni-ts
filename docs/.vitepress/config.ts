@@ -11,7 +11,7 @@ export default defineConfig({
   description,
   cleanUrls: true,
   sitemap: {
-    hostname: 'https://uni-ts.pages.dev',
+    hostname: 'https://uni-ts.dev',
   },
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: logo }],
@@ -19,7 +19,7 @@ export default defineConfig({
     ['meta', { property: 'og:title', content: title }],
     ['meta', { property: 'og:description', content: description }],
     ['meta', { property: 'og:image', content: logo }],
-    ['meta', { property: 'og:url', content: 'https://uni-ts.pages.dev' }],
+    ['meta', { property: 'og:url', content: 'https://uni-ts.dev' }],
     ['meta', { property: 'og:site_name', content: title }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: title }],
