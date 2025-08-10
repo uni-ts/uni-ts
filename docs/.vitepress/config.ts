@@ -98,6 +98,8 @@ export default defineConfig({
               '@uni-ts/composition/builder': ['packages/composition/src/builder.ts'],
               '@uni-ts/model': ['packages/model/src/index.ts'],
               '@uni-ts/model/safe': ['packages/model/src/safe.ts'],
+              '@uni-ts/action': ['packages/action/src/index.ts'],
+              '@uni-ts/action/safe': ['packages/action/src/safe.ts'],
             },
           },
         },
