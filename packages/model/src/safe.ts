@@ -18,7 +18,7 @@ import type { StandardSchemaV1 } from './standard-schema.js';
  * import { z } from 'zod';
  * import { isOk } from '@uni-ts/result';
  *
- * type User = InferModelType<typeof User>; // { name: string; email: string }
+ * type User = InferModelOutput<typeof User>; // { name: string; email: string }
  * const User = createModel(z.object({
  *   name: z.string().min(1),
  *   email: z.string().email(),
@@ -206,5 +206,5 @@ function safeValidate<S extends StandardSchemaV1>(
   return result.issues ? err(new ModelValidationError(result.issues)) : ok(result.value);
 }
 
-export type { InferModelType } from './index.js';
+export type { InferModelInput, InferModelOutput } from './index.js';
 export { ModelValidationError };

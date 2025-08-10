@@ -64,10 +64,10 @@ if (isOk(result)) {
 Create type-safe data models with related utilities attached. No more guessing if your data is valid or what you can do with it — let TypeScript tell you.
 
 ```typescript
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-type Email = InferModelType<typeof Email>;
+type Email = InferModelOutput<typeof Email>;
 const Email = createModel(z.string().email().brand('Email'));
 
 // TypeScript ensures only valid emails can be passed to this function

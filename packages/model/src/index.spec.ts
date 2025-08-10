@@ -4,54 +4,115 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import { ModelValidationError } from './error.js';
 import { oneOf } from './helpers.js';
-import { createModel, type InferModelType } from './index.js';
+import { createModel, type InferModelInput, type InferModelOutput } from './index.js';
 
 describe('index.ts', () => {
-  describe('InferModelType', () => {
+  describe('InferModelOutput', () => {
     describe('infers the schema property type from given model', () => {
       it('infers the output type from schema', () => {
         const stringModel = createModel(oneOf(z.string(), v.string(), type('string')));
-        expectTypeOf<InferModelType<typeof stringModel>>().toEqualTypeOf<string>();
+        expectTypeOf<InferModelOutput<typeof stringModel>>().toEqualTypeOf<string>();
 
         const stringLiteralModel = createModel(oneOf(z.literal('hello1'), v.literal('hello2'), type('"hello3"')));
-        expectTypeOf<InferModelType<typeof stringLiteralModel>>().toEqualTypeOf<'hello1' | 'hello2' | 'hello3'>();
+        expectTypeOf<InferModelOutput<typeof stringLiteralModel>>().toEqualTypeOf<'hello1' | 'hello2' | 'hello3'>();
 
         const numberModel = createModel(oneOf(z.number(), v.number(), type('number')));
-        expectTypeOf<InferModelType<typeof numberModel>>().toEqualTypeOf<number>();
+        expectTypeOf<InferModelOutput<typeof numberModel>>().toEqualTypeOf<number>();
 
         const booleanModel = createModel(oneOf(z.boolean(), v.boolean(), type('boolean')));
-        expectTypeOf<InferModelType<typeof booleanModel>>().toEqualTypeOf<boolean>();
+        expectTypeOf<InferModelOutput<typeof booleanModel>>().toEqualTypeOf<boolean>();
 
         const arrayModel = createModel(oneOf(z.array(z.string()), v.array(v.string()), type('string[]')));
-        expectTypeOf<InferModelType<typeof arrayModel>>().toEqualTypeOf<string[]>();
+        expectTypeOf<InferModelOutput<typeof arrayModel>>().toEqualTypeOf<string[]>();
 
         const objectModel = createModel(
           oneOf(z.object({ name: z.string() }), v.object({ name: v.string() }), type({ name: 'string' })),
         );
-        expectTypeOf<InferModelType<typeof objectModel>>().toEqualTypeOf<{ name: string }>();
+        expectTypeOf<InferModelOutput<typeof objectModel>>().toEqualTypeOf<{ name: string }>();
 
         const unionModel = createModel(
           oneOf(z.union([z.string(), z.number()]), v.union([v.string(), v.number()]), type('string | number')),
         );
-        expectTypeOf<InferModelType<typeof unionModel>>().toEqualTypeOf<string | number>();
+        expectTypeOf<InferModelOutput<typeof unionModel>>().toEqualTypeOf<string | number>();
 
         const optionalModel = createModel(
           oneOf(z.string().optional(), v.optional(v.string()), type('string | undefined')),
         );
-        expectTypeOf<InferModelType<typeof optionalModel>>().toEqualTypeOf<string | undefined>();
+        expectTypeOf<InferModelOutput<typeof optionalModel>>().toEqualTypeOf<string | undefined>();
 
         const nullableModel = createModel(oneOf(z.string().nullable(), v.nullable(v.string()), type('string | null')));
-        expectTypeOf<InferModelType<typeof nullableModel>>().toEqualTypeOf<string | null>();
+        expectTypeOf<InferModelOutput<typeof nullableModel>>().toEqualTypeOf<string | null>();
 
         const zodUserSchema = z.string().brand('ZodUser');
         const valibotUserSchema = v.pipe(v.string(), v.brand('ValibotUser'));
         const arkTypeUserSchema = type('string#ArkTypeUser');
 
         const brandedModel = createModel(oneOf(zodUserSchema, valibotUserSchema, arkTypeUserSchema));
-        expectTypeOf<InferModelType<typeof brandedModel>>().toExtend<string>();
-        expectTypeOf<InferModelType<typeof brandedModel>>().toEqualTypeOf<
+        expectTypeOf<InferModelOutput<typeof brandedModel>>().toExtend<string>();
+        expectTypeOf<InferModelOutput<typeof brandedModel>>().toEqualTypeOf<
           (string & z.$brand<'ZodUser'>) | (string & v.Brand<'ValibotUser'>) | typeof arkTypeUserSchema.infer
         >();
+      });
+
+      it('infers the output type for transformations correctly', () => {
+        const numberStringModel = createModel(z.string().transform(Number));
+        expectTypeOf<InferModelOutput<typeof numberStringModel>>().toEqualTypeOf<number>();
+
+        const stringNumberModel = createModel(z.number().transform(String));
+        expectTypeOf<InferModelOutput<typeof stringNumberModel>>().toEqualTypeOf<string>();
+
+        const preprocessModel = createModel(z.preprocess((val: string) => String(val), z.enum(['a', 'b'])));
+        expectTypeOf<InferModelOutput<typeof preprocessModel>>().toEqualTypeOf<'a' | 'b'>();
+      });
+    });
+  });
+
+  describe('InferModelInput', () => {
+    describe('infers the input type from given model', () => {
+      it('infers the output type from schema', () => {
+        const stringModel = createModel(oneOf(z.string(), v.string(), type('string')));
+        expectTypeOf<InferModelInput<typeof stringModel>>().toEqualTypeOf<string>();
+
+        const stringLiteralModel = createModel(oneOf(z.literal('hello1'), v.literal('hello2'), type('"hello3"')));
+        expectTypeOf<InferModelInput<typeof stringLiteralModel>>().toEqualTypeOf<'hello1' | 'hello2' | 'hello3'>();
+
+        const numberModel = createModel(oneOf(z.number(), v.number(), type('number')));
+        expectTypeOf<InferModelInput<typeof numberModel>>().toEqualTypeOf<number>();
+
+        const booleanModel = createModel(oneOf(z.boolean(), v.boolean(), type('boolean')));
+        expectTypeOf<InferModelInput<typeof booleanModel>>().toEqualTypeOf<boolean>();
+
+        const arrayModel = createModel(oneOf(z.array(z.string()), v.array(v.string()), type('string[]')));
+        expectTypeOf<InferModelInput<typeof arrayModel>>().toEqualTypeOf<string[]>();
+
+        const objectModel = createModel(
+          oneOf(z.object({ name: z.string() }), v.object({ name: v.string() }), type({ name: 'string' })),
+        );
+        expectTypeOf<InferModelInput<typeof objectModel>>().toEqualTypeOf<{ name: string }>();
+
+        const unionModel = createModel(
+          oneOf(z.union([z.string(), z.number()]), v.union([v.string(), v.number()]), type('string | number')),
+        );
+        expectTypeOf<InferModelInput<typeof unionModel>>().toEqualTypeOf<string | number>();
+
+        const optionalModel = createModel(
+          oneOf(z.string().optional(), v.optional(v.string()), type('string | undefined')),
+        );
+        expectTypeOf<InferModelInput<typeof optionalModel>>().toEqualTypeOf<string | undefined>();
+
+        const nullableModel = createModel(oneOf(z.string().nullable(), v.nullable(v.string()), type('string | null')));
+        expectTypeOf<InferModelInput<typeof nullableModel>>().toEqualTypeOf<string | null>();
+      });
+
+      it('infers input types for transformations correctly', () => {
+        const numberStringModel = createModel(z.string().transform(Number));
+        expectTypeOf<InferModelInput<typeof numberStringModel>>().toEqualTypeOf<string>();
+
+        const stringNumberModel = createModel(z.number().transform(String));
+        expectTypeOf<InferModelInput<typeof stringNumberModel>>().toEqualTypeOf<number>();
+
+        const preprocessModel = createModel(z.preprocess((val: string) => String(val), z.enum(['a', 'b'])));
+        expectTypeOf<InferModelInput<typeof preprocessModel>>().toEqualTypeOf<string>();
       });
     });
   });
@@ -61,7 +122,7 @@ describe('index.ts', () => {
       oneOf(z.string().min(1), v.pipe(v.string(), v.minLength(1)), type('string > 0')),
     );
 
-    type Email = InferModelType<typeof Email>;
+    type Email = InferModelOutput<typeof Email>;
     const Email = createModel(
       oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
     );

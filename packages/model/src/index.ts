@@ -9,7 +9,7 @@ import type { StandardSchemaV1 } from './standard-schema.js';
  *
  * @example
  * ```typescript
- * import { createModel, InferModelType } from '@uni-ts/model';
+ * import { createModel, InferModelOutput } from '@uni-ts/model';
  * import { z } from 'zod';
  *
  * const User = createModel(z.object({
@@ -18,7 +18,7 @@ import type { StandardSchemaV1 } from './standard-schema.js';
  * }));
  *
  * // Infer the type from the model
- * type User = InferModelType<typeof User>; // { name: string; email: string }
+ * type User = InferModelOutput<typeof User>; // { name: string; email: string }
  *
  * function processUser(user: User) {
  *   // user is guaranteed to have name and email properties
@@ -26,7 +26,44 @@ import type { StandardSchemaV1 } from './standard-schema.js';
  * }
  * ```
  */
-export type InferModelType<M extends { schema: StandardSchemaV1 }> = StandardSchemaV1.InferOutput<M['schema']>;
+export type InferModelOutput<M extends { schema: StandardSchemaV1 }> = StandardSchemaV1.InferOutput<M['schema']>;
+
+/**
+ * Infers the input type of a model created with `createModel`.
+ *
+ * This represents the data structure that the model accepts before validation
+ * and transformation. It's also the value accepted by the `from` method.
+ *
+ * The input type may differ from the output type when the schema
+ * includes transformations like trimming, parsing, or coercion.
+ *
+ * @template M - Type of the model object containing a schema property
+ *
+ * @example
+ * ```typescript
+ * import { createModel, InferModelInput, InferModelOutput } from '@uni-ts/model';
+ * import { z } from 'zod';
+ *
+ * const BlogPost = createModel(z.object({
+ *   title: z.string().trim(),
+ *   status: z.preprocess((value: string) => String(value), z.enum(['draft', 'published'])),
+ *   publishedAt: z.date().transform((date) => date.toISOString()),
+ * }));
+ *
+ * // Infer input type - what the model accepts
+ * type BlogPostInput = InferModelInput<typeof BlogPost>;
+ * // { title: string; status: string; publishedAt: Date }
+ *
+ * // Infer output type - what the model produces
+ * type BlogPost = InferModelOutput<typeof BlogPost>;
+ * // { title: string; status: 'draft' | 'published'; publishedAt: string }
+ *
+ * function createBlogPost(input: BlogPostInput): BlogPost {
+ *   return BlogPost.from(input); // validates and transforms input to output
+ * }
+ * ```
+ */
+export type InferModelInput<M extends { schema: StandardSchemaV1 }> = StandardSchemaV1.InferInput<M['schema']>;
 
 /**
  * Creates a type-safe data model based on schema from any Standard Schema compatible validation library.
@@ -39,7 +76,7 @@ export type InferModelType<M extends { schema: StandardSchemaV1 }> = StandardSch
  * ```typescript
  * import { z } from 'zod';
  *
- * type User = InferModelType<typeof User>; // { name: string; email: string }
+ * type User = InferModelOutput<typeof User>; // { name: string; email: string }
  * const User = createModel(z.object({
  *   name: z.string().min(1),
  *   email: z.string().email(),
@@ -53,7 +90,7 @@ export type InferModelType<M extends { schema: StandardSchemaV1 }> = StandardSch
  * ```typescript
  * import { z } from 'zod';
  *
- * type Email = InferModelType<typeof Email>; // string & z.$brand<'Email'>
+ * type Email = InferModelOutput<typeof Email>; // string & z.$brand<'Email'>
  * const Email = createModel(z.string().email().brand('Email'));
  *
  * function sendEmail(email: Email) {

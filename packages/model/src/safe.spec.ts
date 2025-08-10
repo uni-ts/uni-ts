@@ -6,7 +6,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import { ModelValidationError } from './error.js';
 import { oneOf } from './helpers.js';
-import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel, type InferModelType } from './safe.js';
+import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel, type InferModelOutput } from './safe.js';
 
 describe('safe.ts', () => {
   function expectToBeOkResult(result: UnknownResult, value: unknown) {
@@ -20,7 +20,7 @@ describe('safe.ts', () => {
   }
 
   describe('createSafeModel', () => {
-    type Email = InferModelType<typeof Email>;
+    type Email = InferModelOutput<typeof Email>;
     const Email = createSafeModel(
       oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
     );
@@ -72,7 +72,7 @@ describe('safe.ts', () => {
   });
 
   describe('createSafeFirstModel', () => {
-    type Email = InferModelType<typeof Email>;
+    type Email = InferModelOutput<typeof Email>;
     const Email = createSafeFirstModel(
       oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
     );
@@ -165,7 +165,7 @@ describe('safe.ts', () => {
   });
 
   describe('createUnsafeFirstModel', () => {
-    type Email = InferModelType<typeof Email>;
+    type Email = InferModelOutput<typeof Email>;
     const Email = createUnsafeFirstModel(
       oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
     );

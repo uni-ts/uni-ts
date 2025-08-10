@@ -69,7 +69,7 @@ $ bun add @uni-ts/model @uni-ts/result
 As you saw in the [Introduction](./index.md), a Model combines data structure and business logic in one place. Let's create your first model using Zod:
 
 ```typescript twoslash
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 const User = createModel(
@@ -81,7 +81,7 @@ const User = createModel(
 );
 
 // Get the TypeScript type
-type User = InferModelType<typeof User>;
+type User = InferModelOutput<typeof User>;
 ```
 
 ## Validation Methods
@@ -93,7 +93,7 @@ Models provide multiple ways to validate data, each suited for different scenari
 Use `is()` to safely check unknown data and narrow its type:
 
 ```typescript twoslash
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 const User = createModel(
@@ -104,7 +104,7 @@ const User = createModel(
   })
 );
 
-type User = InferModelType<typeof User>;
+type User = InferModelOutput<typeof User>;
 // ---cut---
 function processUserData(data: unknown) {
   if (User.is(data)) {
@@ -122,7 +122,7 @@ function processUserData(data: unknown) {
 When you have data that should match your model's input type, use `from()`:
 
 ```typescript twoslash
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 const User = createModel(
@@ -148,7 +148,7 @@ console.log(user.name); // "John Doe"
 When working with completely unknown data (like API responses), use `cast()`:
 
 ```typescript twoslash
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 const User = createModel(
@@ -178,10 +178,10 @@ Models work with any validation library that supports the [Standard Schema inter
 ::: code-group
 
 ```typescript twoslash [Zod]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-type Product = InferModelType<typeof Product>;
+type Product = InferModelOutput<typeof Product>;
 const Product = createModel(
   z.object({
     name: z.string().min(1),
@@ -192,10 +192,10 @@ const Product = createModel(
 ```
 
 ```typescript twoslash [Valibot]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import * as v from 'valibot';
 
-type Product = InferModelType<typeof Product>;
+type Product = InferModelOutput<typeof Product>;
 const Product = createModel(
   v.object({
     name: v.pipe(v.string(), v.minLength(1)),
@@ -206,10 +206,10 @@ const Product = createModel(
 ```
 
 ```typescript twoslash [ArkType]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { type } from 'arktype';
 
-type Product = InferModelType<typeof Product>;
+type Product = InferModelOutput<typeof Product>;
 const Product = createModel(
   type({
     name: 'string>0',
@@ -230,11 +230,11 @@ When modeling primitive values like emails or user IDs, use branded types to enf
 ::: code-group
 
 ```typescript twoslash [Email]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 // Create branded type
-type Email = InferModelType<typeof Email>;
+type Email = InferModelOutput<typeof Email>;
 const Email = createModel(z.string().email().brand('Email'));
 
 // Function can now require already validated data
@@ -250,11 +250,11 @@ sendWelcomeEmail(email);
 ```
 
 ```typescript twoslash [UserId]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 // Create branded type
-type UserId = InferModelType<typeof UserId>;
+type UserId = InferModelOutput<typeof UserId>;
 const UserId = createModel(z.string().uuid().brand('UserId'));
 
 // Function can now require already validated data
@@ -401,10 +401,10 @@ Models become even more powerful when you corelate them with some business rules
 ::: code-group
 
 ```typescript twoslash [Definition]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-type Product = InferModelType<typeof Product>;
+type Product = InferModelOutput<typeof Product>;
 const Product = createModel(
   z.object({
     name: z.string().min(1),
@@ -426,10 +426,10 @@ function canBeSold(product: Product, quantity: number) {
 ```
 
 ```typescript twoslash [Usage]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-type Product = InferModelType<typeof Product>;
+type Product = InferModelOutput<typeof Product>;
 const Product = createModel(
   z.object({
     name: z.string().min(1),
@@ -469,11 +469,11 @@ Models shine when working with external APIs. Here's a common pattern for usage 
 ::: code-group
 
 ```typescript twoslash [user.ts]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 // Domain model with business logic
-export type User = InferModelType<typeof User>;
+export type User = InferModelOutput<typeof User>;
 export const User = createModel(
   z.object({
     id: z.string().uuid().brand('UserId'),
@@ -492,10 +492,10 @@ function isNew(user: User) {
 
 ```typescript twoslash [api-user.ts]
 // @filename: user.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type User = InferModelType<typeof User>;
+export type User = InferModelOutput<typeof User>;
 export const User = createModel(
   z.object({
     id: z.string().uuid().brand('UserId'),
@@ -513,12 +513,12 @@ function isNew(user: User) {
 
 // @filename: api-user.ts
 // ---cut---
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 import { User } from './user';
 
 // API response model
-export type ApiUser = InferModelType<typeof ApiUser>;
+export type ApiUser = InferModelOutput<typeof ApiUser>;
 export const ApiUser = createModel(
   z.object({
     id: z.string().uuid(),
@@ -541,10 +541,10 @@ function toUser(apiUser: ApiUser) {
 
 ```typescript twoslash [user-service.ts]
 // @filename: user.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type User = InferModelType<typeof User>;
+export type User = InferModelOutput<typeof User>;
 export const User = createModel(
   z.object({
     id: z.string().uuid().brand('UserId'),
@@ -561,11 +561,11 @@ function isNew(user: User) {
 }
 
 // @filename: api-user.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 import { User } from './user';
 
-export type ApiUser = InferModelType<typeof ApiUser>;
+export type ApiUser = InferModelOutput<typeof ApiUser>;
 export const ApiUser = createModel(
   z.object({
     id: z.string().uuid(),

@@ -14,11 +14,11 @@ A Model is a code representation of a real-world thing (e.g. User, Product, Reci
 Let's see this in action with a simple example.
 
 ```typescript twoslash
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 // Type of a valid Product
-type Product = InferModelType<typeof Product>;
+type Product = InferModelOutput<typeof Product>;
 
 const Product = createModel(
   // Structure: what properties a Product has and what rules they follow
@@ -116,14 +116,14 @@ While you can create branded types manually, it's much easier to use existing li
 
 ```typescript twoslash
 // @errors: 2345
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
 // Create model with a branded type using .brand()
 const Email = createModel(z.string().email().brand('Email'));
 
 // Get the branded type (hover to see it's not just a string)
-type Email = InferModelType<typeof Email>;
+type Email = InferModelOutput<typeof Email>;
 
 // Our function accepts only valid emails
 function sendWelcomeEmail(to: Email) {}
@@ -221,10 +221,10 @@ With models, we get a single place where all data validation rules live. This wa
 
 ```typescript twoslash [create-contact.ts]
 // @filename: contact.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type Contact = InferModelType<typeof Contact>;
+export type Contact = InferModelOutput<typeof Contact>;
 export const Contact = createModel(
   z.object({
     id: z.uuid(),
@@ -245,10 +245,10 @@ function createContact(data: Contact) {
 
 ```typescript twoslash [update-contact.ts]
 // @filename: contact.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type Contact = InferModelType<typeof Contact>;
+export type Contact = InferModelOutput<typeof Contact>;
 export const Contact = createModel(
   z.object({
     id: z.uuid(),
@@ -268,10 +268,10 @@ function updateContact(data: Contact) {
 ```
 
 ```typescript twoslash [contact.ts]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type Contact = InferModelType<typeof Contact>;
+export type Contact = InferModelOutput<typeof Contact>;
 export const Contact = createModel(
   z.object({
     id: z.uuid(),
@@ -317,10 +317,10 @@ function registerUser(data: { email: string; password: string }) {
 Models with branded types help you separate data validation from business logic, making your code more maintainable.
 
 ```typescript twoslash [With models]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-type Email = InferModelType<typeof Email>;
+type Email = InferModelOutput<typeof Email>;
 const Email = createModel(z.string().email().brand('Email'));
 
 function sendWelcomeEmail(to: Email) {
@@ -423,10 +423,10 @@ With models, we can attach business logic directly to the data it operates on, k
 
 ```typescript twoslash [withdraw-money.ts]
 // @filename: account.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type Account = InferModelType<typeof Account>;
+export type Account = InferModelOutput<typeof Account>;
 export const Account = createModel(
   z.object({
     id: z.uuid(),
@@ -466,10 +466,10 @@ export function withdrawMoney(account: Account, amount: number) {
 
 ```typescript twoslash [deposit-money.ts]
 // @filename: account.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type Account = InferModelType<typeof Account>;
+export type Account = InferModelOutput<typeof Account>;
 export const Account = createModel(
   z.object({
     id: z.uuid(),
@@ -509,10 +509,10 @@ export function depositMoney(account: Account, amount: number) {
 
 ```typescript twoslash [transfer-money.ts]
 // @filename: account.ts
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type Account = InferModelType<typeof Account>;
+export type Account = InferModelOutput<typeof Account>;
 export const Account = createModel(
   z.object({
     id: z.uuid(),
@@ -551,10 +551,10 @@ export function transferMoney(from: Account, to: Account, amount: number) {
 ```
 
 ```typescript twoslash [account.ts]
-import { createModel, type InferModelType } from '@uni-ts/model';
+import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
-export type Account = InferModelType<typeof Account>;
+export type Account = InferModelOutput<typeof Account>;
 export const Account = createModel(
   z.object({
     id: z.uuid(),
@@ -586,7 +586,7 @@ function canTransferMoney(from: Account, to: Account, amount: number) {
 
 While reading this page, you may have noticed that all the practices we've covered don't require you to use `@uni-ts/model`. It's really about utilizing a schema validation library like Zod and combining it with best practices for code organization. And you're absolutely right! So what does this library bring to the table?
 
-- It gives you a unified way of creating models and inferring their types (`createModel`, `InferModelType`)
+- It gives you a unified way of creating models and inferring their types (`createModel`, `InferModelOutput`)
 - It equips each model with essential utilities like `schema`, `is`, `from`, and `cast`
 - It allows you to use any validation library that supports [Standard Schema](https://github.com/standard-schema/standard-schema) for model validation
 - It provides you with a model extension mechanism out of the box
