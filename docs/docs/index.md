@@ -26,21 +26,11 @@ Each package in the UniTS family focuses on solving a specific problem you face 
 
   Explore [`@uni-ts/action`](/docs/action/) for composable workflows.
 
-## Why Choose UniTS?
+Let's explore each package in more detail.
 
-**🛡️ Type Safety First** — Every utility leverages TypeScript's type system to catch errors at compile time, not runtime.
+## [@uni-ts/result](/docs/result/)
 
-**🧩 Modular Design** — Install only what you need. Each package works independently but plays nicely with others.
-
-**📚 Proven Patterns** — Based on battle-tested concepts from functional programming that have stood the test of time.
-
-**⚡ Zero Dependencies** — Lightweight packages that won't bloat your bundle size.
-
-**🔄 Works Together** — When you need multiple packages, they integrate seamlessly.
-
-## The UniTS Family
-
-### [@uni-ts/result](/docs/result/) — Handle Errors Like a Pro
+> Handle errors in a type-safe way.
 
 Stop letting errors crash your app unexpectedly. Make them visible in your function signatures and handle them gracefully.
 
@@ -59,7 +49,9 @@ if (isOk(result)) {
 
 **Perfect for:** API calls, file operations, user input validation, and any other operation that might fail.
 
-### [@uni-ts/model](/docs/model/) — Model Your Data and Behavior with Confidence
+## [@uni-ts/model](/docs/model/)
+
+> Model your data and behavior with confidence.
 
 Create type-safe data models with related utilities attached. No more guessing if your data is valid or what you can do with it — let TypeScript tell you.
 
@@ -81,7 +73,9 @@ if (Email.is(input)) {
 
 **Perfect for:** Form validation, API responses, configuration files, and all other data kinds in your project.
 
-### [@uni-ts/composition](/docs/composition/) — Build Pipelines, Not Pyramids
+## [@uni-ts/composition](/docs/composition/)
+
+> Compose functional pipelines from small, reusable pieces.
 
 Transform nested function calls into readable, left-to-right pipelines that are easy to understand and modify.
 
@@ -101,7 +95,9 @@ const result = await processUserInput(userInput);
 
 **Perfect for:** Data transformation, processing pipelines, or any time you have multiple steps that depend on each other.
 
-### [@uni-ts/action](/docs/action/) — Composable Business Logic
+## [@uni-ts/action](/docs/action/)
+
+> Add context to your pipelines.
 
 Build complex workflows from simple, reusable pieces. Perfect for moving repeatable code like authentication, validation, or logging out of your business logic.
 
@@ -118,6 +114,18 @@ const createPost = createAction<{ title: string; content: string }>()
 ```
 
 **Perfect for:** Complex business workflows, API handlers, or any operation that needs multiple processing steps with shared context.
+
+## Why Choose UniTS?
+
+**🛡️ Type Safety First** — Every utility leverages TypeScript's type system to catch errors at compile time, not runtime.
+
+**🧩 Modular Design** — Install only what you need. Each package works independently but plays nicely with others.
+
+**📚 Proven Patterns** — Based on battle-tested concepts from functional programming that have stood the test of time.
+
+**⚡ Zero Dependencies** — Lightweight packages that won't bloat your bundle size.
+
+**🔄 Works Together** — When you need multiple packages, they integrate seamlessly.
 
 ## Getting Started
 
