@@ -38,17 +38,17 @@ import {
 describe('index.ts', () => {
   describe('Basic interfaces', () => {
     it('Ok', () => {
-      expectTypeOf<Ok<string>>().toEqualTypeOf<{ success: true; data: string }>();
-      expectTypeOf<Ok<number>>().toEqualTypeOf<{ success: true; data: number }>();
-      expectTypeOf<Ok<{ foo: string }>>().toEqualTypeOf<{ success: true; data: { foo: string } }>();
-      expectTypeOf<Ok>().toEqualTypeOf<{ success: true; data: any }>();
+      expectTypeOf<Ok<string>>().toEqualTypeOf<Readonly<{ success: true; data: string }>>();
+      expectTypeOf<Ok<number>>().toEqualTypeOf<Readonly<{ success: true; data: number }>>();
+      expectTypeOf<Ok<{ foo: string }>>().toEqualTypeOf<Readonly<{ success: true; data: { foo: string } }>>();
+      expectTypeOf<Ok>().toEqualTypeOf<Readonly<{ success: true; data: any }>>();
     });
 
     it('Err', () => {
-      expectTypeOf<Err<string>>().toEqualTypeOf<{ success: false; error: string }>();
-      expectTypeOf<Err<Error>>().toEqualTypeOf<{ success: false; error: Error }>();
-      expectTypeOf<Err<{ code: number }>>().toEqualTypeOf<{ success: false; error: { code: number } }>();
-      expectTypeOf<Err>().toEqualTypeOf<{ success: false; error: any }>();
+      expectTypeOf<Err<string>>().toEqualTypeOf<Readonly<{ success: false; error: string }>>();
+      expectTypeOf<Err<Error>>().toEqualTypeOf<Readonly<{ success: false; error: Error }>>();
+      expectTypeOf<Err<{ code: number }>>().toEqualTypeOf<Readonly<{ success: false; error: { code: number } }>>();
+      expectTypeOf<Err>().toEqualTypeOf<Readonly<{ success: false; error: any }>>();
     });
 
     it('Result', () => {
