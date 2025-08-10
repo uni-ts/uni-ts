@@ -6,8 +6,6 @@
 
 - e813fc8: Update package's README.md with link to the documentation
 - 851a2ab: Remove `originalEx` property from `ThrownActionError`. `cause` is enough to access the original exception.
-- Updated dependencies [e813fc8]
-  - @uni-ts/result@0.0.3
 
 ## 0.1.2
 

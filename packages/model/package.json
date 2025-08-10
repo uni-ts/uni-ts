@@ -46,7 +46,7 @@
     "zod": "4.0.14"
   },
   "peerDependencies": {
-    "@uni-ts/result": "^0.0.3"
+    "@uni-ts/result": "^0.0.2"
   },
   "peerDependenciesMeta": {
     "@uni-ts/result": {
