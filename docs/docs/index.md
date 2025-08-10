@@ -14,7 +14,7 @@ Each package in the UniTS family focuses on solving a specific problem you face 
 
   Use [`@uni-ts/result`](/docs/result/) for explicit error handling.
 
-- **Struggling keeping your data in check?**
+- **Struggling to keep your data in check?**
 
   Try [`@uni-ts/model`](/docs/model/) for type-safe data modeling.
 
@@ -71,7 +71,7 @@ if (Email.is(input)) {
 }
 ```
 
-**Perfect for:** Form validation, API responses, configuration files, and all other data kinds in your project.
+**Perfect for:** Form validation, API responses, configuration files, and all other types of data in your project.
 
 ## [@uni-ts/composition](/docs/composition/)
 

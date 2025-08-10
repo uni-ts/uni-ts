@@ -82,7 +82,7 @@ import { flow } from '@uni-ts/composition';
 
 const greetUser = flow(
   (user: { name: string; email: string }) => user.name, // Extract name
-  (name) => name.trim(), // Remove whitespace on sides
+  (name) => name.trim(), // Remove whitespace from sides
   (name) => `Hello, ${name}!` // Add greeting
 );
 
@@ -132,7 +132,7 @@ const result = await processData('hello'); // "O-L-L-E-H"
 
 ## Builder Style API
 
-For complex pipelines or when you prefer method chaining, use the builder style API. As it doesn't require function overloads under the hood, it's more performant on a type level and has no limit on the number of functions you can chain together.
+For complex pipelines or when you prefer method chaining, use the builder style API. As it doesn't require function overloads under the hood, it's more performant at the type level and has no limit on the number of functions you can chain together.
 
 ### `flow`
 

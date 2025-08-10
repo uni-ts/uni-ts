@@ -127,7 +127,7 @@ function getNewBlogpostTitle(title: string) {
 
 ### Testability: Small Functions, Big Confidence
 
-By writing small, focused functions testing becomes a breeze. It's also far less likely you forget to test some part of a function.
+By writing small, focused functions, testing becomes a breeze. It's also far less likely you'll forget to test some part of a function.
 
 :::code-group
 

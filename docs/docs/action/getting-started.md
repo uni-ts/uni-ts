@@ -149,8 +149,8 @@ const action = createAction<{ token: string; amount: number }>()
 
 Use `.do()` to define what happens when all middleware passes. The main difference between `.with()` and `.do()` is that
 
-- `.with()` can return the `next()` function to continue the pipeline while `.do()` cannot.
-- `.with()` will continue the pipeline (return a builder) while `.do()` will execute the action (return a function).
+- `.with()` can return the `next()` function to continue the pipeline, while `.do()` cannot.
+- `.with()` continues the pipeline (returns a builder), while `.do()` executes the action (returns a function).
 
 ```typescript twoslash
 import { createAction, next } from '@uni-ts/action';

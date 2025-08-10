@@ -148,7 +148,7 @@ In the example above we used a primitive `string` type to showcase branding. How
 
 ## Why Use Models?
 
-Let's explore why models make your code better through practical examples.
+Let's explore how models make your code better through practical examples.
 
 ### Single Source of Truth
 
@@ -215,7 +215,7 @@ export type Contact = {
 
 :::
 
-With models, we get a single place where all data validation rules live. This way we ensure that all other parts of our codebase share the same validation logic.
+With models, we get a single place where all data validation rules live. This way, we ensure that all other parts of our codebase share the same validation logic.
 
 :::code-group
 

@@ -385,7 +385,7 @@ There are three approaches to combine safe functions. Choose the one that feels 
 
 ### Simple Approach
 
-This approach uses early returns to handle errors, keeping the main logic focused on the success path. It may seem verbose but it's very clear about what's happening at each step. We recommend to start with this approach if Result types are something new to you or your team.
+This approach uses early returns to handle errors, keeping the main logic focused on the success path. It may seem verbose, but it's very clear about what's happening at each step. We recommend starting with this approach if Result types are something new to you or your team.
 
 ```typescript twoslash
 import { Result } from '@uni-ts/result';
@@ -429,7 +429,7 @@ type Error = UnwrapErr<typeof todo>; // result Err type
 
 ### Functional Composition
 
-You can also use a more functional style by composing functions together. This approach helps you to focus on only one path (success or error) at a time, handling the second one automatically.
+You can also use a more functional style by composing functions together. This approach helps you focus on only one path (success or error) at a time, handling the second one automatically.
 
 > [!NOTE] 📦 Additional package required
 > To use this approach, you need to install `@uni-ts/composition` or some other library that provides function composition utilities.

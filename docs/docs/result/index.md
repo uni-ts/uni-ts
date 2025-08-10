@@ -98,7 +98,7 @@ function calculate() {
 
 ### Required Error Handling
 
-Returning `x` and `y` doesn't actually calculate anything. Let's return a sum of those numbers. In traditional approach, you don't see the errors until runtime so you may forget to handle them. With Result types, TypeScript will prevent you from accessing the data until you ensure no error has occurred.
+Returning `x` and `y` doesn't actually calculate anything. Let's return a sum of those numbers. In the traditional approach, you don't see the errors until runtime, so you may forget to handle them. With Result types, TypeScript will prevent you from accessing the data until you ensure no error has occurred.
 
 **Traditional approach:**
 
@@ -166,9 +166,9 @@ function calculate() {
 
 Last but not least, let's handle possible errors from the `divide` function to see how it will look like in both approaches.
 
-Traditional approach requires you to dig into implementation details or use `instanceof` checks to ensure you handle only the `divide` function exceptions (you may place more throwable functions in `try` block in the future).
+The traditional approach requires you to dig into implementation details or use `instanceof` checks to ensure you handle only the `divide` function exceptions (you may place more throwable functions in the `try` block in the future).
 
-With Result types, nothing changes from the previous example. You are already sure you're handling only errors from `divide` function. If you introduce more functions in the future they will come with their own Result return types so TypeScript will tell you if they can fail and how.
+With Result types, nothing changes from the previous example. You are already sure you're handling only errors from the `divide` function. If you introduce more functions in the future, they will come with their own Result return types, so TypeScript will tell you if they can fail and how.
 
 <!-- With Result types, you know exactly what errors are possible and where they come from, without needing to dig into implementation details or catch generic exceptions. -->
 
@@ -220,7 +220,7 @@ function calculate() {
   const xResult = safeDivide(10, 2);
   const yResult = safeDivide(8, 0);
 
-  // We're sure exceptions come from `safeDivide` function
+  // We're sure errors come from the `safeDivide` function
   if (isErr(xResult) || isErr(yResult)) {
     return 0;
   }

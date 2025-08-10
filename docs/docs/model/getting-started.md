@@ -396,7 +396,7 @@ const user4 = User.safeCast(data);
 
 ## Extending Models
 
-Models become even more powerful when you corelate them with some business rules. You can use the `.extend()` method to add custom functionality.
+Models become even more powerful when you correlate them with some business rules. You can use the `.extend()` method to add custom functionality.
 
 ::: code-group
 

@@ -149,7 +149,7 @@ function log(data: string) {
 
 ### Error Handling Complexity
 
-Complex operations often require different error handling strategies at different steps. This leads to multiple try-catch blocks and need to define additional variables to get the values out of them.
+Complex operations often require different error handling strategies at different steps. This leads to multiple try-catch blocks and the need to define additional variables to get the values out of them.
 
 **Traditional approach:**
 
