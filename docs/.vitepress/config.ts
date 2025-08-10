@@ -95,6 +95,7 @@ export default defineConfig({
               '@uni-ts/result/fp': ['packages/result/src/fp.ts'],
               '@uni-ts/result/builder': ['packages/result/src/builder.ts'],
               '@uni-ts/composition': ['packages/composition/src/index.ts'],
+              '@uni-ts/composition/builder': ['packages/composition/src/builder.ts'],
               '@uni-ts/model': ['packages/model/src/index.ts'],
               '@uni-ts/model/safe': ['packages/model/src/safe.ts'],
             },
