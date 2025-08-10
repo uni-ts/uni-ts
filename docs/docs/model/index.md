@@ -1,4 +1,4 @@
-# Introduction to Models
+# Introduction
 
 :::info
 This is an introduction to **model concept** itself. For package documentation, see the [Getting Started](/docs/model/getting-started) guide.
@@ -588,7 +588,7 @@ While reading this page, you may have noticed that all the practices we've cover
 
 - It gives you a unified way of creating models and inferring their types (`createModel`, `InferModelType`)
 - It equips each model with essential utilities like `schema`, `is`, `from`, and `cast`
-- It allows you to use any validation library that supports Standard Schema for model validation
+- It allows you to use any validation library that supports [Standard Schema](https://github.com/standard-schema/standard-schema) for model validation
 - It provides you with a model extension mechanism out of the box
 
 If these benefits seem useful for your project, give this package a try!

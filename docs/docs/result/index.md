@@ -1,4 +1,4 @@
-# Introduction to Result Types
+# Introduction
 
 :::info
 This is an introduction to the **Result type concept** itself. For package documentation, see the [Getting Started](/docs/result/getting-started) guide.
