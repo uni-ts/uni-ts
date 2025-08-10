@@ -2,6 +2,8 @@
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
+title: 'UniTS: Type-safe functional utilities'
+
 hero:
   name: 'UniTS'
   text: 'Type-safe functional utilities'
@@ -19,15 +21,23 @@ hero:
       link: https://github.com/uni-ts/uni-ts
 
 features:
-  - title: 🛡️ Safe Error Handling
-    details: 'Replace try-catch with Result types. Handle errors explicitly with Ok/Err patterns, inspired by Rust and functional languages.'
+  - icon: 🛡️
+    title: '@uni-ts/result'
+    details: 'Explicit error handling without exceptions - make errors visible and type-safe using Result type with related utilities.'
+    link: /docs/result/
 
-  - title: 🔗 Function Composition
-    details: 'Chain operations seamlessly with flow() and pipe(). Build complex data transformations from simple, reusable functions.'
+  - icon: 🏗️
+    title: '@uni-ts/model'
+    details: 'Universal data modeling with validation - create type-safe models that work seamlessly with Zod, Valibot, ArkType, and more.'
+    link: /docs/model/
 
-  - title: ✅ Type-safe Validation
-    details: 'Validate data with full type safety using Standard Schema. Transform and validate with confidence at runtime.'
+  - icon: 🔀
+    title: '@uni-ts/composition'
+    details: 'Type-safe function composition - transform nested calls into readable pipelines with async support and perfect type inference.'
+    link: /docs/composition/
 
-  - title: 🧩 Composable Actions
-    details: 'Build complex workflows from simple actions. Chain operations with built-in error handling, context, and type safety.'
+  - icon: 🎬
+    title: '@uni-ts/action'
+    details: 'Type-safe action pipelines with context sharing and error handling - build composable middleware chains with full TypeScript support.'
+    link: /docs/action/
 ---

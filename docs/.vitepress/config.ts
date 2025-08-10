@@ -40,25 +40,38 @@ export default defineConfig({
     ],
     sidebar: {
       '/docs/': [
+        { text: 'About the project', link: '/docs/' },
         {
-          text: 'Getting Started',
-          link: '/docs/',
+          text: '🛡️ Result',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/result/' },
+            { text: 'Getting started', link: '/docs/result/getting-started' },
+          ],
         },
         {
-          text: 'Result',
-          items: [{ text: 'Getting Started', link: '/docs/result/getting-started' }],
+          text: '🏗️ Model',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/model/' },
+            { text: 'Getting started', link: '/docs/model/getting-started' },
+          ],
         },
         {
-          text: 'Model',
-          items: [{ text: 'Getting Started', link: '/docs/model/getting-started' }],
+          text: '🔀 Composition',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/composition/' },
+            { text: 'Getting started', link: '/docs/composition/getting-started' },
+          ],
         },
         {
-          text: 'Composition',
-          items: [{ text: 'Getting Started', link: '/docs/composition/getting-started' }],
-        },
-        {
-          text: 'Action',
-          items: [{ text: 'Getting Started', link: '/docs/action/getting-started' }],
+          text: '🎬 Action',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/action/' },
+            { text: 'Getting started', link: '/docs/action/getting-started' },
+          ],
         },
       ],
       '/api/': [
@@ -72,7 +85,26 @@ export default defineConfig({
     socialLinks: [{ icon: 'github', link: 'https://github.com/uni-ts/uni-ts' }],
   },
   markdown: {
-    codeTransformers: [transformerTwoslash()],
+    codeTransformers: [
+      transformerTwoslash({
+        twoslashOptions: {
+          compilerOptions: {
+            strict: true,
+            paths: {
+              '@uni-ts/result': ['packages/result/src/index.ts'],
+              '@uni-ts/result/fp': ['packages/result/src/fp.ts'],
+              '@uni-ts/result/builder': ['packages/result/src/builder.ts'],
+              '@uni-ts/composition': ['packages/composition/src/index.ts'],
+              '@uni-ts/composition/builder': ['packages/composition/src/builder.ts'],
+              '@uni-ts/model': ['packages/model/src/index.ts'],
+              '@uni-ts/model/safe': ['packages/model/src/safe.ts'],
+              '@uni-ts/action': ['packages/action/src/index.ts'],
+              '@uni-ts/action/safe': ['packages/action/src/safe.ts'],
+            },
+          },
+        },
+      }),
+    ],
     languages: ['js', 'ts'],
   },
 });
