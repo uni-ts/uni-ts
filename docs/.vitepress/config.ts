@@ -47,10 +47,6 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/docs/result/' },
             { text: 'Getting started', link: '/docs/result/getting-started' },
-            { text: 'Basic utilities', link: '/docs/result/basic-utilities' },
-            { text: 'Builder flow', link: '/docs/result/builder-flow' },
-            { text: 'Functional composition', link: '/docs/result/functional-composition' },
-            { text: 'Best Practices', link: '/docs/result/best-practices' },
           ],
         },
         {
@@ -59,9 +55,6 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/docs/model/' },
             { text: 'Getting started', link: '/docs/model/getting-started' },
-            { text: 'Basic utilities', link: '/docs/model/basic-utilities' },
-            { text: 'Safe utilities', link: '/docs/model/safe-utilities' },
-            { text: 'Best practices', link: '/docs/model/best-practices' },
           ],
         },
         {
@@ -70,7 +63,6 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/docs/composition/' },
             { text: 'Getting started', link: '/docs/composition/getting-started' },
-            { text: 'Best practices', link: '/docs/composition/best-practices' },
           ],
         },
         {
@@ -79,9 +71,6 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/docs/action/' },
             { text: 'Getting started', link: '/docs/action/getting-started' },
-            { text: 'Basic utilities', link: '/docs/action/basic-utilities' },
-            { text: 'Safe utilities', link: '/docs/action/safe-utilities' },
-            { text: 'Best practices', link: '/docs/action/best-practices' },
           ],
         },
       ],
