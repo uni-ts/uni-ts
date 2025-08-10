@@ -1,5 +1,15 @@
 # @uni-ts/model
 
+## 0.2.0
+
+### Minor Changes
+
+- 1172448: Add `InferModelInput` type. Rename `InferModelType` to `InferModelOutput`
+
+### Patch Changes
+
+- e813fc8: Update package's README.md with link to the documentation
+
 ## 0.1.2
 
 ### Patch Changes
