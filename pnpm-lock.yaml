@@ -44,6 +44,9 @@ importers:
       vitest:
         specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.2.1)(yaml@2.8.1)
+      zod:
+        specifier: 4.0.14
+        version: 4.0.14
 
   packages/action:
     devDependencies:
