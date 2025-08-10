@@ -42,23 +42,15 @@ export default defineConfig({
       '/docs/': [
         { text: 'About the project', link: '/docs/' },
         {
-          text: '🎬 Action',
+          text: '🛡️ Result',
           collapsed: true,
           items: [
-            { text: 'Introduction', link: '/docs/action/' },
-            { text: 'Getting started', link: '/docs/action/getting-started' },
-            { text: 'Basic utilities', link: '/docs/action/basic-utilities' },
-            { text: 'Safe utilities', link: '/docs/action/safe-utilities' },
-            { text: 'Best practices', link: '/docs/action/best-practices' },
-          ],
-        },
-        {
-          text: '🔀 Composition',
-          collapsed: true,
-          items: [
-            { text: 'Introduction', link: '/docs/composition/' },
-            { text: 'Getting started', link: '/docs/composition/getting-started' },
-            { text: 'Best practices', link: '/docs/composition/best-practices' },
+            { text: 'Introduction', link: '/docs/result/' },
+            { text: 'Getting started', link: '/docs/result/getting-started' },
+            { text: 'Basic utilities', link: '/docs/result/basic-utilities' },
+            { text: 'Builder flow', link: '/docs/result/builder-flow' },
+            { text: 'Functional composition', link: '/docs/result/functional-composition' },
+            { text: 'Best Practices', link: '/docs/result/best-practices' },
           ],
         },
         {
@@ -73,15 +65,23 @@ export default defineConfig({
           ],
         },
         {
-          text: '🛡️ Result',
+          text: '🔀 Composition',
           collapsed: true,
           items: [
-            { text: 'Introduction', link: '/docs/result/' },
-            { text: 'Getting started', link: '/docs/result/getting-started' },
-            { text: 'Basic utilities', link: '/docs/result/basic-utilities' },
-            { text: 'Builder flow', link: '/docs/result/builder-flow' },
-            { text: 'Functional composition', link: '/docs/result/functional-composition' },
-            { text: 'Best Practices', link: '/docs/result/best-practices' },
+            { text: 'Introduction', link: '/docs/composition/' },
+            { text: 'Getting started', link: '/docs/composition/getting-started' },
+            { text: 'Best practices', link: '/docs/composition/best-practices' },
+          ],
+        },
+        {
+          text: '🎬 Action',
+          collapsed: true,
+          items: [
+            { text: 'Introduction', link: '/docs/action/' },
+            { text: 'Getting started', link: '/docs/action/getting-started' },
+            { text: 'Basic utilities', link: '/docs/action/basic-utilities' },
+            { text: 'Safe utilities', link: '/docs/action/safe-utilities' },
+            { text: 'Best practices', link: '/docs/action/best-practices' },
           ],
         },
       ],

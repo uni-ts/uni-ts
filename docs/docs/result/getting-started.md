@@ -6,9 +6,9 @@ Ready to use Result types in your project? This guide will walk you through inst
 
 ### Requirements
 
-**TypeScript**: Version 4.5.0 or higher is required. We recommend using the latest stable version for the best experience and type safety.
+**TypeScript**: Version 5.3.0 or higher is required. We recommend using the latest stable version for the best experience and type safety.
 
-**Configuration**: Make sure you have strict type checking enabled in your `tsconfig.json`:
+**Configuration**: Make sure you have `"strict": true` (or at least `"strictNullChecks": true`) enabled in your `tsconfig.json`:
 
 ```json
 {
