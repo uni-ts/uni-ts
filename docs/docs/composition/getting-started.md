@@ -46,22 +46,7 @@ $ bun add @uni-ts/composition
 
 As you saw in the [Introduction](./index.md), function composition is about connecting simple functions to create complex transformations. Let's start with a basic example:
 
-```typescript twoslash
-import { flow, pipe } from '@uni-ts/composition';
-
-// Define simple, focused functions
-const double = (x: number) => x * 2;
-const add10 = (x: number) => x + 10;
-const toString = (x: number) => x.toString();
-
-// Method 1: Create a reusable function with flow
-const transform = flow(double, add10, toString);
-const result1 = transform(5); // "20"
-const result2 = transform(10); // "30"
-
-// Method 2: Transform a value immediately with pipe
-const result3 = pipe(5, double, add10, toString); // "20"
-```
+<!--@include: ./snippets/getting-started/your-first-composition.md-->
 
 Both approaches produce the same result, but serve different purposes:
 
@@ -77,55 +62,19 @@ Both approaches produce the same result, but serve different purposes:
 
 The `flow` function creates a new function by composing multiple functions in sequence. The output of each function becomes the input of the next.
 
-```typescript twoslash
-import { flow } from '@uni-ts/composition';
-
-const greetUser = flow(
-  (user: { name: string; email: string }) => user.name, // Extract name
-  (name) => name.trim(), // Remove whitespace from sides
-  (name) => `Hello, ${name}!` // Add greeting
-);
-
-const user = { name: '  Alice  ', email: 'alice@example.com' };
-const greeting = greetUser(user); // "Hello, Alice!"
-```
+<!--@include: ./snippets/getting-started/flow-example.md-->
 
 ### `pipe` - Immediate Transformation
 
 The `pipe` function applies a series of transformations to a value immediately and returns the final result.
 
-```typescript twoslash
-import { pipe } from '@uni-ts/composition';
-
-const greeting = pipe(
-  { name: '  Alice  ', email: 'alice@example.com' },
-  (user) => user.name, // Extract name
-  (name) => name.trim(), // Remove whitespace
-  (name) => `Hello, ${name}!` // Add greeting
-); // "Hello, Alice!"
-```
+<!--@include: ./snippets/getting-started/pipe-example.md-->
 
 ## Async Operations
 
 One of the most powerful features of `@uni-ts/composition` is seamless async support. When any function in the pipeline returns a Promise, the entire composition becomes asynchronous.
 
-```typescript twoslash
-import { flow } from '@uni-ts/composition';
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const processData = flow(
-  (data: string) => data.toUpperCase(),
-  async (data) => {
-    await delay(100);
-    return data.split('');
-  },
-  (chars) => chars.reverse(),
-  (chars) => chars.join('-')
-);
-
-const result = await processData('hello'); // "O-L-L-E-H"
-```
+<!--@include: ./snippets/getting-started/async-operations.md-->
 
 > [!TIP] ⚡ TypeScript Magic
 > Notice how TypeScript automatically infers that `processData` returns `Promise<string>` because one function in the pipeline is async, even though the last two functions are synchronous.
@@ -136,26 +85,8 @@ For complex pipelines or when you prefer method chaining, use the builder style 
 
 ### `flow`
 
-```typescript twoslash
-import { flow } from '@uni-ts/composition/builder';
-
-const greetUser = flow((user: { name: string; email: string }) => user.name)
-  .andThen((name) => name.trim())
-  .andThen((name) => `Hello, ${name}!`)
-  .create(); // Call .create() at the end to output the function
-
-const user = { name: '  Alice  ', email: 'alice@example.com' };
-const greeting = greetUser(user); // "Hello, Alice!"
-```
+<!--@include: ./snippets/getting-started/builder-style/flow-builder.md-->
 
 ### `pipe`
 
-```typescript twoslash
-import { pipe } from '@uni-ts/composition/builder';
-
-const greeting = pipe({ name: '  Alice  ', email: 'alice@example.com' })
-  .andThen((user) => user.name) // Extract name
-  .andThen((name) => name.trim()) // Remove whitespace
-  .andThen((name) => `Hello, ${name}!`) // Add greeting
-  .run(); // Call .run() to execute immediately // "Hello, Alice!"
-```
+<!--@include: ./snippets/getting-started/builder-style/pipe-builder.md-->

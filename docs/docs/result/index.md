@@ -8,11 +8,7 @@ This is an introduction to the **Result type concept** itself. For package docum
 
 A Result type is a powerful concept from functional programming that represents the outcome of an operation that can either succeed or fail. Think of it as a type-safe container that holds either a successful value or an error — never both, and never neither.
 
-```typescript
-type Result<Data, Error> =
-  | { success: true; data: Data }
-  | { success: false; error: Error };
-```
+<!--@include: ./snippets/index/result-type-definition.md-->
 
 Instead of throwing exceptions or returning `null`/`undefined` for errors, Result types make success and failure explicit parts of your type system, forcing you to handle both cases.
 
@@ -26,33 +22,11 @@ Traditional functions often hide potential errors in their type signatures. When
 
 **Traditional approach:**
 
-```typescript twoslash
-function divide(a: number, b: number) {
-  if (b === 0) {
-    // Hidden error - not visible in type signature
-    throw new Error('division_by_zero');
-  }
-  return a / b;
-}
-
-// TypeScript says this returns `number`, but it can actually throw
-const result = divide(10, 0); // 💥 Runtime exception
-//    ^?
-```
+<!--@include: ./snippets/index/division-traditional.md-->
 
 **Result type approach:**
 
-```typescript twoslash
-import { ok, err } from '@uni-ts/result';
-
-function safeDivide(a: number, b: number) {
-  return b === 0 ? err('division_by_zero') : ok(a / b);
-}
-
-// TypeScript correctly shows it can return a number or an error.
-const result = safeDivide(10, 0);
-//    ^?
-```
+<!--@include: ./snippets/index/division-safe.md-->
 
 ### Predictable Control Flow
 
@@ -60,41 +34,11 @@ Now let's see what happens when we use these functions in a larger calculation. 
 
 **Traditional approach:**
 
-```typescript twoslash
-function divide(a: number, b: number) {
-  if (b === 0) {
-    throw new Error('division_by_zero');
-  }
-  return a / b;
-}
-
-// ---cut---
-function calculate() {
-  const x = divide(10, 2); // 5 - works fine
-  const y = divide(8, 0); // 💥 Throws exception, disrupts the flow
-
-  return { x, y }; // This line never executes
-}
-```
+<!--@include: ./snippets/index/control-flow-traditional.md-->
 
 **Result type approach:**
 
-```typescript twoslash
-import { ok, err } from '@uni-ts/result';
-
-function safeDivide(a: number, b: number) {
-  return b === 0 ? err('division_by_zero') : ok(a / b);
-}
-
-// ---cut---
-function calculate() {
-  const x = safeDivide(10, 2); // Ok<number>
-  const y = safeDivide(8, 0); // Err<'division_by_zero'>
-
-  // No exceptions thrown, no flow interruption
-  return { x, y };
-}
-```
+<!--@include: ./snippets/index/control-flow-safe.md-->
 
 ### Required Error Handling
 
@@ -102,65 +46,13 @@ Returning `x` and `y` doesn't actually calculate anything. Let's return a sum of
 
 **Traditional approach:**
 
-```typescript twoslash
-function divide(a: number, b: number) {
-  if (b === 0) {
-    throw new Error('division_by_zero');
-  }
-  return a / b;
-}
-
-// ---cut---
-function calculate() {
-  // Easy to forget error handling - code compiles fine
-  const x = divide(10, 2);
-  const y = divide(8, 0); // 💥 Runtime exception
-
-  return x + y; // This line will never execute
-}
-```
+<!--@include: ./snippets/index/error-handling-traditional.md-->
 
 **Result type approach:**
 
-```typescript twoslash
-// @errors: 2339
-import { ok, err, isErr } from '@uni-ts/result';
+<!--@include: ./snippets/index/error-handling-safe-wrong.md-->
 
-function safeDivide(a: number, b: number) {
-  return b === 0 ? err('division_by_zero') : ok(a / b);
-}
-
-// ---cut---
-function calculate() {
-  const xResult = safeDivide(10, 2);
-  const yResult = safeDivide(8, 0);
-
-  // We cannot access data without checking for errors
-  return xResult.data + yResult.data;
-}
-```
-
-```typescript twoslash
-import { ok, err, isErr } from '@uni-ts/result';
-
-function safeDivide(a: number, b: number) {
-  return b === 0 ? err('division_by_zero') : ok(a / b);
-}
-
-// ---cut---
-function calculate() {
-  const xResult = safeDivide(10, 2);
-  const yResult = safeDivide(8, 0);
-
-  // Handle errors first
-  if (isErr(xResult) || isErr(yResult)) {
-    return 0;
-  }
-
-  // Then safely access the data
-  return xResult.data + yResult.data;
-}
-```
+<!--@include: ./snippets/index/error-handling-safe-correct.md-->
 
 ### Explicit Error Information
 
@@ -174,63 +66,11 @@ With Result types, nothing changes from the previous example. You are already su
 
 **Traditional approach:**
 
-```typescript twoslash
-function divide(a: number, b: number) {
-  if (b === 0) {
-    throw new Error('division_by_zero');
-  }
-  return a / b;
-}
-
-// ---cut---
-function calculate() {
-  try {
-    const x = divide(10, 2);
-    const y = divide(8, 0);
-
-    // ... maybe some more functions
-
-    return x + y;
-  } catch (ex) {
-    // What exception? From which function?
-    // We need to inspect implementation or use instanceof checks
-    // to ensure we handle only the `divide` function exceptions
-    if (ex instanceof Error && ex.message === 'division_by_zero') {
-      return 0;
-    }
-
-    // Re-throw in case of exceptions from other functions
-    // (current ones or introduced in the future)
-    throw ex;
-  }
-}
-```
+<!--@include: ./snippets/index/explicit-error-traditional.md-->
 
 **Result type approach:**
 
-```typescript twoslash
-import { ok, err, isErr } from '@uni-ts/result';
-
-function safeDivide(a: number, b: number) {
-  return b === 0 ? err('division_by_zero') : ok(a / b);
-}
-
-// ---cut---
-function calculate() {
-  const xResult = safeDivide(10, 2);
-  const yResult = safeDivide(8, 0);
-
-  // We're sure errors come from the `safeDivide` function
-  if (isErr(xResult) || isErr(yResult)) {
-    return 0;
-  }
-
-  // ... maybe some more functions
-  // TypeScript will tell us if they can fail and how
-
-  return xResult.data + yResult.data;
-}
-```
+<!--@include: ./snippets/index/explicit-error-safe.md-->
 
 ## Getting Started
 

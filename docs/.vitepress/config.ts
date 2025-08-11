@@ -1,4 +1,5 @@
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash';
+import { createFileSystemTypesCache } from '@shikijs/vitepress-twoslash/cache-fs';
 import { defineConfig } from 'vitepress';
 import typedocSidebar from '../api/typedoc-sidebar.json';
 
@@ -10,6 +11,7 @@ export default defineConfig({
   title,
   description,
   cleanUrls: true,
+  srcExclude: ['**/snippets/**'],
   sitemap: {
     hostname: 'https://uni-ts.dev',
   },
@@ -87,6 +89,9 @@ export default defineConfig({
   markdown: {
     codeTransformers: [
       transformerTwoslash({
+        typesCache: createFileSystemTypesCache({
+          dir: 'docs/.vitepress/cache/twoslash',
+        }),
         twoslashOptions: {
           compilerOptions: {
             strict: true,
