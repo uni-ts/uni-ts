@@ -1,3 +1,5 @@
+// @errors: 2345
+// ---cut---
 import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 

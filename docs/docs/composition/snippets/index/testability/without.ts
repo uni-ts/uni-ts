@@ -1,21 +1,22 @@
-interface Product {
+type Product = {
   price: number;
   quantity: number;
-}
+};
 
-interface Discount {
+type Discount = {
   from: number;
   rate: number;
-}
+};
 
-interface Order {
+type Order = {
   items: Product[];
   discount: Discount;
   taxRate: number;
   currency: string;
-}
+};
 // ---cut---
 // We need to think about all test cases for this function
+
 function processOrder(order: Order) {
   const total = order.items.reduce(
     (sum, item) => sum + item.price * item.quantity,

@@ -1,3 +1,5 @@
+// @errors: 2345
+// ---cut---
 type Email = string & { __brand: 'email' };
 
 function sendWelcomeEmail(to: Email) {}

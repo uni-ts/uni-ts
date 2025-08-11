@@ -20,11 +20,11 @@ Function composition transforms how you structure and think about your code, by 
 
 Traditional nested function calls read from inside-out (right to left), making it difficult to follow the data transformation flow.
 
-<!--@include: ./snippets/index/readability-without.md-->
+<!--@include: ./snippets/index/readability/without.md-->
 
 The composed version reads like a step-by-step recipe.
 
-<!--@include: ./snippets/index/readability-with.md-->
+<!--@include: ./snippets/index/readability/with.md-->
 
 ### Reusability: Build Once, Use Everywhere
 

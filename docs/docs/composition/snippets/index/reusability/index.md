@@ -1,11 +1,11 @@
 :::code-group
 
-```typescript twoslash [With composition]
-<!--@include: ./with-composition.ts-->
+```typescript twoslash [Without composition]
+<!--@include: ./without.ts-->
 ```
 
-```typescript twoslash [Without composition]
-<!--@include: ./without-composition.ts-->
+```typescript twoslash [With composition]
+<!--@include: ./with.ts-->
 ```
 
 :::

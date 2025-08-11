@@ -1,21 +1,21 @@
 import { pipe } from '@uni-ts/composition';
 
-interface Product {
+type Product = {
   price: number;
   quantity: number;
-}
+};
 
-interface Discount {
+type Discount = {
   from: number;
   rate: number;
-}
+};
 
-interface Order {
+type Order = {
   items: Product[];
   discount: Discount;
   taxRate: number;
   currency: string;
-}
+};
 // ---cut---
 // We can test each price calculation step independently
 

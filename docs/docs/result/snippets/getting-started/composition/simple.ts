@@ -1,21 +1,8 @@
-import type { Result } from '@uni-ts/result';
-
-type Todo = { id: string; userId: string; title: string };
-
-declare function validateInput(
-  data: unknown,
-): Result<{ title: string }, 'invalid_data'>;
-
-declare function getUserSession(): Promise<
-  Result<{ id: string; name: string }, 'invalid_token' | 'session_expired'>
->;
-
-declare function insertTodo(
-  data: Pick<Todo, 'userId' | 'title'>,
-): Promise<Result<Todo, 'db_connection_error'>>;
-
+// biome-ignore assist/source/organizeImports: fine here
+import type { UnwrapErr, UnwrapOk } from '@uni-ts/result';
+import { getUserSession, insertTodo, validateInput } from './declarations';
 // ---cut---
-import { isErr, ok, type UnwrapErr, type UnwrapOk } from '@uni-ts/result';
+import { isErr, ok } from '@uni-ts/result';
 
 async function createTodo(data: unknown) {
   const input = validateInput(data);

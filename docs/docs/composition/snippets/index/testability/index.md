@@ -1,11 +1,11 @@
 :::code-group
 
 ```typescript twoslash [Monolithic function]
-<!--@include: ./monolithic-function.ts-->
+<!--@include: ./without.ts-->
 ```
 
 ```typescript twoslash [Composed functions]
-<!--@include: ./composed-functions.ts-->
+<!--@include: ./with.ts-->
 ```
 
 :::

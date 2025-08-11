@@ -2,21 +2,7 @@
 
 Ready to use Result types in your project? This guide will walk you through installation, basic usage, and common patterns to get you productive quickly.
 
-## Installation
-
-### Requirements
-
-**TypeScript**: Version 5.3.0 or higher is required. We recommend using the latest stable version for the best experience and type safety.
-
-**Configuration**: Make sure you have `"strict": true` (or at least `"strictNullChecks": true`) enabled in your `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "strict": true
-  }
-}
-```
+<!--@include: ../../snippets/installation.md-->
 
 ### Install the Package
 
@@ -136,7 +122,7 @@ There are three approaches to combine safe functions. Choose the one that feels 
 
 This approach uses early returns to handle errors, keeping the main logic focused on the success path. It may seem verbose, but it's very clear about what's happening at each step. We recommend starting with this approach if Result types are something new to you or your team.
 
-<!--@include: ./snippets/getting-started/composition-simple.md-->
+<!--@include: ./snippets/getting-started/composition/simple.md-->
 
 ### Functional Composition
 
@@ -145,10 +131,10 @@ You can also use a more functional style by composing functions together. This a
 > [!NOTE] 📦 Additional package required
 > To use this approach, you need to install `@uni-ts/composition` or some other library that provides function composition utilities.
 
-<!--@include: ./snippets/getting-started/composition-functional.md-->
+<!--@include: ./snippets/getting-started/composition/functional.md-->
 
 ### Result Chaining
 
 If you prefer method chaining, you can use the result builder pattern. It provides a fluent API similar to Promise chains but with explicit error handling. It's similar to the functional approach, but operates on chainable objects.
 
-<!--@include: ./snippets/getting-started/composition-chaining.md-->
+<!--@include: ./snippets/getting-started/composition/chaining.md-->

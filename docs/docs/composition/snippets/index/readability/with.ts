@@ -18,7 +18,6 @@ declare const discount: number;
 declare const taxRate: number;
 
 // ---cut---
-// Clear left-to-right pipe that matches how we think
 const finalPrice = pipe(
   product,
   getBasePrice,
