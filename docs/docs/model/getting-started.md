@@ -56,6 +56,8 @@ As you saw in the [Introduction](./index.md), a Model combines data structure an
 
 <!--@include: ./snippets/getting-started/your-first-model.md-->
 
+<!--@include: ./snippets/bring-your-validation-library.md-->
+
 ## Validation Methods
 
 Models provide multiple ways to validate data, each suited for different scenarios:
@@ -78,12 +80,25 @@ When working with completely unknown data (like API responses), use `cast()`:
 
 <!--@include: ./snippets/getting-started/methods/cast.md-->
 
-> [!NOTE] 💡 Pro Tip
-> Use `from()` when you're confident about the data structure, and `cast()` when working with external or unknown data sources.
+::: tip 💡 `from` vs `cast`
+Use `from()` when you're confident about the data structure, and `cast()` when working with external or unknown data sources.
+:::
+
+## Accessing the Schema
+
+Every model exposes its underlying validation schema through the `.schema` property. It's useful when you need to compose schemas or use them with other libraries.
+
+<!--@include: ./snippets/getting-started/schema-access/index.md-->
+
+## Extending Models
+
+Models become even more powerful when you correlate them with some business rules. You can use the `.extend()` method to add custom functionality.
+
+<!--@include: ./snippets/getting-started/extending-models/index.md-->
 
 ## Working with Different Libraries
 
-Models work with any validation library that supports the [Standard Schema interface](https://github.com/standard-schema/standard-schema). Here are examples with some popular libraries:
+Models work with any validation library that supports the [Standard Schema interface](https://github.com/standard-schema/standard-schema#what-schema-libraries-implement-the-spec). Here are examples for some popular libraries:
 
 <!--@include: ./snippets/getting-started/libraries/index.md-->
 
@@ -110,12 +125,6 @@ If you prefer Result types over exceptions, use the safe model creators from `@u
 `@uni-ts/model/safe` provides three variants of safe model creators, so you can choose the one that fits your coding style.
 
 <!--@include: ./snippets/getting-started/safe-model-variants/index.md-->
-
-## Extending Models
-
-Models become even more powerful when you correlate them with some business rules. You can use the `.extend()` method to add custom functionality.
-
-<!--@include: ./snippets/getting-started/extending-models/index.md-->
 
 ## Working with APIs
 

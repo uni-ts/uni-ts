@@ -39,9 +39,6 @@ Both approaches produce the same result, but serve different purposes:
 - **`flow`** creates a reusable function you can call multiple times
 - **`pipe`** immediately transforms a specific value
 
-> [!NOTE] 💡 Pro Tip
-> Use `flow` when you need to apply the same transformation to multiple values, and `pipe` when you have a single value to transform.
-
 ## Core Functions
 
 ### `flow` - Build Reusable Pipelines
@@ -56,14 +53,19 @@ The `pipe` function applies a series of transformations to a value immediately a
 
 <!--@include: ./snippets/getting-started/pipe-example.md-->
 
+::: tip 💡 `flow` vs `pipe`
+Use `flow` when you need to apply the same transformation to multiple values, and `pipe` when you have a single value to transform.
+:::
+
 ## Async Operations
 
 One of the most powerful features of `@uni-ts/composition` is seamless async support. When any function in the pipeline returns a Promise, the entire composition becomes asynchronous.
 
 <!--@include: ./snippets/getting-started/async-operations.md-->
 
-> [!TIP] ⚡ TypeScript Magic
-> Notice how TypeScript automatically infers that `processData` returns `Promise<string>` because one function in the pipeline is async, even though the last two functions are synchronous.
+::: info ⚡ TypeScript Magic
+Notice how TypeScript automatically infers that `processData` returns `Promise<string>` because one function in the pipeline is async, even though the last two functions are synchronous.
+:::
 
 ## Builder Style API
 

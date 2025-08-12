@@ -17,6 +17,8 @@ Let's see this in action with a simple example.
 
 The `Product` model above contains everything we need to work with products in our application — from validation rules to business logic. If you need to change anything product-related in the future, you only have one place to look.
 
+<!--@include: ./snippets/bring-your-validation-library.md-->
+
 ## Models for Primitives
 
 But what if instead of modeling a complex object like `Product`, we want to model a simple primitive value? Consider this scenario:
@@ -47,7 +49,7 @@ While you can create branded types manually, it's much easier to use existing li
 
 As mentioned before, with models our `Email` is still a string at runtime. We simply made TypeScript's type system treat it differently.
 
-::: tip You can brand anything
+::: tip 💡 You can brand anything
 In the example above we used a primitive `string` type to showcase branding. However, you can also brand other primitive types, arrays, and objects.
 :::
 
@@ -91,7 +93,7 @@ While reading this page, you may have noticed that all the practices we've cover
 
 - It gives you a unified way of creating models and inferring their types (`createModel`, `InferModelOutput`)
 - It equips each model with essential utilities like `schema`, `is`, `from`, and `cast`
-- It allows you to use any validation library that supports [Standard Schema](https://github.com/standard-schema/standard-schema) for model validation
+- It allows you to use any validation library that supports [Standard Schema](https://github.com/standard-schema/standard-schema#what-schema-libraries-implement-the-spec) for model validation
 - It provides you with a model extension mechanism out of the box
 
 If these benefits seem useful for your project, give this package a try!

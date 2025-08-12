@@ -38,8 +38,9 @@ Since we don't want to repeat ourselves when creating these objects manually, we
 
 <!--@include: ./snippets/getting-started/ok-err-helpers.md-->
 
-> [!NOTE] 💡 Pro Tip
-> The `ok` and `err` functions automatically infer types, making your code cleaner and more maintainable.
+::: info ⚡ TypeScript Magic
+The `ok` and `err` functions automatically infer types and makes them readonly, making your code cleaner and more maintainable.
+:::
 
 ## From Throwing to Returning
 
@@ -103,8 +104,9 @@ Use `unwrapOrThrow` when you already have a Result and need to throw if it's an 
 
 <!--@include: ./snippets/getting-started/unwrap-or-throw.md-->
 
-> [!WARNING] ⚠️ Use with Caution
-> Converting Results back to exceptions defeats the purpose of explicit error handling. Only do this when integrating with libraries that require it.
+::: warning ⚠️ Use with Caution
+Converting Results back to exceptions defeats the purpose of explicit error handling. Only do this when integrating with libraries that require it.
+:::
 
 ## Async Operations
 
@@ -128,8 +130,9 @@ This approach uses early returns to handle errors, keeping the main logic focuse
 
 You can also use a more functional style by composing functions together. This approach helps you focus on only one path (success or error) at a time, handling the second one automatically.
 
-> [!NOTE] 📦 Additional package required
-> To use this approach, you need to install `@uni-ts/composition` or some other library that provides function composition utilities.
+::: info 📦 Additional package required
+To use this approach, you need to install `@uni-ts/composition` or some other library that provides function composition utilities.
+:::
 
 <!--@include: ./snippets/getting-started/composition/functional.md-->
 
