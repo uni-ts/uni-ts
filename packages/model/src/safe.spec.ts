@@ -6,7 +6,8 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import { ModelValidationError } from './error.js';
 import { oneOf } from './helpers.js';
-import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel, type InferModelOutput } from './safe.js';
+import type { InferModelOutput, SafeFirstModel, SafeModel, UnsafeFirstModel } from './safe.js';
+import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel } from './safe.js';
 
 describe('safe.ts', () => {
   function expectToBeOkResult(result: UnknownResult, value: unknown) {
@@ -67,6 +68,19 @@ describe('safe.ts', () => {
         expectToBeErrorResult(Email.cast(123));
         expectToBeErrorResult(Email.cast(null));
         expectToBeErrorResult(Email.cast({}));
+      });
+    });
+
+    describe('extend', () => {
+      it('extends the model', () => {
+        const ExtendedEmail = Email.extend((model) => {
+          expectTypeOf(model).toEqualTypeOf<Omit<SafeModel<typeof Email.schema>, 'extend'>>();
+          return { additionalProp: 'x' };
+        });
+
+        expect(ExtendedEmail.additionalProp).toBe('x');
+        expectTypeOf(ExtendedEmail.from).toEqualTypeOf<SafeModel<typeof Email.schema>['from']>();
+        expectTypeOf(ExtendedEmail.cast).toEqualTypeOf<SafeModel<typeof Email.schema>['cast']>();
       });
     });
   });
@@ -162,6 +176,21 @@ describe('safe.ts', () => {
         expect(() => Email.unsafeCast({})).toThrow(ModelValidationError);
       });
     });
+
+    describe('extend', () => {
+      it('extends the model', () => {
+        const ExtendedEmail = Email.extend((model) => {
+          expectTypeOf(model).toEqualTypeOf<Omit<SafeFirstModel<typeof Email.schema>, 'extend'>>();
+          return { additionalProp: 'x' };
+        });
+
+        expect(ExtendedEmail.additionalProp).toBe('x');
+        expectTypeOf(ExtendedEmail.from).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['from']>();
+        expectTypeOf(ExtendedEmail.cast).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['cast']>();
+        expectTypeOf(ExtendedEmail.unsafeFrom).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['unsafeFrom']>();
+        expectTypeOf(ExtendedEmail.unsafeCast).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['unsafeCast']>();
+      });
+    });
   });
 
   describe('createUnsafeFirstModel', () => {
@@ -253,6 +282,21 @@ describe('safe.ts', () => {
         expectToBeErrorResult(Email.safeCast(123));
         expectToBeErrorResult(Email.safeCast(null));
         expectToBeErrorResult(Email.safeCast({}));
+      });
+    });
+
+    describe('extend', () => {
+      it('extends the model', () => {
+        const ExtendedEmail = Email.extend((model) => {
+          expectTypeOf(model).toEqualTypeOf<Omit<UnsafeFirstModel<typeof Email.schema>, 'extend'>>();
+          return { additionalProp: 'x' };
+        });
+
+        expect(ExtendedEmail.additionalProp).toBe('x');
+        expectTypeOf(ExtendedEmail.from).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['from']>();
+        expectTypeOf(ExtendedEmail.cast).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['cast']>();
+        expectTypeOf(ExtendedEmail.safeFrom).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['safeFrom']>();
+        expectTypeOf(ExtendedEmail.safeCast).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['safeCast']>();
       });
     });
   });
