@@ -1,5 +1,11 @@
 # @uni-ts/model
 
+## 0.2.2
+
+### Patch Changes
+
+- 8336830: Fix an error when extending safe models removes some of their methods.
+
 ## 0.2.1
 
 ### Patch Changes
