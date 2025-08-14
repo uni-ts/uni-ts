@@ -40,10 +40,7 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@uni-ts/result": "workspace:*",
-    "arktype": "2.1.20",
-    "valibot": "1.1.0",
-    "zod": "4.0.14"
+    "@uni-ts/result": "workspace:*"
   },
   "peerDependencies": {
     "@uni-ts/result": "^0.0.2"
