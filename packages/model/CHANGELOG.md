@@ -1,5 +1,33 @@
 # @uni-ts/model
 
+## 0.2.1
+
+### Patch Changes
+
+- f95cae3: Export generic types of models. Now you can create your own functions that takes models as parameters using: `Model<S>, SafeModel<S>, SafeFirstModel<S>, UnsafeFirstModel<S>`.
+
+  ```typescript
+  import {
+    createModel,
+    type Model,
+    type StandardSchemaV1,
+  } from "@uni-ts/model";
+  import z, { ZodError } from "zod";
+
+  function getValidatedSearchParams<S extends StandardSchemaV1>(
+    model: Model<S>
+  ) {
+    const searchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(searchParams.entries());
+
+    try {
+      return model.cast(params);
+    } catch {
+      return null;
+    }
+  }
+  ```
+
 ## 0.2.0
 
 ### Minor Changes
