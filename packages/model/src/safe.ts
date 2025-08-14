@@ -2,8 +2,60 @@ import type { Result } from '@uni-ts/result';
 import { err, ok } from '@uni-ts/result';
 import { ModelValidationError } from './error.js';
 import { getSyncValidationResult } from './helpers.js';
-import { createModel } from './index.js';
+import { createModel, type Model } from './index.js';
 import type { StandardSchemaV1 } from './standard-schema.js';
+
+export type SafeModel<S extends StandardSchemaV1> = Omit<Model<S>, 'from' | 'cast'> & {
+  /**
+   * Safely validates and converts data that matches the model's input type to the model's output type.
+   * Returns a Result instead of throwing errors on validation failure.
+   *
+   * @param value - Data matching the model's input type
+   * @returns Result containing either the validated data or validation error
+   *
+   * @example
+   * ```typescript
+   * const User = createSafeModel(z.object({
+   *   name: z.string().min(1),
+   *   email: z.string().email(),
+   * }));
+   *
+   * const okResult = User.from({ name: 'John', email: 'john@example.com' });
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: true, data: { name: 'John', email: 'john@example.com' } }
+   *
+   * const errResult = User.from({ name: '', email: 'invalid' });
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: false, error: ModelValidationError }
+   * ```
+   */
+  from: (value: StandardSchemaV1.InferInput<S>) => Result<StandardSchemaV1.InferOutput<S>, ModelValidationError>;
+
+  /**
+   * Safely validates and converts unknown data to the model's output type.
+   * Returns a Result instead of throwing errors on validation failure.
+   *
+   * @param value - Any value that should be validated against the model schema
+   * @returns Result containing either the validated data or validation error
+   *
+   * @example
+   * ```typescript
+   * const User = createSafeModel(z.object({
+   *   name: z.string().min(1),
+   *   email: z.string().email(),
+   * }));
+   *
+   * const okResult = User.cast({ name: 'John', email: 'john@example.com' });
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: true, data: { name: 'John', email: 'john@example.com' } }
+   *
+   * const errResult = User.cast('invalid data');
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: false, error: ModelValidationError }
+   * ```
+   */
+  cast: (value: unknown) => Result<StandardSchemaV1.InferOutput<S>, ModelValidationError>;
+};
 
 /**
  * Creates a safe model where all validation methods return Result types instead of throwing errors.
@@ -33,59 +85,72 @@ import type { StandardSchemaV1 } from './standard-schema.js';
  * }
  * ```
  */
-export function createSafeModel<S extends StandardSchemaV1>(schema: S) {
+export function createSafeModel<S extends StandardSchemaV1>(schema: S): SafeModel<S> {
   return createModel(schema).extend({
-    /**
-     * Safely validates and converts data that matches the model's input type to the model's output type.
-     * Returns a Result instead of throwing errors on validation failure.
-     *
-     * @param value - Data matching the model's input type
-     * @returns Result containing either the validated data or validation error
-     *
-     * @example
-     * ```typescript
-     * const User = createSafeModel(z.object({
-     *   name: z.string().min(1),
-     *   email: z.string().email(),
-     * }));
-     *
-     * const okResult = User.from({ name: 'John', email: 'john@example.com' });
-     * // Type: Result<User, ModelValidationError>
-     * // Value: { success: true, data: { name: 'John', email: 'john@example.com' } }
-     *
-     * const errResult = User.from({ name: '', email: 'invalid' });
-     * // Type: Result<User, ModelValidationError>
-     * // Value: { success: false, error: ModelValidationError }
-     * ```
-     */
     from: (value: StandardSchemaV1.InferInput<S>) => safeValidate(schema, value),
-
-    /**
-     * Safely validates and converts unknown data to the model's output type.
-     * Returns a Result instead of throwing errors on validation failure.
-     *
-     * @param value - Any value that should be validated against the model schema
-     * @returns Result containing either the validated data or validation error
-     *
-     * @example
-     * ```typescript
-     * const User = createSafeModel(z.object({
-     *   name: z.string().min(1),
-     *   email: z.string().email(),
-     * }));
-     *
-     * const okResult = User.cast({ name: 'John', email: 'john@example.com' });
-     * // Type: Result<User, ModelValidationError>
-     * // Value: { success: true, data: { name: 'John', email: 'john@example.com' } }
-     *
-     * const errResult = User.cast('invalid data');
-     * // Type: Result<User, ModelValidationError>
-     * // Value: { success: false, error: ModelValidationError }
-     * ```
-     */
     cast: (value: unknown) => safeValidate(schema, value),
   });
 }
+
+export type SafeFirstModel<S extends StandardSchemaV1> = SafeModel<S> & {
+  /**
+   * Validates and converts data that matches the model's input type to the model's output type.
+   *
+   * @param value - Data matching the model's input type
+   * @returns The validated and potentially transformed data
+   * @throws {ModelValidationError} When the input data doesn't match the schema
+   *
+   * @example
+   * ```typescript
+   * const User = createSafeFirstModel(z.object({
+   *   name: z.string().min(1).trim(),
+   *   email: z.string().email().trim().toLowerCase(),
+   * }));
+   *
+   * User.unsafeFrom({ name: 'John Doe ', email: 'John@example.com' });
+   * // ✅ Ok: returns { name: 'John Doe', email: 'john@example.com' }
+   *
+   * User.unsafeFrom({ name: '', email: '' });
+   * // ❌ Runtime Error: validation failed
+   *
+   * User.unsafeFrom({ name: 'John' });
+   * // ❌ TypeScript Error: missing properties
+   *
+   * User.unsafeFrom('string');
+   * // ❌ TypeScript Error: wrong type
+   * ```
+   */
+  unsafeFrom: Model<S>['from'];
+
+  /**
+   * Validates and converts unknown data to the model's output type.
+   *
+   * @param value - Any value that should be validated against the model schema
+   * @returns The validated and potentially transformed data
+   * @throws {ModelValidationError} When the input data doesn't match the schema
+   *
+   * @example
+   * ```typescript
+   * const User = createModel(z.object({
+   *   name: z.string().min(1).trim(),
+   *   email: z.string().email().trim().toLowerCase(),
+   * }));
+   *
+   * User.unsafeCast({ name: 'John Doe ', email: 'John@example.com' });
+   * // ✅ Ok: returns { name: 'John Doe', email: 'john@example.com' }
+   *
+   * User.unsafeCast({ name: '', email: '' });
+   * // ❌ Runtime Error: validation failed
+   *
+   * User.unsafeCast({ name: 'John' });
+   * // ❌ Runtime Error: missing properties
+   *
+   * User.unsafeCast('string');
+   * // ❌ Runtime Error: wrong type
+   * ```
+   */
+  unsafeCast: Model<S>['cast'];
+};
 
 /**
  * Creates a model where safe validation is the default behavior, with unsafe versions available as fallbacks.
@@ -111,45 +176,66 @@ export function createSafeModel<S extends StandardSchemaV1>(schema: S) {
  * // User (may throw ModelValidationError)
  * ```
  */
-export function createSafeFirstModel<S extends StandardSchemaV1>(schema: S) {
+export function createSafeFirstModel<S extends StandardSchemaV1>(schema: S): SafeFirstModel<S> {
   return createModel(schema).extend((current) => ({
-    /**
-     * Safely validates and converts data that matches the model's input type to the model's output type.
-     * Returns a Result instead of throwing errors on validation failure.
-     *
-     * @param value - Data matching the model's input type
-     * @returns Result containing either the validated data or validation error
-     */
     from: (value: StandardSchemaV1.InferInput<S>) => safeValidate(schema, value),
-
-    /**
-     * Safely validates and converts unknown data to the model's output type.
-     * Returns a Result instead of throwing errors on validation failure.
-     *
-     * @param value - Any value that should be validated against the model schema
-     * @returns Result containing either the validated data or validation error
-     */
     cast: (value: unknown) => safeValidate(schema, value),
-
-    /**
-     * Validates and converts data that matches the model's input type to the model's output type.
-     *
-     * @param value - Data matching the model's input type
-     * @returns The validated and potentially transformed data
-     * @throws {ModelValidationError} When the input data doesn't match the schema
-     */
     unsafeFrom: current.from,
-
-    /**
-     * Validates and converts unknown data to the model's output type.
-     *
-     * @param value - Any value that should be validated against the model schema
-     * @returns The validated and potentially transformed data
-     * @throws {ModelValidationError} When the input data doesn't match the schema
-     */
     unsafeCast: current.cast,
   }));
 }
+
+export type UnsafeFirstModel<S extends StandardSchemaV1> = Model<S> & {
+  /**
+   * Safely validates and converts data that matches the model's input type to the model's output type.
+   * Returns a Result instead of throwing errors on validation failure.
+   *
+   * @param value - Data matching the model's input type
+   * @returns Result containing either the validated data or validation error
+   *
+   * @example
+   * ```typescript
+   * const User = createUnsafeFirstModel(z.object({
+   *   name: z.string().min(1),
+   *   email: z.string().email(),
+   * }));
+   *
+   * const okResult = User.safeFrom({ name: 'John', email: 'john@example.com' });
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: true, data: { name: 'John', email: 'john@example.com' } }
+   *
+   * const errResult = User.safeFrom({ name: '', email: 'invalid' });
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: false, error: ModelValidationError }
+   * ```
+   */
+  safeFrom: SafeModel<S>['from'];
+
+  /**
+   * Safely validates and converts unknown data to the model's output type.
+   * Returns a Result instead of throwing errors on validation failure.
+   *
+   * @param value - Any value that should be validated against the model schema
+   * @returns Result containing either the validated data or validation error
+   *
+   * @example
+   * ```typescript
+   * const User = createUnsafeFirstModel(z.object({
+   *   name: z.string().min(1),
+   *   email: z.string().email(),
+   * }));
+   *
+   * const okResult = User.safeCast({ name: 'John', email: 'john@example.com' });
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: true, data: { name: 'John', email: 'john@example.com' } }
+   *
+   * const errResult = User.safeCast('invalid data');
+   * // Type: Result<User, ModelValidationError>
+   * // Value: { success: false, error: ModelValidationError }
+   * ```
+   */
+  safeCast: SafeModel<S>['cast'];
+};
 
 /**
  * Creates a model where unsafe validation is the default behavior, with safe versions available as alternatives.
@@ -175,24 +261,9 @@ export function createSafeFirstModel<S extends StandardSchemaV1>(schema: S) {
  * // Result<User, ModelValidationError>
  * ```
  */
-export function createUnsafeFirstModel<S extends StandardSchemaV1>(schema: S) {
+export function createUnsafeFirstModel<S extends StandardSchemaV1>(schema: S): UnsafeFirstModel<S> {
   return createModel(schema).extend(() => ({
-    /**
-     * Safely validates and converts data that matches the model's input type to the model's output type.
-     * Returns a Result instead of throwing errors on validation failure.
-     *
-     * @param value - Data matching the model's input type
-     * @returns Result containing either the validated data or validation issues
-     */
     safeFrom: (value: StandardSchemaV1.InferInput<S>) => safeValidate(schema, value),
-
-    /**
-     * Safely validates and converts unknown data to the model's output type.
-     * Returns a Result instead of throwing errors on validation failure.
-     *
-     * @param value - Any value that should be validated against the model schema
-     * @returns Result containing either the validated data or validation issues
-     */
     safeCast: (value: unknown) => safeValidate(schema, value),
   }));
 }

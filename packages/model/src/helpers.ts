@@ -19,7 +19,7 @@ export interface ExtendFn<T> {
   <const E>(extension: E): ExtendableModel<Merge<T, E>>;
 }
 
-type ExtendableModel<T> = Merge<T, { readonly extend: ExtendFn<T> }>;
+export type ExtendableModel<T> = Merge<T, { readonly extend: ExtendFn<T> }>;
 
 export function createExtendableModel<const T>(model: T) {
   return {
