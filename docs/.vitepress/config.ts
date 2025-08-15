@@ -58,6 +58,7 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/docs/model/' },
             { text: 'Getting started', link: '/docs/model/getting-started' },
+            { text: 'Best practices', link: '/docs/model/best-practices' },
           ],
         },
         {
