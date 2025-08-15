@@ -368,6 +368,16 @@ describe('index.ts', () => {
       // @ts-expect-error - value is not of a Result type
       expect(isOk({})).toBe(false);
     });
+
+    it('works with union of ok types', () => {
+      const result = first(ok('data'), err('error'), ok({ userId: '123' }));
+
+      if (isOk(result)) {
+        expectTypeOf(result).toEqualTypeOf<Ok<'data'> | Ok<{ readonly userId: '123' }>>();
+      } else {
+        expectTypeOf(result).toEqualTypeOf<Err<'error'>>();
+      }
+    });
   });
 
   describe('isOkResult', () => {
@@ -424,6 +434,16 @@ describe('index.ts', () => {
     it('only accepts Result type as argument', () => {
       // @ts-expect-error - value is not of a Result type
       expect(isErr({})).toBe(false);
+    });
+
+    it('works with union of error types', () => {
+      const result = first(err('error'), ok('data'), err({ type: 'invalid_user_id' }));
+
+      if (isErr(result)) {
+        expectTypeOf(result).toEqualTypeOf<Err<'error'> | Err<{ readonly type: 'invalid_user_id' }>>();
+      } else {
+        expectTypeOf(result).toEqualTypeOf<Ok<'data'>>();
+      }
     });
   });
 

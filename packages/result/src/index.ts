@@ -285,7 +285,9 @@ export function isResult(value: unknown): value is Result {
  * }
  * ```
  */
-export function isOk<T>(result: Result<T, unknown>): result is Ok<T> {
+export function isOk<T>(result: Result<T, unknown>): result is Ok<T>;
+export function isOk<R extends UnknownResult>(result: R): result is ExtractOk<R>;
+export function isOk(result: UnknownResult): result is Ok {
   return result.success === true;
 }
 
@@ -325,7 +327,9 @@ export function isOkResult(value: unknown): value is Ok {
  * }
  * ```
  */
-export function isErr<E>(result: Result<unknown, E>): result is Err<E> {
+export function isErr<T>(result: Result<unknown, T>): result is Err<T>;
+export function isErr<R extends UnknownResult>(result: R): result is ExtractErr<R>;
+export function isErr(result: UnknownResult): result is Err {
   return result.success === false;
 }
 
