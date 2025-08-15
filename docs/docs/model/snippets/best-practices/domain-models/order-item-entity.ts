@@ -16,13 +16,12 @@ declare interface DatabaseClient {
 declare const db: DatabaseClient;
 
 // ---cut---
-// Doesn't follow any of the domain model rules
-// Shape of database entities isn't a business concept.
-// It depends on the database client.
-
 import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 
+// Doesn't follow any of the domain model rules
+// Shape of database entities isn't a business concept.
+// It depends on the database client.
 export type OrderItemEntity = InferModelOutput<typeof OrderItemEntity>;
 export const OrderItemEntity = createModel(
   z.object({

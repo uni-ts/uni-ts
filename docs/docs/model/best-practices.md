@@ -39,3 +39,29 @@ Since domain models don't depend on anything except other models, you can test y
 **🔄 Reusable Everywhere**
 
 Once you have a domain model, you can use it anywhere in your app, ensuring business logic stays consistent across multiple different contexts.
+
+## Model Composition
+
+In some cases you may wonder if you should merge multiple models into one or move some model property to a standalone model. While there is no one-size-fits-all answer, here are some guidelines to help you make the right decision:
+
+### 1. Check the model methods
+
+As a general rule of thumb, all model methods should receive (or return) the model instance. While not using all model's properties by a method is fine, situations where a method uses only one property are a good indicator that the property may benefit from a model of its own.
+
+<!--@include: ./snippets/best-practices/check-model-methods/index.md-->
+
+### 2. Consider domain boundaries
+
+Models should align with a single business domain. If two pieces of data are related to different areas of your system, they should probably be separate models.
+
+<!--@include: ./snippets/best-practices/domain-boundaries/index.md-->
+
+### 3. Look for cohesion patterns
+
+Properties that are always used together or changed together are good candidates for the same model. Properties that are used independently suggest separate models.
+
+<!--@include: ./snippets/best-practices/cohesion-patterns/index.md-->
+
+:::tip 💡 Prefer smaller models
+When in doubt, prefer dividing models into smaller ones over keeping them together. It's always easier to merge models again if needed than to untangle a complex model.
+:::

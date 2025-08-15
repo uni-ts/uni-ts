@@ -1,11 +1,10 @@
-// Doesn't follow the first rule of domain models.
-// Shape of the products API endpoint response
-// is not a business concept but a technical detail.
-
 import { createModel, type InferModelOutput } from '@uni-ts/model';
 import { z } from 'zod';
 import { Product } from './product';
 
+// Doesn't follow the first rule of domain models.
+// Shape of the products API endpoint response isn't
+// a business concept but a technical detail.
 export type ProductsApiResponse = InferModelOutput<typeof ProductsApiResponse>;
 export const ProductsApiResponse = createModel(
   z.object({
