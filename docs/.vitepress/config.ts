@@ -49,6 +49,7 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/docs/result/' },
             { text: 'Getting started', link: '/docs/result/getting-started' },
+            { text: 'Best practices', link: '/docs/result/best-practices' },
           ],
         },
         {
