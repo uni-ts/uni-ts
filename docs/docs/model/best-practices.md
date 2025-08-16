@@ -2,7 +2,7 @@
 
 ## Domain Models
 
-Each application contains a set of core concepts and rules that makes it distinct from others. A banking app prevents you from withdrawing more than your balance. An e-commerce app won't let you apply more than one discount per order. A social platform might restrict who can see your posts. While these constraints (also called business logic or business rules) often end up scattered across the codebase a good practice is to get them together into so called **domain models**.
+Each application contains a set of core concepts and rules that make it distinct from others. A banking app prevents you from withdrawing more than your balance. An e-commerce app won't let you apply more than one discount per order. A social platform might restrict who can see your posts. While these constraints (also called business logic or business rules) often end up scattered across the codebase, a good practice is to bring them together into so-called **domain models**.
 
 A domain model is a specific kind of a [model](/docs/model/index#what-is-a-model) with the following characteristics:
 
@@ -12,7 +12,7 @@ A domain model is a specific kind of a [model](/docs/model/index#what-is-a-model
 
 - **Doesn't depend on anything except other domain models.**
 
-  Domain model is your system in its purest form. It focuses on describing concepts and rules without any knowledge on what database will be used, how the logging works, where the app will run (client or server), etc. Because of that, the only dependencies (imports) you should see in domain models are other domain models (e.g. `TodoList` may depend on `TodoItem`) and pure utility functions (e.g. from libraries like `lodash`).
+  A domain model is your system in its purest form. It focuses on describing concepts and rules without any knowledge of what database will be used, how the logging works, where the app will run (client or server), etc. Because of that, the only dependencies (imports) you should see in domain models are other domain models (e.g. `TodoList` may depend on `TodoItem`) and pure utility functions (e.g. from libraries like `lodash`).
 
 Below you can see some examples of domain (✅) and non-domain (❌) models for an e-commerce app.
 
@@ -46,7 +46,7 @@ In some cases you may wonder if you should merge multiple models into one or mov
 
 ### 1. Check the model methods
 
-As a general rule of thumb, all model methods should receive (or return) the model instance. While not using all model's properties by a method is fine, situations where a method uses only one property are a good indicator that the property may benefit from a model of its own.
+As a rule of thumb, all model methods should receive (or return) the model instance. While not using all model's properties by a method is fine, situations where a method uses only one property are a good indicator that the property may benefit from a model of its own.
 
 <!--@include: ./snippets/best-practices/check-model-methods/index.md-->
 
@@ -65,3 +65,45 @@ Properties that are always used together or changed together are good candidates
 :::tip 💡 Prefer smaller models
 When in doubt, prefer dividing models into smaller ones over keeping them together. It's always easier to merge models again if needed than to untangle a complex model.
 :::
+
+## When to Use Branded Types?
+
+Branded types are a powerful pattern allowing you to create distinct types with consistent validation rules and related methods. However, they may be easily overused, causing your code to become bloated with type validations and the same methods repeated across different branded types.
+
+To avoid this, here are some guidelines on when branded types are useful and when they are usually not.
+
+**✅ Type usage requires its validation**
+
+When all utilities related to a type require it to be valid (match certain criteria), make it a branded type.
+
+<!--@include: ./snippets/best-practices/branded-types/validation-required.md-->
+
+**❌ Type can be used the same way - branded or not**
+
+When type usage doesn't require any validation beyond TypeScript type matching, there is probably no need to brand it.
+
+<!--@include: ./snippets/best-practices/branded-types/validation-non-required.md-->
+
+**✅ Type distinction provides additional value**
+
+When distinction between similar types benefits your code's type safety, brand each of them.
+
+<!--@include: ./snippets/best-practices/branded-types/distinction-useful.md-->
+
+**❌ Type distinction is purely cosmetic**
+
+When branding serves only a cosmetic purpose, it likely can be avoided.
+
+<!--@include: ./snippets/best-practices/branded-types/distinction-useless.md-->
+
+**✅ Object properties are correlated**
+
+When in order for an object to be valid, its properties must maintain some correlations with each other, it's a sign you should brand this object.
+
+<!--@include: ./snippets/best-practices/branded-types/properties-correlated.md-->
+
+**❌ Object properties are independent**
+
+When each property validation depends only on its own value, the object can stay unbranded.
+
+<!--@include: ./snippets/best-practices/branded-types/properties-non-correlated.md-->
