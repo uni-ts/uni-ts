@@ -15,11 +15,12 @@ export const Product = createModel(
     viewCount: z.number().int().min(0),
     lastViewedAt: z.date().optional(),
   }),
-).extend({
-  getDisplayPrice,
-  getAvailableStock,
-  trackView,
-});
+  {
+    getDisplayPrice,
+    getAvailableStock,
+    trackView,
+  },
+);
 
 // Uses only one property
 function getDisplayPrice(product: Product) {

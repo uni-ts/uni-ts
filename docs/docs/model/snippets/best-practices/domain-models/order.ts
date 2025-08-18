@@ -14,10 +14,11 @@ export const Order = createModel(
     status: z.enum(['pending', 'confirmed', 'shipped', 'cancelled']),
     createdAt: z.date(),
   }),
-).extend({
-  getTotalPrice,
-  canBeCancelled,
-});
+  {
+    getTotalPrice,
+    canBeCancelled,
+  },
+);
 
 function getTotalPrice(order: Order) {
   return order.items.reduce(

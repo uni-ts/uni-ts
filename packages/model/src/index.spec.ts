@@ -118,14 +118,17 @@ describe('index.ts', () => {
   });
 
   describe('createModel', () => {
-    const NonEmptyString = createModel(
-      oneOf(z.string().min(1), v.pipe(v.string(), v.minLength(1)), type('string > 0')),
+    const nonEmptyStringSchema = oneOf(z.string().min(1), v.pipe(v.string(), v.minLength(1)), type('string > 0'));
+    const emailSchema = oneOf(
+      z.email().brand('Email'),
+      v.pipe(v.string(), v.email(), v.brand('Email')),
+      type('string.email#Email'),
     );
 
+    const NonEmptyString = createModel(nonEmptyStringSchema);
+
     type Email = InferModelOutput<typeof Email>;
-    const Email = createModel(
-      oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
-    );
+    const Email = createModel(emailSchema);
 
     it('creates a model with given schema', () => {
       const zodStringSchema = z.string();
@@ -222,8 +225,8 @@ describe('index.ts', () => {
 
     describe('extend', () => {
       it('extends the model with additional properties', () => {
-        const baseModel = NonEmptyString;
-        const extendedModel = baseModel.extend({
+        const baseModel = createModel(nonEmptyStringSchema);
+        const extendedModel = createModel(nonEmptyStringSchema, {
           customProperty: 'custom',
           customMethod: () => 'custom',
         });
@@ -236,8 +239,8 @@ describe('index.ts', () => {
       });
 
       it('can override existing properties', () => {
-        const baseModel = NonEmptyString;
-        const extendedModel = baseModel.extend({
+        const baseModel = createModel(nonEmptyStringSchema);
+        const extendedModel = createModel(nonEmptyStringSchema, {
           is: (value: string) => `yes it is ${value}`,
         });
 
@@ -246,29 +249,6 @@ describe('index.ts', () => {
 
         expectTypeOf(baseModel.is).toEqualTypeOf<(value: unknown) => value is string>();
         expectTypeOf(extendedModel.is).toEqualTypeOf<(value: string) => string>();
-      });
-
-      it('can access current model data and methods', () => {
-        const baseModel = Email;
-        const extendedModel = baseModel.extend((current) => ({
-          isLongEmail: (value: string) => current.is(value) && value.length > 15,
-        }));
-
-        expect(baseModel.is('correct-long@email.com')).toBe(true);
-        expect(baseModel.is('short@mail.com')).toBe(true);
-        expect(baseModel.is('invalid-but-long-string')).toBe(false);
-
-        expect(extendedModel.isLongEmail('correct-long@email.com')).toBe(true);
-        expect(extendedModel.isLongEmail('short@mail.com')).toBe(false);
-        expect(extendedModel.isLongEmail('invalid-but-long-string')).toBe(false);
-      });
-
-      it('disables further model extensions when receiving false as an argument', () => {
-        const baseModel = NonEmptyString;
-        const extendedModel = baseModel.extend(false);
-
-        expect(baseModel).toHaveProperty('extend');
-        expect(extendedModel).not.toHaveProperty('extend');
       });
     });
   });

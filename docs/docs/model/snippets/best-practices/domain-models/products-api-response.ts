@@ -23,9 +23,10 @@ export const ProductsApiResponse = createModel(
       limit: z.int().positive(),
     }),
   }),
-).extend({
-  toProducts,
-});
+  {
+    toProducts,
+  },
+);
 
 // It's usually a good practice to convert
 // non-domain models into domain ones.

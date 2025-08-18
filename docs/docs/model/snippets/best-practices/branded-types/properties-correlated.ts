@@ -13,7 +13,10 @@ export const DateRange = createModel(
       message: 'Start date must be before end date',
     })
     .brand('DateRange'),
-).extend({ isInRange });
+  {
+    isInRange,
+  },
+);
 
 function isInRange(date: Date, range: DateRange) {
   return date >= range.start && date <= range.end;

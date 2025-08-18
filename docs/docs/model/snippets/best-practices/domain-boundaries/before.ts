@@ -14,12 +14,13 @@ export const User = createModel(
     subscriptionExpiresAt: z.date().optional(),
     billingAddress: z.string().optional(),
   }),
-).extend({
-  getDisplayName,
-  updateTheme,
-  updateLanguage,
-  isSubscribed,
-});
+  {
+    getDisplayName,
+    updateTheme,
+    updateLanguage,
+    isSubscribed,
+  },
+);
 
 function getDisplayName(user: User) {
   return `${user.firstName} ${user.lastName}`;

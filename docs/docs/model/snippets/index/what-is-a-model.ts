@@ -11,7 +11,8 @@ const Product = createModel(
     price: z.number().positive(),
     amount: z.int().positive(),
   }),
-).extend({
-  // Behavior: what operations can be performed on a Product
-  canBeSold: (product: Product) => product.amount > 0,
-});
+  {
+    // Behavior: what operations can be performed on a Product
+    canBeSold: (product: Product) => product.amount > 0,
+  },
+);

@@ -12,7 +12,10 @@ export const ApiUser = createModel(
     email: z.email(),
     created_at: z.number().int().min(0),
   }),
-).extend({ toUser });
+  {
+    toUser,
+  },
+);
 
 function toUser(apiUser: ApiUser) {
   return User.from({

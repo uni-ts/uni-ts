@@ -8,10 +8,11 @@ export const Product = createModel(
     price: z.number().positive(),
     stock: z.number().int().min(0),
   }),
-).extend({
-  isInStock,
-  canBeSold,
-});
+  {
+    isInStock,
+    canBeSold,
+  },
+);
 
 function isInStock(product: Product) {
   return product.stock > 0;

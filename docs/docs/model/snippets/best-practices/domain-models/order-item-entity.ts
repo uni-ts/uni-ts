@@ -32,9 +32,10 @@ export const OrderItemEntity = createModel(
     created_at: z.date(),
     updated_at: z.date(),
   }),
-).extend({
-  save,
-});
+  {
+    save,
+  },
+);
 
 async function save(orderItemEntity: OrderItemEntity): Promise<void> {
   await db.query(saveOrderItemSql, Object.values(orderItemEntity));

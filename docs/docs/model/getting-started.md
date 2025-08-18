@@ -92,7 +92,7 @@ Every model exposes its underlying validation schema through the `.schema` prope
 
 ## Extending Models
 
-Models become even more powerful when you correlate them with some business rules. You can use the `.extend()` method to add custom functionality.
+Models become even more powerful when you integrate them with business rules. You can use the second argument when defining a model to add custom functionality.
 
 <!--@include: ./snippets/getting-started/extending-models/index.md-->
 

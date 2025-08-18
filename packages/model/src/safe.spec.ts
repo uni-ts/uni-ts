@@ -10,6 +10,12 @@ import type { InferModelOutput, SafeFirstModel, SafeModel, UnsafeFirstModel } fr
 import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel } from './safe.js';
 
 describe('safe.ts', () => {
+  const emailSchema = oneOf(
+    z.email().brand('Email'),
+    v.pipe(v.string(), v.email(), v.brand('Email')),
+    type('string.email#Email'),
+  );
+
   function expectToBeOkResult(result: UnknownResult, value: unknown) {
     expect(isOk(result)).toBe(true);
     expect((result as Ok<unknown>).data).toEqual(value);
@@ -21,11 +27,9 @@ describe('safe.ts', () => {
   }
 
   describe('createSafeModel', () => {
-    type Email = InferModelOutput<typeof Email>;
-    const Email = createSafeModel(
-      oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
-    );
+    const Email = createSafeModel(emailSchema);
 
+    type Email = InferModelOutput<typeof Email>;
     type EmailResult = Result<Email, ModelValidationError>;
 
     describe('from', () => {
@@ -72,25 +76,39 @@ describe('safe.ts', () => {
     });
 
     describe('extend', () => {
-      it('extends the model', () => {
-        const ExtendedEmail = Email.extend((model) => {
-          expectTypeOf(model).toEqualTypeOf<Omit<SafeModel<typeof Email.schema>, 'extend'>>();
-          return { additionalProp: 'x' };
+      it('extends the model with additional properties', () => {
+        const baseModel = createSafeModel(emailSchema);
+        const extendedModel = createSafeModel(emailSchema, {
+          customProperty: 'custom',
+          customMethod: () => 'custom',
         });
 
-        expect(ExtendedEmail.additionalProp).toBe('x');
-        expectTypeOf(ExtendedEmail.from).toEqualTypeOf<SafeModel<typeof Email.schema>['from']>();
-        expectTypeOf(ExtendedEmail.cast).toEqualTypeOf<SafeModel<typeof Email.schema>['cast']>();
+        expect(extendedModel.customProperty).toBe('custom');
+        expect(extendedModel.customMethod()).toBe('custom');
+        expect(extendedModel.schema).toBe(baseModel.schema);
+        expectTypeOf(extendedModel.customProperty).toEqualTypeOf<'custom'>();
+        expectTypeOf(extendedModel.customMethod).toEqualTypeOf<() => 'custom'>();
+      });
+
+      it('can override existing properties', () => {
+        const baseModel = createSafeModel(emailSchema);
+        const extendedModel = createSafeModel(emailSchema, {
+          is: (value: string) => `yes it is ${value}`,
+        });
+
+        expect(baseModel.is('test@example.com')).toBe(true);
+        expect(extendedModel.is('test@example.com')).toBe('yes it is test@example.com');
+
+        expectTypeOf(baseModel.is).toEqualTypeOf<(value: unknown) => value is Email>();
+        expectTypeOf(extendedModel.is).toEqualTypeOf<(value: string) => string>();
       });
     });
   });
 
   describe('createSafeFirstModel', () => {
-    type Email = InferModelOutput<typeof Email>;
-    const Email = createSafeFirstModel(
-      oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
-    );
+    const Email = createSafeFirstModel(emailSchema);
 
+    type Email = InferModelOutput<typeof Email>;
     type EmailResult = Result<Email, ModelValidationError>;
 
     describe('from', () => {
@@ -178,27 +196,39 @@ describe('safe.ts', () => {
     });
 
     describe('extend', () => {
-      it('extends the model', () => {
-        const ExtendedEmail = Email.extend((model) => {
-          expectTypeOf(model).toEqualTypeOf<Omit<SafeFirstModel<typeof Email.schema>, 'extend'>>();
-          return { additionalProp: 'x' };
+      it('extends the model with additional properties', () => {
+        const baseModel = createSafeFirstModel(emailSchema);
+        const extendedModel = createSafeFirstModel(emailSchema, {
+          customProperty: 'custom',
+          customMethod: () => 'custom',
         });
 
-        expect(ExtendedEmail.additionalProp).toBe('x');
-        expectTypeOf(ExtendedEmail.from).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['from']>();
-        expectTypeOf(ExtendedEmail.cast).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['cast']>();
-        expectTypeOf(ExtendedEmail.unsafeFrom).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['unsafeFrom']>();
-        expectTypeOf(ExtendedEmail.unsafeCast).toEqualTypeOf<SafeFirstModel<typeof Email.schema>['unsafeCast']>();
+        expect(extendedModel.customProperty).toBe('custom');
+        expect(extendedModel.customMethod()).toBe('custom');
+        expect(extendedModel.schema).toBe(baseModel.schema);
+        expectTypeOf(extendedModel.customProperty).toEqualTypeOf<'custom'>();
+        expectTypeOf(extendedModel.customMethod).toEqualTypeOf<() => 'custom'>();
+      });
+
+      it('can override existing properties', () => {
+        const baseModel = createSafeFirstModel(emailSchema);
+        const extendedModel = createSafeFirstModel(emailSchema, {
+          is: (value: string) => `yes it is ${value}`,
+        });
+
+        expect(baseModel.is('test@example.com')).toBe(true);
+        expect(extendedModel.is('test@example.com')).toBe('yes it is test@example.com');
+
+        expectTypeOf(baseModel.is).toEqualTypeOf<(value: unknown) => value is Email>();
+        expectTypeOf(extendedModel.is).toEqualTypeOf<(value: string) => string>();
       });
     });
   });
 
   describe('createUnsafeFirstModel', () => {
-    type Email = InferModelOutput<typeof Email>;
-    const Email = createUnsafeFirstModel(
-      oneOf(z.email().brand('Email'), v.pipe(v.string(), v.email(), v.brand('Email')), type('string.email#Email')),
-    );
+    const Email = createUnsafeFirstModel(emailSchema);
 
+    type Email = InferModelOutput<typeof Email>;
     type EmailResult = Result<Email, ModelValidationError>;
 
     describe('from', () => {
@@ -286,17 +316,31 @@ describe('safe.ts', () => {
     });
 
     describe('extend', () => {
-      it('extends the model', () => {
-        const ExtendedEmail = Email.extend((model) => {
-          expectTypeOf(model).toEqualTypeOf<Omit<UnsafeFirstModel<typeof Email.schema>, 'extend'>>();
-          return { additionalProp: 'x' };
+      it('extends the model with additional properties', () => {
+        const baseModel = createUnsafeFirstModel(emailSchema);
+        const extendedModel = createUnsafeFirstModel(emailSchema, {
+          customProperty: 'custom',
+          customMethod: () => 'custom',
         });
 
-        expect(ExtendedEmail.additionalProp).toBe('x');
-        expectTypeOf(ExtendedEmail.from).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['from']>();
-        expectTypeOf(ExtendedEmail.cast).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['cast']>();
-        expectTypeOf(ExtendedEmail.safeFrom).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['safeFrom']>();
-        expectTypeOf(ExtendedEmail.safeCast).toEqualTypeOf<UnsafeFirstModel<typeof Email.schema>['safeCast']>();
+        expect(extendedModel.customProperty).toBe('custom');
+        expect(extendedModel.customMethod()).toBe('custom');
+        expect(extendedModel.schema).toBe(baseModel.schema);
+        expectTypeOf(extendedModel.customProperty).toEqualTypeOf<'custom'>();
+        expectTypeOf(extendedModel.customMethod).toEqualTypeOf<() => 'custom'>();
+      });
+
+      it('can override existing properties', () => {
+        const baseModel = createUnsafeFirstModel(emailSchema);
+        const extendedModel = createUnsafeFirstModel(emailSchema, {
+          is: (value: string) => `yes it is ${value}`,
+        });
+
+        expect(baseModel.is('test@example.com')).toBe(true);
+        expect(extendedModel.is('test@example.com')).toBe('yes it is test@example.com');
+
+        expectTypeOf(baseModel.is).toEqualTypeOf<(value: unknown) => value is Email>();
+        expectTypeOf(extendedModel.is).toEqualTypeOf<(value: string) => string>();
       });
     });
   });

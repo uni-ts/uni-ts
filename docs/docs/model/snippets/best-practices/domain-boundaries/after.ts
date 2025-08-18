@@ -10,7 +10,10 @@ export const UserProfile = createModel(
     firstName: z.string().min(1),
     lastName: z.string().min(1),
   }),
-).extend({ getDisplayName });
+  {
+    getDisplayName,
+  },
+);
 
 export type UserPreferences = InferModelOutput<typeof UserPreferences>;
 export const UserPreferences = createModel(
@@ -19,7 +22,11 @@ export const UserPreferences = createModel(
     theme: z.enum(['light', 'dark']),
     language: z.enum(['en', 'es', 'fr']),
   }),
-).extend({ updateTheme, updateLanguage });
+  {
+    updateTheme,
+    updateLanguage,
+  },
+);
 
 export type UserSubscription = InferModelOutput<typeof UserSubscription>;
 export const UserSubscription = createModel(
@@ -28,7 +35,10 @@ export const UserSubscription = createModel(
     subscriptionExpiresAt: z.date().optional(),
     billingAddress: z.string().optional(),
   }),
-).extend({ isSubscribed });
+  {
+    isSubscribed,
+  },
+);
 
 function getDisplayName(user: UserProfile) {
   return `${user.firstName} ${user.lastName}`;

@@ -13,9 +13,10 @@ export const OrderItem = createModel(
     quantity: z.int().positive(),
     unitPrice: z.number().positive(),
   }),
-).extend({
-  getTotalPrice,
-});
+  {
+    getTotalPrice,
+  },
+);
 
 function getTotalPrice(orderItem: OrderItem) {
   return orderItem.quantity * orderItem.unitPrice;

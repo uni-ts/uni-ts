@@ -13,11 +13,12 @@ export const Product = createModel(
     quantity: z.int().nonnegative(),
     isActive: z.boolean(),
   }),
-).extend({
-  canBePurchased,
-  applyDiscount,
-  isOutOfStock,
-});
+  {
+    canBePurchased,
+    applyDiscount,
+    isOutOfStock,
+  },
+);
 
 function canBePurchased(product: Product, quantity: number) {
   return product.isActive && product.quantity >= quantity;

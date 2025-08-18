@@ -11,7 +11,10 @@ export const UserCredentials = createModel(
     email: z.email(),
     hashedPassword: z.string().brand('HashedPassword'),
   }),
-).extend({ verifyPassword });
+  {
+    verifyPassword,
+  },
+);
 
 // It uses only one model property.
 // It's a sign `hashedPassword` may be extracted to a separate model.

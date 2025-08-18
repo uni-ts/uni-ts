@@ -7,7 +7,7 @@ export const ProductId = createModel(z.uuid().brand('ProductId'));
 // Can be reused out of the product context
 // e.g. to represent shipping cost
 export type Price = InferModelOutput<typeof Price>;
-export const Price = createModel(z.number().positive().brand('Price')).extend({
+export const Price = createModel(z.number().positive().brand('Price'), {
   toDisplayFormat,
 });
 
@@ -27,7 +27,10 @@ export const ProductInventory = createModel(
     stock: z.number().int().min(0),
     reservedStock: z.number().int().min(0),
   }),
-).extend({ getAvailableStock });
+  {
+    getAvailableStock,
+  },
+);
 
 export type ProductAnalytics = InferModelOutput<typeof ProductAnalytics>;
 export const ProductAnalytics = createModel(
@@ -36,7 +39,10 @@ export const ProductAnalytics = createModel(
     viewCount: z.number().int().min(0),
     lastViewedAt: z.date().optional(),
   }),
-).extend({ trackView });
+  {
+    trackView,
+  },
+);
 
 function toDisplayFormat(price: Price) {
   return `$${price.toFixed(2)}`;

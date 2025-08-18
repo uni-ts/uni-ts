@@ -10,7 +10,10 @@ export const User = createModel(
     email: z.email().brand('Email'),
     createdAt: z.date(),
   }),
-).extend({ isNew });
+  {
+    isNew,
+  },
+);
 
 function isNew(user: User) {
   const daysSinceCreation =

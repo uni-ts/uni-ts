@@ -8,11 +8,12 @@ export const Account = createModel(
     balance: z.number().min(0),
     isActive: z.boolean(),
   }),
-).extend({
-  canReceiveMoney,
-  canSpendMoney,
-  canTransferMoney,
-});
+  {
+    canReceiveMoney,
+    canSpendMoney,
+    canTransferMoney,
+  },
+);
 
 function canReceiveMoney(account: Account) {
   return account.isActive;
