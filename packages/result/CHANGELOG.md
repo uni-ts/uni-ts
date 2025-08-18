@@ -1,5 +1,11 @@
 # @uni-ts/result
 
+## 0.0.4
+
+### Patch Changes
+
+- ca6f865: Enable mixed result types handling in `isOk` and `isErr` functions
+
 ## 0.0.3
 
 ### Patch Changes

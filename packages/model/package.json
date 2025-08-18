@@ -1,6 +1,6 @@
 {
   "name": "@uni-ts/model",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Utils for creating data models in TypeScript.",
   "keywords": [
     "model",
@@ -43,7 +43,7 @@
     "@uni-ts/result": "workspace:*"
   },
   "peerDependencies": {
-    "@uni-ts/result": "^0.0.2"
+    "@uni-ts/result": "^0.0.4"
   },
   "peerDependenciesMeta": {
     "@uni-ts/result": {
