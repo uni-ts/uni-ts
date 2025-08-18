@@ -43,7 +43,7 @@
     "@uni-ts/result": "workspace:*"
   },
   "peerDependencies": {
-    "@uni-ts/result": "^0.0.4"
+    "@uni-ts/result": "^0.0.2"
   },
   "peerDependenciesMeta": {
     "@uni-ts/result": {
