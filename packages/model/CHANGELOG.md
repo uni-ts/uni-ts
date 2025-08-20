@@ -1,5 +1,12 @@
 # @uni-ts/model
 
+## 0.3.1
+
+### Patch Changes
+
+- 1b3846f: - Update the `ModelValidationError` message. Now instead of showing the first issue's message, it shows all issue messages with paths.
+  - Provide `prettifyError` function to format the error message.
+
 ## 0.3.0
 
 ### Minor Changes
