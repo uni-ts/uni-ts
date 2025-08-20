@@ -40,7 +40,6 @@ export function isPromise<T = unknown>(value: unknown): value is Promise<T> {
   return value instanceof Promise;
 }
 
-// biome-ignore lint/complexity/noBannedTypes: fine for this use case
 export function isFunction(value: unknown): value is Function {
   return typeof value === 'function';
 }

@@ -21,7 +21,6 @@
  *   .do(({ ctx }) => {...});
  * ```
  */
-// biome-ignore lint/complexity/noBannedTypes: fine as the default value.
 export function next<const Value extends object = {}>(value = {} as Value): Ctx<Value> {
   return { type: 'ctx', value };
 }
@@ -110,7 +109,6 @@ export function createActionExecutor<
 }
 
 // Type definitions
-// biome-ignore lint/complexity/noBannedTypes: fine as the default value.
 export type Ctx<Value extends object = {}> = {
   type: 'ctx';
   value: Value;

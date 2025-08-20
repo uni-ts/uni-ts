@@ -149,7 +149,6 @@ describe('safe.ts', () => {
     it('starts with empty context', () => {
       const action = createSafeAction().do(({ ctx }) => {
         expect(ctx).toEqual({});
-        // biome-ignore lint/complexity/noBannedTypes: fine as type assertion
         expectTypeOf(ctx).toEqualTypeOf<{}>();
         return ok('success');
       });
