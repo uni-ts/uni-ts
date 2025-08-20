@@ -130,7 +130,6 @@ function safeValidate<S extends StandardSchemaV1>(
   return result.issues ? err(new ModelValidationError(result.issues)) : ok(result.value);
 }
 
-export { ModelValidationError };
 export { derive } from './derive.js';
-export type { SafeModel, SafeFirstModel, UnsafeFirstModel };
-export type { InferModelInput, InferModelOutput } from './types.js';
+export { ModelValidationError, prettifyError } from './error.js';
+export type { InferModelInput, InferModelOutput, SafeFirstModel, SafeModel, UnsafeFirstModel } from './types.js';

@@ -61,7 +61,6 @@ export function validate<S extends StandardSchemaV1>(schema: S, value: unknown):
   return result.value;
 }
 
-export { ModelValidationError };
-export type { Model };
 export { derive } from './derive.js';
-export type { InferModelInput, InferModelOutput } from './types.js';
+export { ModelValidationError, prettifyError } from './error.js';
+export type { InferModelInput, InferModelOutput, Model } from './types.js';
