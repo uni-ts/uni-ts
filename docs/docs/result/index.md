@@ -78,6 +78,22 @@ With Result types, nothing changes from the previous example. You are already su
 
 <!--@include: ./snippets/index/explicit-error-information/safe.md-->
 
+## Why Choose This Package?
+
+As there are other Result type packages out there, you may wonder, what makes this one different? Here's what we believe sets `@uni-ts/result` apart:
+
+**✨ Just Plain Objects**  
+Results are simple JavaScript objects, not complex classes. This means you can easily log them or send them through APIs (e.g. using a server action) without any extra work.
+
+**⚡ Function-Based Approach**  
+Instead of chaining methods on result classes, you use simple pure functions. Want to create your own utility? Just write a new function — no classes or inheritance needed.
+
+**🔀 Sync and Async Support**  
+All utilities work with both synchronous and asynchronous code. You don't have to learn two different APIs or import separate functions for promise handling.
+
+**🌱 Easy to Adopt**  
+Start small! You can use Result types in just a few places to get immediate benefits. No need to use more dependencies or rewrite the entire project to see the difference.
+
 ## Getting Started
 
 Ready to start using Result types in your project? Check out the [Getting Started](/docs/result/getting-started) guide to learn how to install and use the `@uni-ts/result` package with practical examples and API documentation.
