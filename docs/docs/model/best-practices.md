@@ -107,3 +107,19 @@ When in order for an object to be valid, its properties must maintain some corre
 When each property validation depends only on its own value, the object can stay unbranded.
 
 <!--@include: ./snippets/best-practices/branded-types/properties-non-correlated.md-->
+
+## Branded Types Composition
+
+As a branded type is just an intersection of the base type and the brand, it can be passed to functions that expect either the full branded type or just the base type.
+
+<!--@include: ./snippets/best-practices/branded-types-composition/single.md-->
+
+However, there is nothing stopping us from adding more intersections (brands) to a type in order to further constrain it for specific use cases while making it compatible with the existing ones.
+
+<!--@include: ./snippets/best-practices/branded-types-composition/multiple.md-->
+
+While composing branded types, keep in mind rules from the [previous section](#when-to-use-branded-types) to ensure they actually make your project more maintainable instead of just adding additional complexity.
+
+:::tip 💡 Validation + Domain
+The common use case for composing branded types is when the first branded type is validation-related and the following ones are domain-related. A great example is the one above where we use `Email` to validate if the string is a valid email address and then use `AuthEmail` to further constrain it for authentication use cases.
+:::

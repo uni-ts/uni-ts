@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ModelValidationError, prettifyError } from './error.js';
 import type { StandardSchemaV1 } from './standard-schema.js';
 
-describe.skip('error.ts', () => {
+describe('error.ts', () => {
   describe('ModelValidationError', () => {
     it('extends Error with correct name and type', () => {
       const issues: StandardSchemaV1.Issue[] = [];
