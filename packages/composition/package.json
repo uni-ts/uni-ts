@@ -23,15 +23,13 @@
   "bugs": "https://github.com/uni-ts/uni-ts/issues",
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./builder": {
-      "import": "./dist/builder.js",
+      "default": "./dist/builder.js",
       "types": "./dist/builder.d.ts"
     }
   },
