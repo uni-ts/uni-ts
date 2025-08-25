@@ -1,5 +1,11 @@
 # @uni-ts/result
 
+## 0.1.0
+
+### Minor Changes
+
+- 38ef035: Update package.json exports to use "default" field instead of the "import" one
+
 ## 0.0.4
 
 ### Patch Changes
