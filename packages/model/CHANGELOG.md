@@ -1,5 +1,11 @@
 # @uni-ts/model
 
+## 0.4.1
+
+### Patch Changes
+
+- a07e9c1: Re-export Result type from the safe models file
+
 ## 0.4.0
 
 ### Minor Changes
