@@ -6,7 +6,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import { ModelValidationError } from './error.js';
 import { oneOf } from './helpers.js';
-import type { InferModelOutput, SafeFirstModel, SafeModel, UnsafeFirstModel } from './safe.js';
+import type { InferModelOutput } from './safe.js';
 import { createSafeFirstModel, createSafeModel, createUnsafeFirstModel } from './safe.js';
 
 describe('safe.ts', () => {
